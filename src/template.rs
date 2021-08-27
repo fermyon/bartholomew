@@ -1,10 +1,22 @@
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use super::content::{Content, Frontmatter};
-use handlebars::Handlebars;
-use serde::Serialize;
+use handlebars::{
+    handlebars_helper, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
+};
+use serde::{Deserialize, Serialize};
 
 const DEFAULT_TEMPLATE: &str = "main";
+
+/// Describe the site itself
+#[derive(Serialize, Deserialize)]
+pub struct SiteInfo {
+    title: String,
+    logo: Option<String>,
+    base_url: Option<String>,
+    about: Option<String>,
+}
 
 #[derive(Serialize)]
 pub struct TemplateContext {
@@ -17,7 +29,10 @@ pub struct TemplateContext {
 pub struct RequestValues {}
 
 #[derive(Serialize)]
-pub struct SiteValues {}
+pub struct SiteValues {
+    info: SiteInfo,
+    pages: BTreeMap<String, PageValues>,
+}
 
 /// The structured values sent to the template renderer.
 /// The body should be legal HTML that can be inserted within the <body> tag.
@@ -58,6 +73,7 @@ impl<'a> Renderer<'a> {
     //     Ok(())
     // }
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
+        self.register_helpers();
         self.handlebars
             .register_templates_directory(".hbs", &self.template_dir)?;
         Ok(())
@@ -69,7 +85,11 @@ impl<'a> Renderer<'a> {
         Ok(())
     }
 
-    pub fn render_template<T: Into<PageValues>>(&self, values: T) -> anyhow::Result<String> {
+    pub fn render_template<T: Into<PageValues>>(
+        &self,
+        values: T,
+        info: SiteInfo,
+    ) -> anyhow::Result<String> {
         let page: PageValues = values.into();
         let tpl = page
             .frontmatter
@@ -80,12 +100,62 @@ impl<'a> Renderer<'a> {
         let ctx = TemplateContext {
             page,
             request: RequestValues {},
-            site: SiteValues {},
+            site: SiteValues {
+                info,
+                // Right now, we literally include ALL OF THE CONTENT in its rendered
+                // state. I take some consolation in knowing how PHP works. But
+                // seriously, this is probably not the best thing to do.
+                //
+                // Options:
+                // 1. Parse only the frontmatter out of pages
+                // 2. Get all of the content paths, but load lazily (perhaps by helper)
+                // 3. ???
+                // 4. Leave it like it is
+                // 5. Determine that this is out of scope
+                pages: crate::content::all_pages(self.content_dir.clone())?,
+            },
         };
         let out = self.handlebars.render(&tpl, &ctx)?;
         Ok(out)
     }
+
+    fn register_helpers(&mut self) {
+        // This is a mess right now. I am trying to figure out what helpers should be
+        // included by default.
+
+        //let cdir = self.content_dir.clone();
+        // TODO: Don't capture the error.
+        //handlebars_helper!(frontmatter: |p: String| crate::content::load_frontmatter(p).unwrap_or_else(Frontmatter{}));
+        handlebars_helper!(upper: |s: String| s.to_uppercase());
+        handlebars_helper!(lower: |s: String| s.to_lowercase());
+        /*handlebars_helper!(pages: |_| {
+            let contents = content::all_pages(self.content_dir.clone());
+            contents.into::<PageValues>()
+        });*/
+        self.handlebars.register_helper("upper", Box::new(upper));
+        self.handlebars.register_helper("lower", Box::new(lower));
+        //self.handlebars
+        //    .register_helper("frontmatter", Box::new(frontmatter));
+    }
 }
+
+/*
+fn pages_helper(
+    h: &Helper,
+    _: &Handlebars,
+    _: &Context,
+    _: &mut RenderContext,
+    out: &mut dyn Output,
+) -> Result<(), RenderError> {
+    // get parameter from helper or throw an error
+    let param = h
+        .param(0)
+        .ok_or_else(|| RenderError::new("Param 0 is required for format helper."))?;
+    let rendered = format!("{} pts", param.value().render());
+    out.write(rendered.as_ref())?;
+    Ok(())
+}
+*/
 
 /// Describe an error to the template engine.
 ///

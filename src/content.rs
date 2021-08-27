@@ -1,10 +1,13 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::any;
+use std::collections::{BTreeMap, HashMap};
 use std::fs::{read_dir, DirEntry};
 use std::path::PathBuf;
 use std::str::FromStr;
 
 use pulldown_cmark as markdown;
+
+use crate::template::PageValues;
 
 const DOC_SEPERATOR: &str = "\n---\n";
 
@@ -27,6 +30,17 @@ pub fn content_path(content_dir: PathBuf, path_info: &str) -> PathBuf {
     let buf = PathBuf::from(path_info).with_extension("md");
     // PATH_INFO must have a leading slash. So we strip that.
     content_dir.join(buf.strip_prefix("/").unwrap_or(&buf))
+}
+
+pub fn all_pages(dir: PathBuf) -> anyhow::Result<BTreeMap<String, PageValues>> {
+    let files = all_files(dir)?;
+    let mut contents = BTreeMap::new();
+    for f in files {
+        let raw_data = std::fs::read_to_string(&f)?;
+        let content: Content = raw_data.parse()?;
+        contents.insert(f.to_string_lossy().to_string(), content.into());
+    }
+    Ok(contents)
 }
 
 /// Fetch a list of paths to every file in the directory

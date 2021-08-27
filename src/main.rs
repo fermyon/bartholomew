@@ -8,6 +8,7 @@ mod template;
 const CONTENT_PATH: &str = "/content/";
 const TEMPLATE_PATH: &str = "/templates/";
 const SCRIPT_PATH: &str = "/scripts/";
+const CONFIG_FILE: &str = "/config/site.toml";
 
 const DEFAULT_INDEX: &str = "/index";
 
@@ -27,6 +28,10 @@ fn exec(request: Request) -> anyhow::Result<Response> {
         }
         None => "/index",
     };
+
+    // Load the site config
+    let raw_config = std::fs::read(CONFIG_FILE)?;
+    let config: template::SiteInfo = toml::from_slice(&raw_config)?;
 
     // Load the template directory
     let mut engine = template::Renderer::new(
@@ -51,13 +56,13 @@ fn exec(request: Request) -> anyhow::Result<Response> {
         Ok(full_document) => {
             eprintln!("200 {} {}", verb, path_info);
             let doc: content::Content = full_document.parse()?;
-            let data = engine.render_template(doc)?;
+            let data = engine.render_template(doc, config)?;
             Ok(html_response(200, data))
         }
         Err(_) => {
             eprintln!("404 {} {}", verb, path_info);
             let err_vals = template::error_values("Not Found", "The requested page was not found.");
-            let body = engine.render_template(err_vals)?;
+            let body = engine.render_template(err_vals, config)?;
             Ok(html_response(404, body))
         }
     }

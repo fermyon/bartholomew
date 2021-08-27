@@ -1,3 +1,5 @@
+title = "Welcome to Bartholomew, the Micro-CMS for Wagi"
+---
 # Welcome to Bartholomew
 
 It might be hard to spell, but fortunately you won't have to spell it that often.
