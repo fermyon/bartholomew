@@ -1,0 +1,4 @@
+[[module]]
+module = "target/wasm32-wasi/release/bartholomew.wasm"
+route = "/..."
+volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = "scripts/"}

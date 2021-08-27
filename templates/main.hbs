@@ -1,0 +1,29 @@
+<html>
+
+<head>
+    {{! Use the formatter.title and formatter.description in the head }}
+    <title>{{page.frontmatter.title}}</title>
+    {{#if page.frontmatter.description}}
+    {{! Only render the description if it exists }}
+    <meta name="description" content="{{page.frontmatter.description}}">
+    {{/if}}
+</head>
+<style>
+    /* pretend we have some style */
+    body {
+        margin-top: 1em;
+        margin-left: 5em;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h1 {
+        color: navy;
+    }
+</style>
+
+<body>
+    {{! Since this is HTML, we use the triple-curly }}
+    {{{page.body}}}
+</body>
+
+</html>
