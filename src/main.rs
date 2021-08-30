@@ -15,16 +15,14 @@ fn main() {
         Ok(()) => {}
         Err(e) => {
             eprintln!("Internal Server Error: {}", e);
-            println!("Content-Type: text/plain");
-            println!("Status: 500 Internal Server Error\n");
-            println!("In internal error occurred");
+            internal_server_error()
         }
     }
 }
 
 /// The main entrypoint. This is executed for each HTTP request.
 fn exec() -> anyhow::Result<()> {
-    let path_info = match std::env::var("X-CGI-Path-Info") {
+    let path_info = match std::env::var("PATH_INFO") {
         Ok(path) => {
             if path == "/" {
                 DEFAULT_INDEX.to_owned()
@@ -70,13 +68,19 @@ fn exec() -> anyhow::Result<()> {
 
 fn not_found(route: String, body: String) {
     eprintln!("Not Found: {}", route);
-    println!("Content-Type: text/html");
+    println!("Content-Type: text/html; charset=utf-8");
     println!("Status: 404 Not Found\n");
     println!("{}", body);
 }
 
+fn internal_server_error() {
+    println!("Content-Type: text/plain");
+    println!("Status: 500 Internal Server Error\n");
+    println!("In internal error occurred");
+}
+
 fn html_ok(route: String, body: String) {
     eprintln!("OK: {}", route);
-    println!("Content-Type: text/html\n");
+    println!("Content-Type: text/html; charset=utf-8\n");
     println!("{}", body);
 }
