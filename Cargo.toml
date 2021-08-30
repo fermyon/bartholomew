@@ -5,7 +5,6 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.43"
-cgi = "0.6"
 handlebars = {version = "4.1", features = ["dir_source", "script_helper"]}
 pulldown-cmark = { version = "0.8", default-features = false }
 serde = { version = "1.0", features = ["derive"] }

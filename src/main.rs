@@ -1,6 +1,4 @@
-use std::path::{Path, PathBuf};
-
-use cgi::{cgi_try_main, html_response, Request, Response};
+use std::path::PathBuf;
 
 mod content;
 mod template;
@@ -12,21 +10,29 @@ const CONFIG_FILE: &str = "/config/site.toml";
 
 const DEFAULT_INDEX: &str = "/index";
 
-// Generate the top-level handler for running this CGI script.
-cgi_try_main!(exec);
+fn main() {
+    match exec() {
+        Ok(()) => {}
+        Err(e) => {
+            eprintln!("Internal Server Error: {}", e);
+            println!("Content-Type: text/plain");
+            println!("Status: 500 Internal Server Error\n");
+            println!("In internal error occurred");
+        }
+    }
+}
 
 /// The main entrypoint. This is executed for each HTTP request.
-fn exec(request: Request) -> anyhow::Result<Response> {
-    let path_info = match request.headers().get("X-CGI-Path-Info") {
-        Some(header) => {
-            let path = header.to_str()?;
+fn exec() -> anyhow::Result<()> {
+    let path_info = match std::env::var("X-CGI-Path-Info") {
+        Ok(path) => {
             if path == "/" {
-                DEFAULT_INDEX
+                DEFAULT_INDEX.to_owned()
             } else {
                 path
             }
         }
-        None => "/index",
+        Err(_) => "/index".to_owned(),
     };
 
     // Load the site config
@@ -44,26 +50,33 @@ fn exec(request: Request) -> anyhow::Result<Response> {
     // Right now, I have this as a separate call b/c I might disable it, or add an
     // option for a user to enable/disable.
     engine.load_script_dir()?;
-
-    let verb = request
-        .headers()
-        .get("X-CGI-Request-Method")
-        .map(|hv| hv.to_str().unwrap_or("GET"))
-        .unwrap_or("GET");
-    let content_path = content::content_path(PathBuf::from(CONTENT_PATH), path_info);
+    let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
     eprintln!("Loading {}", content_path.to_string_lossy());
     match std::fs::read_to_string(content_path) {
         Ok(full_document) => {
-            eprintln!("200 {} {}", verb, path_info);
             let doc: content::Content = full_document.parse()?;
             let data = engine.render_template(doc, config)?;
-            Ok(html_response(200, data))
+            html_ok(path_info, data);
+            Ok(())
         }
         Err(_) => {
-            eprintln!("404 {} {}", verb, path_info);
             let err_vals = template::error_values("Not Found", "The requested page was not found.");
             let body = engine.render_template(err_vals, config)?;
-            Ok(html_response(404, body))
+            not_found(path_info, body);
+            Ok(())
         }
     }
+}
+
+fn not_found(route: String, body: String) {
+    eprintln!("Not Found: {}", route);
+    println!("Content-Type: text/html");
+    println!("Status: 404 Not Found\n");
+    println!("{}", body);
+}
+
+fn html_ok(route: String, body: String) {
+    eprintln!("OK: {}", route);
+    println!("Content-Type: text/html\n");
+    println!("{}", body);
 }
