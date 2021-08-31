@@ -1,5 +1,9 @@
 title = "What Is Markdown?"
 description = "Introducing an easy-to-write document format"
+[extra]
+date = "Aug. 15, 2021"
+author = "Matt Butcher"
+author_page = "/author/butcher"
 ---
 Markdown is one of the most prevalent document formats for writing content. If you use
 Slack, you probably have written some Markdown. Every Slack message is a mini

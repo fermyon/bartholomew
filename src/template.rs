@@ -16,6 +16,7 @@ pub struct SiteInfo {
     logo: Option<String>,
     base_url: Option<String>,
     about: Option<String>,
+    extra: BTreeMap<String, String>,
 }
 
 #[derive(Serialize)]

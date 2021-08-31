@@ -1,6 +1,8 @@
 {{> content_top }}
 
 <div class="col-md-8">
+
+    {{#each (blogs site.pages)}}
     <article class="blog-post">
         {{#with page.frontmatter}}
         <h1 class="blog-post-title border-bottom">{{title}}</h2>
@@ -10,9 +12,9 @@
             {{/with}}
             {{! Since this is HTML, we use the triple-curly }}
             {{{page.body}}}
-            {{ echo "world" }}
-
+            <p><a href="{{this.uri}}">View the Post</a></p>
     </article>
+    {{/each}}
 
 
     <h2 class="border-top learn-more-card-group">Learn More</h2>
@@ -57,7 +59,5 @@
         </div>
     </div>
 </div><!-- end col -->
-
 {{> content_sidebar }}
-
 {{> content_bottom }}

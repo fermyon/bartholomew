@@ -23,6 +23,10 @@ Handlebars is a popular template format similar to Mustache. All of the template
 are fully customizable. You can take a look in the `templates/` directory to start
 customizing the look and feel of this site.
 
+### Twitter Bootstrap
+
+The theme that ships with Bartholomew is just a simple [Twitter Bootstrap](https://getbootstrap.com/) theme.
+
 ## Configuration Files
 
 Configuration files are in `config`, and are simple TOML files. Probably the only one

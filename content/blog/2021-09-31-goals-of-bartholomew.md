@@ -1,5 +1,10 @@
 title = "The Goals of Bartholomew"
 description = "We have plans. Big plans. Actually, they're small plans."
+
+[extra]
+date = "Aug. 31, 2021"
+author = "Matt Butcher"
+author_page = "/author/butcher"
 ---
 
 Bartholomew is intended to be three things:

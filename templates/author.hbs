@@ -1,0 +1,25 @@
+{{> content_top}}
+
+<div class="col-md-8">
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="{{page.frontmatter.extra.author_image}}" class="img-fluid rounded-start"
+                    alt="{{page.frontmatter.title}}">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{page.frontmatter.title}}</h5>
+                    <div class="card-text">
+                        {{{page.body}}}
+                    </div>
+                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{>content_sidebar}}
+{{>content_bottom}}

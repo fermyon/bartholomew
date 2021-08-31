@@ -1,5 +1,9 @@
 title = "First Post!"
 description = "An example of blogging on the Bartholomew platform"
+[extra]
+date = "Aug. 1, 2021"
+author = "Matt Butcher"
+author_page = "/author/butcher"
 ---
 
 This is an example of a blog post.
