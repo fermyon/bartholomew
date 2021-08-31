@@ -80,8 +80,18 @@ impl<'a> Renderer<'a> {
     }
 
     pub fn load_script_dir(&mut self) -> anyhow::Result<()> {
-        self.handlebars
-            .register_script_helper_file("lib", self.script_dir.join("lib.rhai"))?;
+        // TODO: rewrite all_files so we don't need to clone here.
+        let scripts = crate::content::all_files(self.script_dir.clone())?;
+        for script in scripts {
+            // Relative file name without extension. Note that we skip any file
+            // that doesn't have this.
+            if let Some(fn_name) = script.file_stem() {
+                eprintln!("registering {}", fn_name.to_str().unwrap_or("unknown"));
+                self.handlebars
+                    .register_script_helper_file(&fn_name.to_string_lossy(), &script)?;
+            }
+        }
+
         Ok(())
     }
 

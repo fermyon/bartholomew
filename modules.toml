@@ -1,4 +1,9 @@
 [[module]]
+module = "/Users/technosophos/Code/Grain/fileserver/fileserver.gr.wasm"
+route = "/static/..."
+volumes = {"/" = "static/"}
+
+[[module]]
 module = "target/wasm32-wasi/release/bartholomew.wasm"
 route = "/..."
 volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = "scripts/", "config/" = "config/"}
