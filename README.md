@@ -1,10 +1,9 @@
-# Bartholomew: Markdown Microblog
+# Bartholomew MicroCMS
 
-Bartholomew is a markdown website tool. It works like a CMS, rendering your pages
-on the fly. But it has the feel of a static site generator.
+Bartholomew is a simple CMS-like tool for hosting a website. It is compiled entirely
+to WebAssembly, and can run in any Wagi-capable system.
 
-Bartholomew can be distributed as a self-contained module, which can be used in other
-Hippo and Wagi applications.
+Check out [the docs](/content/docs)
 
 ## Getting Bartholomew
 
@@ -36,7 +35,7 @@ Bartholomew can run inside of any CGI environment that supports directly executi
 Wasm modules. That basically means Hippo, Wagi, and Wagi.net. (If you get it running
 in another environment, please tell us!)
 
-Bartholomew requires that two directories are mounted into the Wasm module:
+Bartholomew requires that several directories are mounted into the Wasm module:
 
 - `templates/` should contain Handlebars templates.
 - `content/` should contain Markdown files.
