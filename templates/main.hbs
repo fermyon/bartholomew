@@ -15,46 +15,35 @@
     </article>
 
 
-    <h2 class="border-top learn-more-card-group">Learn More</h2>
+    <h2 class="border-top learn-more-card-group">And...</h2>
     <div class="card-group">
+        {{#with (get_page "/content/features/wasm.md" site.pages) }}
         <div class="card">
-            <img src="/static/rust-code.png" class="card-img-top"
-                alt="Screenshot of Rust code, used purely for aesthetic purposes.">
+            <img src="{{page.frontmatter.extra.image}}" class="card-img-top" alt="{{page.frontmatter.title}}">
             <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">This is a wider card with supporting text below as a natural
-                    lead-in to
-                    additional
-                    content. This content is a little bit longer.</p>
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                <h5 class="card-title">{{this.page.frontmatter.title}}</h5>
+                <p class="card-text">{{{page.body}}}</p>
             </div>
         </div>
+        {{/with}}
+        {{#with (get_page "/content/features/wagi.md" site.pages) }}
         <div class="card">
-            <img src="/static/rust-code.png" class="card-img-top"
-                alt="Screenshot of Rust code, used purely for aesthetic purposes.">
+            <img src="{{page.frontmatter.extra.image}}" class="card-img-top" alt="{{page.frontmatter.title}}">
             <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">This card has supporting text below as a natural lead-in to
-                    additional
-                    content.
-                </p>
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                <h5 class="card-title">{{this.page.frontmatter.title}}</h5>
+                <p class="card-text">{{{page.body}}}</p>
             </div>
         </div>
+        {{/with}}
+        {{#with (get_page "/content/features/kiss.md" site.pages) }}
         <div class="card">
-            <img src="/static/rust-code.png" class="card-img-top"
-                alt="Screenshot of Rust code, used purely for aesthetic purposes.">
+            <img src="{{page.frontmatter.extra.image}}" class="card-img-top" alt="{{page.frontmatter.title}}">
             <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">This is a wider card with supporting text below as a natural
-                    lead-in to
-                    additional
-                    content. This card has even longer content than the first to show that equal height
-                    action.
-                </p>
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                <h5 class="card-title">{{this.page.frontmatter.title}}</h5>
+                <p class="card-text">{{{page.body}}}</p>
             </div>
         </div>
+        {{/with}}
     </div>
 </div><!-- end col -->
 

@@ -1,8 +1,7 @@
 # Bartholomew: Markdown Microblog
 
-Bartholomew is a markdown website tool. Originally built as part of my
-[Wagi codewalk](https://github.com/technosophos/codewalk-wagi), this is a productionized
-version of the same code.
+Bartholomew is a markdown website tool. It works like a CMS, rendering your pages
+on the fly. But it has the feel of a static site generator.
 
 Bartholomew can be distributed as a self-contained module, which can be used in other
 Hippo and Wagi applications.
@@ -29,6 +28,8 @@ With Hippo:
 $ hippo push
 ```
 
+For convenience, `make serve` builds the code, and then runs `wagi -c`.
+
 ## Configuring Bartholomew
 
 Bartholomew can run inside of any CGI environment that supports directly executing
@@ -39,6 +40,8 @@ Bartholomew requires that two directories are mounted into the Wasm module:
 
 - `templates/` should contain Handlebars templates.
 - `content/` should contain Markdown files.
+- `scripts/` contains Rhai scripts that are available as template helpers.
+- `config/site.toml` is the main site configuration file
 
 By convention, we suggest putting all of your Wasm modules in a directory called `modules/`.
 However, there is no hard-coded reason why you need to do this.
@@ -47,9 +50,9 @@ A `modules.toml` might look something like this:
 
 ```toml
 [[module]]
-module = "modules/bartholomew.wasm"
+module = "target/wasm32-wasi/release/bartholomew.wasm"
 route = "/..."
-volumes = { "content/" = "local/path/to/content/" , "templates/" = "local/path/to/templates/"}
+volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = "scripts/", "config/" = "config/"}
 ```
 
 At the time of this writing, Bartholomew does not serve static files. Instead, use
@@ -58,8 +61,8 @@ the [fileserver](https://github.com/deislabs/wagi-fileserver) for Wagi:
 ```
 [[module]]
 module = "modules/fileserver.gr.wasm"
-route = "/images/..."
-volumes = { "/" = "images/"}
+route = "/static/..."
+volumes = { "/" = "static/"}
 ```
 
 Using the fileserver has the distinct security advantage that downloadable files are stored
@@ -85,7 +88,7 @@ This is the markdown content
 
 ```
 
-Bartholomew supports Markdown via the [Rust Markdown](https://crates.io/crates/markdown)
+Bartholomew supports Markdown via the [Pulldown-Cmark](https://crates.io/crates/pulldown_cmark)
 library.
 
 ### Frontmatter
@@ -124,12 +127,12 @@ used when an error occurs.
 
 ### Accessing Frontmatter
 
-Frontmatter is available in the template using the `{{ frontmatter }}` object.
-For example, to print the title, use `{{ frontmatter.title }}`. To access your custom
-`[extra]` field named `foo`, use `{{ frontmatter.extra.foo }}`.
+Frontmatter is available in the template using the `{{ page.frontmatter }}` object.
+For example, to print the title, use `{{ page.frontmatter.title }}`. To access your custom
+`[extra]` field named `foo`, use `{{ page.frontmatter.extra.foo }}`.
 
 The body is injected to the template converted to HTML. That is, the template does not
 have access to the Markdown version of the document.
 
-To print the HTML body without having the output escaped, use `{{{ body }}}` (note the
+To print the HTML body without having the output escaped, use `{{{ page.body }}}` (note the
 triple curly braces).
