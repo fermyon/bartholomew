@@ -13,6 +13,10 @@ Bartholomew from source, just run `make build`, which basically does a
 
 You can also use the pre-built `batholomew.wasm` or the versioned bindles.
 
+To run Bartholomew, you will need a Wagi-capable runtime.
+For example, you can just download a recent release of [Wagi](https://github.com/deislabs/wagi) and put it on your `$PATH`.
+Then the `make serve` command can start it all up for you.
+
 ## Running Bartholomew
 
 With Wagi:
