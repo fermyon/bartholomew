@@ -1,6 +1,11 @@
 title = "Editing the Configuration File"
 description = "You can change site-wide settings in config.toml"
 ---
+
+[TOML](https://toml.io/en/) is a simple configuration format.
+Bartholomew uses TOML for [frontmatter in Markdown documents](markdown) as well as
+in the site configuration. In this chapter, we will focus on site configuration.
+
 Your site's `config/` directory has one configuration file in it, called `site.toml`:
 
 ```
