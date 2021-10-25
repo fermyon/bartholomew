@@ -128,7 +128,7 @@ will be accessible as `main`.
 
 Note that Bartholomew _expects_ to find a template named `main`. This template is used as
 a default when the content frontmatter does not contain a `template` directive. It is also
-used when an error occurs.
+used when an error occurs. You must have a `main` template.
 
 ### Accessing Frontmatter
 
