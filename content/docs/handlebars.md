@@ -17,7 +17,7 @@ Here is a simple HTML template with Handlebars:
 <html>
 
 <head>
-    <title>{{page.frontmatter.title}}</title>
+    <title>{{page.head.title}}</title>
 </head>
 
 <body>
@@ -27,7 +27,7 @@ Here is a simple HTML template with Handlebars:
 </html>
 ```
 
-The above sets the HTML document's title to whatever is in `page.frontmatter.title`, and
+The above sets the HTML document's title to whatever is in `page.head.title`, and
 then fills in the `body` with the value of `page.body`.
 
 Let's take a brief look at the `page` object to understand what is happening here.
@@ -38,7 +38,7 @@ In JSON, the `page` object looks like this:
 
 ```
 {
-    frontmatter: {
+    head: {
         title: "Some title",
         description: "Some description",
         template: "an optional template rather than using main.hbs"
@@ -52,7 +52,7 @@ In JSON, the `page` object looks like this:
 ```
 
 To access a part, you simply use a dotted path notation. So to get the value of `key` in
-the `extra` section, we use `{{ page.frontmatter.extra.key }}`.
+the `extra` section, we use `{{ page.head.extra.key }}`.
 
 In addition to the `page` object, there is also a `site` object:
 

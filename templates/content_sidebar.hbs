@@ -8,7 +8,7 @@
         <div class="p-4">
             <h4 class="fst-italic">Recent Posts</h4>
             <ol class="list-unstyled mb-0">
-                {{#each (blogs site.pages)}}<li><a href="{{uri}}">{{page.frontmatter.title}}</a></li>
+                {{#each (blogs site.pages)}}<li><a href="{{uri}}">{{page.head.title}}</a></li>
                 {{/each }}
             </ol>
         </div>

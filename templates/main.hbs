@@ -2,7 +2,7 @@
 
 <div class="col-md-8">
     <article class="blog-post">
-        {{#with page.frontmatter}}
+        {{#with page.head}}
         <h1 class="blog-post-title border-bottom">{{title}}</h2>
             <p class="blog-post-meta">{{extra.date}} {{#if extra.author}} by <a
                     href="{{extra.author_page}}">{{extra.author}}</a>{{/if}}
@@ -19,27 +19,27 @@
     <div class="card-group">
         {{#with (get_page "/content/features/wasm.md" site.pages) }}
         <div class="card">
-            <img src="{{page.frontmatter.extra.image}}" class="card-img-top" alt="{{page.frontmatter.title}}">
+            <img src="{{page.head.extra.image}}" class="card-img-top" alt="{{page.head.title}}">
             <div class="card-body">
-                <h5 class="card-title">{{this.page.frontmatter.title}}</h5>
+                <h5 class="card-title">{{this.page.head.title}}</h5>
                 <p class="card-text">{{{page.body}}}</p>
             </div>
         </div>
         {{/with}}
         {{#with (get_page "/content/features/wagi.md" site.pages) }}
         <div class="card">
-            <img src="{{page.frontmatter.extra.image}}" class="card-img-top" alt="{{page.frontmatter.title}}">
+            <img src="{{page.head.extra.image}}" class="card-img-top" alt="{{page.head.title}}">
             <div class="card-body">
-                <h5 class="card-title">{{this.page.frontmatter.title}}</h5>
+                <h5 class="card-title">{{this.page.head.title}}</h5>
                 <p class="card-text">{{{page.body}}}</p>
             </div>
         </div>
         {{/with}}
         {{#with (get_page "/content/features/kiss.md" site.pages) }}
         <div class="card">
-            <img src="{{page.frontmatter.extra.image}}" class="card-img-top" alt="{{page.frontmatter.title}}">
+            <img src="{{page.head.extra.image}}" class="card-img-top" alt="{{page.head.title}}">
             <div class="card-body">
-                <h5 class="card-title">{{this.page.frontmatter.title}}</h5>
+                <h5 class="card-title">{{this.page.head.title}}</h5>
                 <p class="card-text">{{{page.body}}}</p>
             </div>
         </div>

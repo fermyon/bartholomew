@@ -75,7 +75,7 @@ in isolation from executed files like templates.
 
 ## Creating Content for Bartholomew
 
-Bartholomew content consists of Markdown documents with TOML headers (aka _frontmatter_):
+Bartholomew content consists of Markdown documents with TOML headers (aka _Front Matter_):
 
 ```
 title = "This is the title"
@@ -96,10 +96,14 @@ This is the markdown content
 Bartholomew supports Markdown via the [Pulldown-Cmark](https://crates.io/crates/pulldown_cmark)
 library.
 
-### Frontmatter
+### Head (Front Matter)
 
 Front matter is fairly basic, limited to a few predefined entries, and a map of custom
-name/value pairs:
+name/value pairs. In Bartholomew, we refer to front matter as `head` (_the header_) for brevity.
+So you can think of every piece of content as having a _head_ and a _body_.
+(Shoulders, knees, and toes will be added in a forthcoming release.)
+
+A typical `head` looks like this:
 
 ```
 title = "The title"
@@ -127,14 +131,14 @@ accessible by its relative name, minus the extension. For example. `templates/ma
 will be accessible as `main`.
 
 Note that Bartholomew _expects_ to find a template named `main`. This template is used as
-a default when the content frontmatter does not contain a `template` directive. It is also
+a default when the content head does not contain a `template` directive. It is also
 used when an error occurs. You must have a `main` template.
 
-### Accessing Frontmatter
+### Accessing The Head (Front Matter) and the Body
 
-Frontmatter is available in the template using the `{{ page.frontmatter }}` object.
-For example, to print the title, use `{{ page.frontmatter.title }}`. To access your custom
-`[extra]` field named `foo`, use `{{ page.frontmatter.extra.foo }}`.
+The head is available in the template using the `{{ page.head }}` object.
+For example, to print the title, use `{{ page.head.title }}`. To access your custom
+`[extra]` field named `foo`, use `{{ page.head.extra.foo }}`.
 
 The body is injected to the template converted to HTML. That is, the template does not
 have access to the Markdown version of the document.

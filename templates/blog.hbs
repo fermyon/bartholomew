@@ -4,7 +4,7 @@
 
     {{#each (blogs site.pages)}}
     <article class="blog-post">
-        {{#with page.frontmatter}}
+        {{#with page.head}}
         <h1 class="blog-post-title border-bottom">{{title}}</h2>
             <p class="blog-post-meta">{{extra.date}} {{#if extra.author}} by <a
                     href="{{extra.author_page}}">{{extra.author}}</a>{{/if}}

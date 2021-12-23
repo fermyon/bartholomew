@@ -11,7 +11,7 @@ use crate::template::PageValues;
 const DOC_SEPERATOR: &str = "\n---\n";
 
 #[derive(Deserialize, Serialize)]
-pub struct Frontmatter {
+pub struct Head {
     /// The title of the document
     pub title: String,
     /// A short description of the document
@@ -69,7 +69,7 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
 }
 
 pub struct Content {
-    pub frontmatter: Frontmatter,
+    pub head: Head,
     pub body: String,
 }
 
@@ -93,9 +93,9 @@ impl FromStr for Content {
         let (toml_text, body) = full_document
             .split_once(DOC_SEPERATOR)
             .unwrap_or(("title = 'Untitled'", &full_document));
-        let frontmatter: Frontmatter = toml::from_str(toml_text)?;
+        let head: Head = toml::from_str(toml_text)?;
         Ok(Content {
-            frontmatter,
+            head,
             body: body.to_owned(),
         })
     }

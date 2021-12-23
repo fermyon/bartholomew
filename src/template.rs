@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
-use super::content::{Content, Frontmatter};
+use super::content::{Content, Head};
 use handlebars::{
     handlebars_helper, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
 };
@@ -39,7 +39,7 @@ pub struct SiteValues {
 /// The body should be legal HTML that can be inserted within the <body> tag.
 #[derive(Serialize)]
 pub struct PageValues {
-    pub frontmatter: Frontmatter,
+    pub head: Head,
     pub body: String,
 }
 
@@ -47,7 +47,7 @@ impl From<Content> for PageValues {
     fn from(c: Content) -> Self {
         PageValues {
             body: c.render_markdown(),
-            frontmatter: c.frontmatter,
+            head: c.head,
         }
     }
 }
@@ -103,7 +103,7 @@ impl<'a> Renderer<'a> {
     ) -> anyhow::Result<String> {
         let page: PageValues = values.into();
         let tpl = page
-            .frontmatter
+            .head
             .template
             .clone()
             .unwrap_or_else(|| DEFAULT_TEMPLATE.to_owned());
@@ -118,7 +118,7 @@ impl<'a> Renderer<'a> {
                 // seriously, this is probably not the best thing to do.
                 //
                 // Options:
-                // 1. Parse only the frontmatter out of pages
+                // 1. Parse only the head out of pages
                 // 2. Get all of the content paths, but load lazily (perhaps by helper)
                 // 3. ???
                 // 4. Leave it like it is
@@ -136,7 +136,7 @@ impl<'a> Renderer<'a> {
 
         //let cdir = self.content_dir.clone();
         // TODO: Don't capture the error.
-        //handlebars_helper!(frontmatter: |p: String| crate::content::load_frontmatter(p).unwrap_or_else(Frontmatter{}));
+        //handlebars_helper!(head: |p: String| crate::content::load_head(p).unwrap_or_else(Head{}));
         handlebars_helper!(upper: |s: String| s.to_uppercase());
         handlebars_helper!(lower: |s: String| s.to_lowercase());
         /*handlebars_helper!(pages: |_| {
@@ -146,7 +146,7 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("upper", Box::new(upper));
         self.handlebars.register_helper("lower", Box::new(lower));
         //self.handlebars
-        //    .register_helper("frontmatter", Box::new(frontmatter));
+        //    .register_helper("head", Box::new(head));
     }
 }
 
@@ -174,7 +174,7 @@ fn pages_helper(
 /// end user.
 pub fn error_values(title: &str, msg: &str) -> PageValues {
     PageValues {
-        frontmatter: Frontmatter {
+        head: Head {
             title: title.to_string(),
             description: None,
             extra: None,

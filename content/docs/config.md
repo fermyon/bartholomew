@@ -3,7 +3,7 @@ description = "You can change site-wide settings in config.toml"
 ---
 
 [TOML](https://toml.io/en/) is a simple configuration format.
-Bartholomew uses TOML for [frontmatter in Markdown documents](markdown) as well as
+Bartholomew uses TOML for [the `head` in Markdown documents](markdown) as well as
 in the site configuration. In this chapter, we will focus on site configuration.
 
 Your site's `config/` directory has one configuration file in it, called `site.toml`:
@@ -20,7 +20,7 @@ github = "https://github.com/technosophos/bartholomew"
 twitter = "https://twitter.com/technosophos"
 ```
 
-You can think of this as "frontmatter for your site".
+You can think of this as "header for your site".
 
 It has a few pre-defined fields:
 
