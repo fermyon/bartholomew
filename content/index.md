@@ -23,7 +23,7 @@ Wagi, Hippo, and Wagi.Net.
       <div class="card-body">
         <h5 class="card-title">Content Is Markdown</h5>
         <p class="card-text">Write your content in Markdown, the simple text-based markup language.
-Just drop your content somewhere in the `content/` folder, and you're ready to go.</p>
+Just drop your content somewhere in the <code>content/</code> folder, and you're ready to go.</p>
         <p class="card-text"><small class="text-muted">Learn More</small></p>
       </div>
     </div>
@@ -39,7 +39,7 @@ Just drop your content somewhere in the `content/` folder, and you're ready to g
       <div class="card-body">
         <h5 class="card-title">Templates are Handlebars</h5>
         <p class="card-text">Handlebars is a popular template format similar to Mustache. All of the templates
-are fully customizable. You can take a look in the `templates/` directory to start
+are fully customizable. You can take a look in the <code>templates/</code> directory to start
 customizing the look and feel of this site.</p>
         <p class="card-text"><small class="text-muted">Learn More</small></p>
       </div>
@@ -55,7 +55,7 @@ customizing the look and feel of this site.</p>
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">Defaults to Twitter Bootstrap</h5>
-        <p class="card-text">The theme that ships with Bartholomew is just a simple [Twitter Bootstrap](https://getbootstrap.com/) theme.</p>
+        <p class="card-text">The theme that ships with Bartholomew is just a simple <a href="https://getbootstrap.com/">Twitter Bootstrap</a> theme.</p>
         <p class="card-text"><small class="text-muted">Learn More</small></p>
       </div>
     </div>
@@ -70,8 +70,8 @@ customizing the look and feel of this site.</p>
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title">Simple TOML Config Files</h5>
-        <p class="card-text">Configuration files are in `config`, and are simple TOML files. Probably the only one
-you need is `config/site.toml`.
+        <p class="card-text">Configuration files are in <code>config/</code>, and are simple TOML files. Probably the only one
+you need is <code>config/site.toml</code>.
 </p>
         <p class="card-text"><small class="text-muted">Learn More</small></p>
       </div>

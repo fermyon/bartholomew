@@ -8,16 +8,14 @@ This content is unpublished.
 
 <div class="col-md-8">
     <article class="blog-post">
-        {{#with page.head}}
-        <h1 class="blog-post-title border-bottom">{{title}}</h2>
-            <p class="blog-post-meta">{{date}} {{#if extra.author}} by <a
-                    href="{{extra.author_page}}">{{extra.author}}</a>{{/if}}
+        <h1 class="blog-post-title border-bottom">{{page.head.title}}</h1>
+            <p class="blog-post-meta">
+                {{#if page.head.date}}{{date_format site.info.extra.date_style page.head.date}} {{/if}}
+                {{#if page.head.extra.author}} by <a
+                    href="{{page.head.extra.author_page}}">{{page.head.extra.author}}</a>{{/if}}
             </p>
-            {{/with}}
             {{! Since this is HTML, we use the triple-curly }}
             {{{page.body}}}
-            {{ echo "world" }}
-
     </article>
 
 

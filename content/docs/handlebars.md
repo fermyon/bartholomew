@@ -14,7 +14,7 @@ it works almost identically.
 Here is a simple HTML template with Handlebars:
 
 ```
-!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -48,12 +48,15 @@ In JSON, the `page` object looks like this:
             "description": "whatever is in the [extra] section of your Markdown doc's header"
         }
     },
-    body: "<p>Some rendered Markdown content</p>"
+    body: "<p>Some rendered Markdown content</p>",
+    published: true
 }
 ```
 
 To access a part, you simply use a dotted path notation. So to get the value of `key` in
 the `extra` section, we use `{{ page.head.extra.key }}`.
+
+### The Site Object
 
 In addition to the `page` object, there is also a `site` object:
 
