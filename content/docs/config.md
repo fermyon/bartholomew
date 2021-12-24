@@ -1,5 +1,6 @@
 title = "Editing the Configuration File"
 description = "You can change site-wide settings in config.toml"
+date = "2021-12-23T17:05:19Z"
 ---
 
 [TOML](https://toml.io/en/) is a simple configuration format.

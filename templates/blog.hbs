@@ -5,8 +5,10 @@
     {{#each (blogs site.pages)}}
     <article class="blog-post">
         {{#with page.head}}
-        <h1 class="blog-post-title border-bottom">{{title}}</h2>
-            <p class="blog-post-meta">{{extra.date}} {{#if extra.author}} by <a
+        <h1 class="blog-post-title border-bottom">{{title}}</h1>
+            <p class="blog-post-meta">
+                {{#if date }}{{date_format "%Y-%m-%d" date}} {{/if}}
+                {{#if extra.author}} by <a
                     href="{{extra.author_page}}">{{extra.author}}</a>{{/if}}
             </p>
             {{/with}}

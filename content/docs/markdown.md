@@ -1,5 +1,6 @@
 title = "Writing Content in Markdown"
 description = "Write your content in a simple text language"
+date = "2021-12-23T17:05:19Z"
 ---
 
 To create a new document, just drop a file into the `content/` folder, and make sure
@@ -16,8 +17,7 @@ to write text that can then be converted into HTML.
 For example, the Markdown `*hello*` is transformed into *hello*. And the Markdown
 `[example](http://example.com)` is transformed into the link [example](http://example.com).
 
-To make
-a header, you just use hash marks: `#` for a title, `##` for a sub-header, and so on.
+To make a header, you just use hash marks: `#` for a title, `##` for a sub-header, and so on.
 Bullet lists are just plain text hyphen or asterisk lists.
 
 For example:

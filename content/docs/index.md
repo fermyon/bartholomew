@@ -1,4 +1,5 @@
 title = "Documentation"
+date = "2021-12-22T17:05:19Z"
 ---
 
 Bartholomew is a content manager that takes documents written in Markdown,

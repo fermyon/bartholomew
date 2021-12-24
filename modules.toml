@@ -1,5 +1,5 @@
 [[module]]
-module = "/Users/technosophos/Code/Grain/fileserver/fileserver.gr.wasm"
+module = "modules/fileserver.gr.wasm"
 route = "/static/..."
 volumes = {"/" = "static/"}
 

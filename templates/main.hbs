@@ -1,10 +1,16 @@
 {{> content_top }}
 
+{{#if page.published }}{{else}}
+<div class="col-md-8 alert alert-warning" role="alert">
+This content is unpublished.
+</div>
+{{/if}}
+
 <div class="col-md-8">
     <article class="blog-post">
         {{#with page.head}}
         <h1 class="blog-post-title border-bottom">{{title}}</h2>
-            <p class="blog-post-meta">{{extra.date}} {{#if extra.author}} by <a
+            <p class="blog-post-meta">{{date}} {{#if extra.author}} by <a
                     href="{{extra.author_page}}">{{extra.author}}</a>{{/if}}
             </p>
             {{/with}}

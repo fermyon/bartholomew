@@ -1,5 +1,6 @@
 title = "Scripting with Rhai"
 description = "Bartholomew supports custom handlebars helpers with the Rhai language"
+date = "2021-12-23T17:05:19Z"
 ---
 
 Sometimes you want to do something special in your templates. Perhaps it's some

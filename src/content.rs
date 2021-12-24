@@ -5,21 +5,30 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use pulldown_cmark as markdown;
+use chrono::{Utc, DateTime};
 
 use crate::template::PageValues;
 
 const DOC_SEPERATOR: &str = "\n---\n";
 
+/// Head contains the front matter for a document
 #[derive(Deserialize, Serialize)]
 pub struct Head {
     /// The title of the document
     pub title: String,
+    // The publication date
+    pub date: Option<DateTime<Utc>>,
     /// A short description of the document
     pub description: Option<String>,
     /// The template to be used. If None, the `main` template is used.
     pub template: Option<String>,
     /// A map of string/string pairs that are user-customizable.
     pub extra: Option<HashMap<String, String>>,
+    /// An explicit flag to control publish state.
+    /// 
+    /// If this is set, it will explicitly set the publish state of a piece of content.
+    /// If this is None, then the publish state will be derived from things like date.
+    pub published: Option<bool>,
 }
 
 /// Given a PATH_INFO variable, transform it into a path for a specific markdown file
@@ -31,18 +40,27 @@ pub fn content_path(content_dir: PathBuf, path_info: &str) -> PathBuf {
     content_dir.join(buf.strip_prefix("/").unwrap_or(&buf))
 }
 
-pub fn all_pages(dir: PathBuf) -> anyhow::Result<BTreeMap<String, PageValues>> {
+/// Fetch all pages.
+/// 
+/// If show_unpublished is `true`, this will include pages that Bartholomew has determined are
+/// unpublished.
+pub fn all_pages(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<BTreeMap<String, PageValues>> {
     let files = all_files(dir)?;
     let mut contents = BTreeMap::new();
     for f in files {
         let raw_data = std::fs::read_to_string(&f)?;
         let content: Content = raw_data.parse()?;
-        contents.insert(f.to_string_lossy().to_string(), content.into());
+        if show_unpublished || content.published {
+            contents.insert(f.to_string_lossy().to_string(), content.into());
+        }
     }
     Ok(contents)
 }
 
 /// Fetch a list of paths to every file in the directory
+/// 
+/// Note that this will return files that contain unpublished content, as publish state cannot be determined
+/// until a file has been read.
 pub fn all_files(dir: PathBuf) -> anyhow::Result<Vec<PathBuf>> {
     let mut files = vec![];
     let mut cb = |d: &DirEntry| {
@@ -68,12 +86,44 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
     Ok(())
 }
 
+/// The envelope for a page's content
+/// The head contains front matter, while the body is the markdown body of the document.
 pub struct Content {
+    /// The front matter for this content.
     pub head: Head,
+    /// The unparsed Markdown for this content.
     pub body: String,
+    /// The published state.
+    /// 
+    /// Published state is determined when a new Content is created.
+    /// It is determined according to the following rules:
+    /// 
+    /// - If the front matter explicitly sets a publish state (`head.published`), this MUST reflect that.
+    /// - Else if a date is present in the front matter (`head.date`), then...
+    ///   - If the date is in the future, `published` is `false`
+    ///   - Otherwise, it is `true`
+    /// - Else content is considered to be published.
+    /// 
+    /// Practically speaking, what this means is that content is published by default.
+    pub published: bool,
 }
 
 impl Content {
+
+    // Create new content from a head and a body.
+    //
+    // This determines published state based on the head.
+    pub fn new(head: Head, body: String) -> Self {
+        let pdate = head.date.clone();
+
+        // If explicitly published in the front matter, mark it published
+        // Else if date is set, and the date is not in the future, it's published...
+        // Else if no date is set, mark it published
+        let published = head.published.unwrap_or_else(|| pdate.map(|d|d <= Utc::now()).unwrap_or(true));
+
+        Content { head, body, published }
+    }
+
     /// Render the body using a Markdown renderer
     pub fn render_markdown(&self) -> String {
         let mut buf = String::new();
@@ -94,9 +144,7 @@ impl FromStr for Content {
             .split_once(DOC_SEPERATOR)
             .unwrap_or(("title = 'Untitled'", &full_document));
         let head: Head = toml::from_str(toml_text)?;
-        Ok(Content {
-            head,
-            body: body.to_owned(),
-        })
+
+        Ok(Content::new(head, body.to_owned()))
     }
 }

@@ -19,12 +19,29 @@ To run Bartholomew, you will need a Wagi-capable runtime.
 For example, you can just download a recent release of [Wagi](https://github.com/deislabs/wagi) and put it on your `$PATH`.
 Then the `make serve` command can start it all up for you.
 
+### Install the Fileserver
+
+Bartholomew uses an external file server called [Wagi-Fileserver](https://github.com/deislabs/wagi-fileserver/releases).
+
+Download the latest release and put it in the `modules/` directory. When you are done, you should see:
+
+```consle
+$ ls modules                                 
+README.md          fileserver.gr.wasm
+```
+
 ## Running Bartholomew
 
 With Wagi:
 
 ```
 $ wagi -c modules.toml
+```
+
+With `make`:
+
+```
+$ make serve
 ```
 
 With Hippo:
@@ -34,6 +51,32 @@ $ hippo push
 ```
 
 For convenience, `make serve` builds the code, and then runs `wagi -c`.
+
+### Preview Mode
+
+By default, Bartholomew will not display content that is unpublished.
+Content is unpublished if either:
+
+- The article is marked `published = false` in its head
+- The article has a publish date in the future
+
+To view unpublished content, turn on `PREVIEW_MODE`.
+
+Wagi:
+
+```
+$ wagi -c modules.toml -e PREVIEW_MODE=1
+```
+
+Make:
+
+```
+$ PREVIEW_MODE=1 make serve
+```
+
+Hippo:
+
+Add the environment variable PREVIEW_MODE=1 to the desired channel.
 
 ## Configuring Bartholomew
 
@@ -80,6 +123,7 @@ Bartholomew content consists of Markdown documents with TOML headers (aka _Front
 ```
 title = "This is the title"
 description = "A quick description of the article"
+date = "2021-12-23T23:20:57Z"
 
 [extra]
 info = "The [extra] section is for your own custom metadata fields. You can use them in templates."
@@ -108,6 +152,7 @@ A typical `head` looks like this:
 ```
 title = "The title"
 description = "A short description"
+date = "2021-12-23T23:20:57Z"
 template = "main" # The default is `main`, which correlates to `templates/main.hbs`
 
 [extra]
