@@ -4,12 +4,12 @@
     <div class="card mb-3">
         <div class="row g-0">
             <div class="col-md-4">
-                <img src="{{page.frontmatter.extra.author_image}}" class="img-fluid rounded-start"
-                    alt="{{page.frontmatter.title}}">
+                <img src="{{page.head.extra.author_image}}" class="img-fluid rounded-start"
+                    alt="{{page.head.title}}">
             </div>
             <div class="col-md-8">
                 <div class="card-body">
-                    <h5 class="card-title">{{page.frontmatter.title}}</h5>
+                    <h5 class="card-title">{{page.head.title}}</h5>
                     <div class="card-text">
                         {{{page.body}}}
                     </div>

@@ -1,8 +1,7 @@
 title = "The Goals of Bartholomew"
 description = "We have plans. Big plans. Actually, they're small plans."
-
+date = "2021-12-23T17:05:19Z"
 [extra]
-date = "Aug. 31, 2021"
 author = "Matt Butcher"
 author_page = "/author/butcher"
 ---

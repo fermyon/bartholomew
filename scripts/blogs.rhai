@@ -19,15 +19,28 @@ for item in keys {
     if item.index_of("/content/blog/") == 0 {
         // Remove /content and .md
         let path = item.sub_string(8);
+        let page = pages[item];
+
         path = path.sub_string(0, path.index_of(".md"));
         blog_pages.push(#{
             uri: path,
-            page: pages[item],
+            page: page,
         });
         //blog_pages[path] = pages[item];
     }
    
 }
-// Newest to oldest, assuming you put the date in the URI
-blog_pages.reverse();
+
+// Return the blogs sorted newest to oldest
+fn sort_by_date(a, b) {
+    if a.page.head.date < b.page.head.date {
+        1
+    } else {
+        -1
+    }
+}
+
+// Sort by the value of the page date.
+blog_pages.sort(Fn("sort_by_date"));
+
 blog_pages

@@ -1,5 +1,6 @@
 title = "Templating with Handlebars"
 description = "Use Handlebars to customize the look and feel of your site"
+date = "2021-12-23T17:05:19Z"
 ---
 In Bartholomew, layout is handled via templates. All templates are in the
 `templates/` directory.
@@ -13,11 +14,11 @@ it works almost identically.
 Here is a simple HTML template with Handlebars:
 
 ```
-!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>{{page.frontmatter.title}}</title>
+    <title>{{page.head.title}}</title>
 </head>
 
 <body>
@@ -27,7 +28,7 @@ Here is a simple HTML template with Handlebars:
 </html>
 ```
 
-The above sets the HTML document's title to whatever is in `page.frontmatter.title`, and
+The above sets the HTML document's title to whatever is in `page.head.title`, and
 then fills in the `body` with the value of `page.body`.
 
 Let's take a brief look at the `page` object to understand what is happening here.
@@ -38,7 +39,7 @@ In JSON, the `page` object looks like this:
 
 ```
 {
-    frontmatter: {
+    head: {
         title: "Some title",
         description: "Some description",
         template: "an optional template rather than using main.hbs"
@@ -47,12 +48,15 @@ In JSON, the `page` object looks like this:
             "description": "whatever is in the [extra] section of your Markdown doc's header"
         }
     },
-    body: "<p>Some rendered Markdown content</p>"
+    body: "<p>Some rendered Markdown content</p>",
+    published: true
 }
 ```
 
 To access a part, you simply use a dotted path notation. So to get the value of `key` in
-the `extra` section, we use `{{ page.frontmatter.extra.key }}`.
+the `extra` section, we use `{{ page.head.extra.key }}`.
+
+### The Site Object
 
 In addition to the `page` object, there is also a `site` object:
 
@@ -91,12 +95,20 @@ Note that we drop the `.hbs` suffix when including this way.
 
 There are a few template helpers define in Bartholomew.
 
-For example, to change a piece of text to all-caps, use the `uppercase` helper:
+For example, to change a piece of text to all-caps, use the `upper` helper:
 
 ```
-{{ uppercase "hello" }}
+{{ upper "hello" }}
 ```
 
 The above will render `HELLO`.
 
 Note that you can create custom template helpers using [Rhai scripts](/docs/rhai).
+
+### Defined Helper Functions
+
+The following helper functions are provided with Bartholomew
+
+- `upper STRING`: converts the given string to uppercase
+- `lower STRING`: converts the given string to lowercase
+- `date_format STRING DATE`: Formats a date using the given string. `date "%Y" page.head.date`. Use [strftime format](https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers).

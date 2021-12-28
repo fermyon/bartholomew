@@ -1,7 +1,7 @@
 title = "What Is Markdown?"
 description = "Introducing an easy-to-write document format"
+date = "2021-12-23T16:05:19Z"
 [extra]
-date = "Aug. 15, 2021"
 author = "Matt Butcher"
 author_page = "/author/butcher"
 ---

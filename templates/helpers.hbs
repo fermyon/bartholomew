@@ -2,18 +2,18 @@
 <html>
 
 <head>
-    <title>{{page.frontmatter.title}}</title>
+    <title>{{page.head.title}}</title>
 </head>
 
 <body>
     <ul>
-        <li>upper: {{upper page.frontmatter.title}}</li>
-        <li>lower: {{lower page.frontmatter.title}}</li>
+        <li>upper: {{upper page.head.title}}</li>
+        <li>lower: {{lower page.head.title}}</li>
     </ul>
     <h2>Pages</h2>
     <ul>
         {{#each site.pages }}
-        <li>{{@key}}: {{this.frontmatter.title}}</li>
+        <li>{{@key}}: {{this.head.title}}</li>
         {{/each}}
     </ul>
 

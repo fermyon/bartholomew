@@ -1,12 +1,15 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
-use super::content::{Content, Frontmatter};
+use super::content::{Content, Head};
 use handlebars::{
-    handlebars_helper, Context, Handlebars, Helper, JsonRender, Output, RenderContext, RenderError,
+    handlebars_helper, Handlebars,
 };
 use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
 
+/// The name of the default template.
+/// This will be resolved to $TEMPLATE_DIR/$DEFAULT_TEMPLATE.hbs
 const DEFAULT_TEMPLATE: &str = "main";
 
 /// Describe the site itself
@@ -19,6 +22,7 @@ pub struct SiteInfo {
     extra: BTreeMap<String, String>,
 }
 
+/// Context for a template render.
 #[derive(Serialize)]
 pub struct TemplateContext {
     request: RequestValues,
@@ -29,6 +33,7 @@ pub struct TemplateContext {
 #[derive(Serialize)]
 pub struct RequestValues {}
 
+/// Information about the site, including site info and all of the pages.
 #[derive(Serialize)]
 pub struct SiteValues {
     info: SiteInfo,
@@ -39,32 +44,38 @@ pub struct SiteValues {
 /// The body should be legal HTML that can be inserted within the <body> tag.
 #[derive(Serialize)]
 pub struct PageValues {
-    pub frontmatter: Frontmatter,
+    pub head: Head,
     pub body: String,
+    pub published: bool,
 }
 
 impl From<Content> for PageValues {
     fn from(c: Content) -> Self {
         PageValues {
             body: c.render_markdown(),
-            frontmatter: c.frontmatter,
+            head: c.head,
+            published: c.published,
         }
     }
 }
 
+/// Renderer can execute a handlebars template and render the results into HTML.
 pub struct Renderer<'a> {
     pub template_dir: PathBuf,
     pub script_dir: PathBuf,
     pub content_dir: PathBuf,
+    pub show_unpublished: bool,
     handlebars: handlebars::Handlebars<'a>,
 }
 
 impl<'a> Renderer<'a> {
+    /// Create a new renderer with the necessary directories attached.
     pub fn new(template_dir: PathBuf, script_dir: PathBuf, content_dir: PathBuf) -> Self {
         Renderer {
             template_dir,
             script_dir,
             content_dir,
+            show_unpublished: false,
             handlebars: Handlebars::new(),
         }
     }
@@ -73,6 +84,8 @@ impl<'a> Renderer<'a> {
     //     self.handlebars.register_template_file(name, filepath)?;
     //     Ok(())
     // }
+
+    /// Load the template directory.
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
         self.register_helpers();
         self.handlebars
@@ -80,6 +93,7 @@ impl<'a> Renderer<'a> {
         Ok(())
     }
 
+    /// Load the scripts directory
     pub fn load_script_dir(&mut self) -> anyhow::Result<()> {
         // TODO: rewrite all_files so we don't need to clone here.
         let scripts = crate::content::all_files(self.script_dir.clone())?;
@@ -87,7 +101,7 @@ impl<'a> Renderer<'a> {
             // Relative file name without extension. Note that we skip any file
             // that doesn't have this.
             if let Some(fn_name) = script.file_stem() {
-                eprintln!("registering {}", fn_name.to_str().unwrap_or("unknown"));
+                eprintln!("scripts: registering {}", fn_name.to_str().unwrap_or("unknown"));
                 self.handlebars
                     .register_script_helper_file(&fn_name.to_string_lossy(), &script)?;
             }
@@ -96,6 +110,7 @@ impl<'a> Renderer<'a> {
         Ok(())
     }
 
+    /// Given values and a site object, render a template.
     pub fn render_template<T: Into<PageValues>>(
         &self,
         values: T,
@@ -103,7 +118,7 @@ impl<'a> Renderer<'a> {
     ) -> anyhow::Result<String> {
         let page: PageValues = values.into();
         let tpl = page
-            .frontmatter
+            .head
             .template
             .clone()
             .unwrap_or_else(|| DEFAULT_TEMPLATE.to_owned());
@@ -118,27 +133,31 @@ impl<'a> Renderer<'a> {
                 // seriously, this is probably not the best thing to do.
                 //
                 // Options:
-                // 1. Parse only the frontmatter out of pages
+                // 1. Parse only the head out of pages
                 // 2. Get all of the content paths, but load lazily (perhaps by helper)
                 // 3. ???
                 // 4. Leave it like it is
                 // 5. Determine that this is out of scope
-                pages: crate::content::all_pages(self.content_dir.clone())?,
+                pages: crate::content::all_pages(self.content_dir.clone(), self.show_unpublished)?,
             },
         };
         let out = self.handlebars.render(&tpl, &ctx)?;
         Ok(out)
     }
 
+    /// Add all of the helper functions to this renderer.
     fn register_helpers(&mut self) {
         // This is a mess right now. I am trying to figure out what helpers should be
         // included by default.
 
         //let cdir = self.content_dir.clone();
         // TODO: Don't capture the error.
-        //handlebars_helper!(frontmatter: |p: String| crate::content::load_frontmatter(p).unwrap_or_else(Frontmatter{}));
+        //handlebars_helper!(head: |p: String| crate::content::load_head(p).unwrap_or_else(Head{}));
         handlebars_helper!(upper: |s: String| s.to_uppercase());
         handlebars_helper!(lower: |s: String| s.to_lowercase());
+        handlebars_helper!(date_format: |format_string: String, date: DateTime<Utc>| {
+            date.format(format_string.as_str()).to_string()
+        });
         /*handlebars_helper!(pages: |_| {
             let contents = content::all_pages(self.content_dir.clone());
             contents.into::<PageValues>()
@@ -146,7 +165,10 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("upper", Box::new(upper));
         self.handlebars.register_helper("lower", Box::new(lower));
         //self.handlebars
-        //    .register_helper("frontmatter", Box::new(frontmatter));
+        //    .register_helper("head", Box::new(head));
+
+        // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
+        self.handlebars.register_helper("date_format", Box::new(date_format));
     }
 }
 
@@ -170,16 +192,19 @@ fn pages_helper(
 
 /// Describe an error to the template engine.
 ///
-/// It should be assumed that all data passed into this function will be visible to teh
+/// It should be assumed that all data passed into this function will be visible to the
 /// end user.
 pub fn error_values(title: &str, msg: &str) -> PageValues {
     PageValues {
-        frontmatter: Frontmatter {
+        head: Head {
             title: title.to_string(),
+            date: Some(chrono::Utc::now()),
             description: None,
             extra: None,
             template: None,
+            published: None,
         },
         body: msg.to_string(),
+        published: true,
     }
 }

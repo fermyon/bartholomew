@@ -5,5 +5,8 @@ about = "This site is generated with Bartholomew, the Wagi micro-CMS. And this m
 
 [extra]
 copyright = "The Site Authors"
-github = "https://github.com/technosophos/bartholomew"
-twitter = "https://twitter.com/technosophos"
+github = "https://github.com/fermyon/bartholomew"
+twitter = "https://twitter.com/fermyontech"
+
+# Style of date to print
+date_style = "%B %e, %Y"

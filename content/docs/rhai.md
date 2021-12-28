@@ -1,5 +1,6 @@
 title = "Scripting with Rhai"
 description = "Bartholomew supports custom handlebars helpers with the Rhai language"
+date = "2021-12-23T17:05:19Z"
 ---
 
 Sometimes you want to do something special in your templates. Perhaps it's some
@@ -93,7 +94,7 @@ The script returns a more complex data type, so let's see how this one is used i
 <div class="p-4">
     <h4 class="fst-italic">Recent Posts</h4>
     <ol class="list-unstyled mb-0">
-        {{#each (blogs site.pages)}}<li><a href="{{uri}}">{{page.frontmatter.title}}</a></li>
+        {{#each (blogs site.pages)}}<li><a href="{{uri}}">{{page.head.title}}</a></li>
         {{/each }}
     </ol>
 </div>
@@ -107,11 +108,11 @@ The value of `this` within the `#each` loop is the object that we created in Rha
 ```
 #{
     uri: "/some/path"
-    page: #{frontmatter: #{...}, body: "some html" }
+    page: #{head: #{...}, body: "some html" }
 }
 ```
 
-So `<a href="{{uri}}">{{page.frontmatter.title}}</a>` will use `this.uri`, and the `title`
+So `<a href="{{uri}}">{{page.head.title}}</a>` will use `this.uri`, and the `title`
 from the `page` object.
 
 That's how you can use Rhai to add custom formatters to the site.

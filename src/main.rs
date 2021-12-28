@@ -22,6 +22,17 @@ fn main() {
 
 /// The main entrypoint. This is executed for each HTTP request.
 fn exec() -> anyhow::Result<()> {
+
+    // Preview mode lets you see content marked unpublished.
+    let preview_mode = match std::env::var("PREVIEW_MODE") {
+        Ok(val) if val == "1" => {
+            eprintln!("INFO: Bartholomew is running in PREVIEW_MODE");
+            true
+        },
+        _ => false,
+    };
+
+    // Get the path from the WAGI env vars
     let path_info = match std::env::var("PATH_INFO") {
         Ok(path) => {
             if path == "/" {
@@ -37,22 +48,40 @@ fn exec() -> anyhow::Result<()> {
     let raw_config = std::fs::read(CONFIG_FILE)?;
     let config: template::SiteInfo = toml::from_slice(&raw_config)?;
 
-    // Load the template directory
+    
     let mut engine = template::Renderer::new(
         PathBuf::from(TEMPLATE_PATH),
         PathBuf::from(SCRIPT_PATH),
         PathBuf::from(CONTENT_PATH),
     );
+
+    // If we are in preview mode, show unpublished content.
+    engine.show_unpublished = preview_mode;
+
+    // Load the template directory
     engine.load_template_dir()?;
 
+    // Load scripts
     // Right now, I have this as a separate call b/c I might disable it, or add an
     // option for a user to enable/disable.
     engine.load_script_dir()?;
+
+    // Load the content
     let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
     eprintln!("Loading {}", content_path.to_string_lossy());
     match std::fs::read_to_string(content_path) {
         Ok(full_document) => {
             let doc: content::Content = full_document.parse()?;
+
+            // Hide unpublished content unless PREVIEW_MODE is on.
+            if !doc.published && !preview_mode {
+                eprintln!("WARNING: Unpublished document was requested. {}", &path_info);
+                let err_vals = template::error_values("Not Found", "The requested page was not found.");
+                let body = engine.render_template(err_vals, config)?;
+                not_found(path_info, body);
+                return Ok(())
+            }
+
             let data = engine.render_template(doc, config)?;
             html_ok(path_info, data);
             Ok(())

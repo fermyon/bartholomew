@@ -1,5 +1,6 @@
 title = "Markdown examples"
 description = "Examples of using Markdown syntax inside of a page"
+date = "2021-12-23T17:05:19Z"
 ---
 
 # Header 1
