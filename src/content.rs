@@ -29,6 +29,14 @@ pub struct Head {
     /// If this is set, it will explicitly set the publish state of a piece of content.
     /// If this is None, then the publish state will be derived from things like date.
     pub published: Option<bool>,
+
+    /// Article tags
+    /// 
+    /// In the template language, having an Option<Vec<>> can get really confusing,
+    /// so the deserializer just creates an empty vec if not present in the source
+    /// doc.
+    #[serde(default)]
+    pub tags: Vec<String>,
 }
 
 /// Given a PATH_INFO variable, transform it into a path for a specific markdown file
@@ -110,9 +118,11 @@ pub struct Content {
 
 impl Content {
 
-    // Create new content from a head and a body.
-    //
-    // This determines published state based on the head.
+    /// Create new content from a head and a body.
+    ///
+    /// This determines published state based on the head.
+    ///
+    /// The environment is copied from the system environment. This is safe when executed inside of Wagi or a WASI runtime.
     pub fn new(head: Head, body: String) -> Self {
         let pdate = head.date.clone();
 

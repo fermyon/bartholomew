@@ -79,6 +79,37 @@ In addition to the `page` object, there is also a `site` object:
 Note that the `site.pages` array has access to every single document in the `content` folder.
 This part of the API may change in the future, as it does not scale terribly well.
 
+### The Env Object
+
+The third top-level object is `env`, which holds all of the environment data, including details about
+the HTTP request, the path of this resource, and other WAGI information.
+
+The `env` object is a set of keys and values:
+
+```
+{
+    PATH_INFO: "/hello-world"
+    ...
+}
+```
+
+The list of environment variables is long. Any environment variable that begins `HTTP_` is from the web browswer and should not be trust.
+A number of variables are [defined by Wagi](https://github.com/deislabs/wagi/blob/main/docs/environment_variables.md) and have a special meaning.
+
+You can dump the entire contents of `env` using a template like this:
+
+```
+<ul>
+    {{#each env}}
+    <li><code>{{@key}}</code>: <code>"{{this}}"</code></li>
+    {{/each}}
+</ul>
+```
+
+Or you can access an individual variable by name: `env.PATH_INFO`.
+
+Note that very little data validation is done on incoming environment variables, so you should validate or scrub any values before showing them to the user.
+
 ## Including A Template
 
 It is possible to include a template into another template.

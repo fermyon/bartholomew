@@ -29,6 +29,7 @@ title = "A New Article"
 description = "This article is really interesting and full of useful material."
 date = "2021-12-23T15:05:19Z"
 template = "post"
+tags = ["news", "article"]
 
 [extra]
 author = "Matt Butcher"
@@ -50,6 +51,7 @@ The following fields are defined for Bartholomew:
 - `description`: A short description of the content. This should be no more than a few sentences. It is RECOMMENDED.
 - `template`: The name of the template that should be used to render this content. It is OPTIONAL and defaults to `main` (`templates/main.hbs`).
 - `published`: A boolean (`published = true` or `published = false`, no quotes) that explicitly sets publication status. It is OPTIONAL and should be used sparingly.
+- `tags`: A list of tags. The tags should be ranked most- to least-relevant. OPTIONAL and defaults to an empty list.
 - `[extra]`: The section marker that indicates that all content after it is user-defined.
     - Fields under extra MUST be in the form `name = "value"`. All values must be strings.
     - once the `[extra]` section is declared, you cannot declare top-level fields anymore.
