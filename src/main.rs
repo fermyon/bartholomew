@@ -9,6 +9,7 @@ const SCRIPT_PATH: &str = "/scripts/";
 const CONFIG_FILE: &str = "/config/site.toml";
 
 const DEFAULT_INDEX: &str = "/index";
+const DEFAULT_CONTENT_TYPE: &str = "text/html; charset=utf-8";
 
 fn main() {
     match exec() {
@@ -43,6 +44,7 @@ fn exec() -> anyhow::Result<()> {
         }
         Err(_) => "/index".to_owned(),
     };
+    eprintln!("Request path: {}", &path_info);
 
     // Load the site config
     let raw_config = std::fs::read(CONFIG_FILE)?;
@@ -68,7 +70,7 @@ fn exec() -> anyhow::Result<()> {
 
     // Load the content
     let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
-    eprintln!("Loading {}", content_path.to_string_lossy());
+    eprintln!("Path {}", content_path.to_string_lossy());
     match std::fs::read_to_string(content_path) {
         Ok(full_document) => {
             let doc: content::Content = full_document.parse()?;
@@ -82,8 +84,10 @@ fn exec() -> anyhow::Result<()> {
                 return Ok(())
             }
 
+            let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
+
             let data = engine.render_template(doc, config)?;
-            html_ok(path_info, data);
+            html_ok(path_info, data, content_type);
             Ok(())
         }
         Err(_) => {
@@ -108,8 +112,8 @@ fn internal_server_error() {
     println!("In internal error occurred");
 }
 
-fn html_ok(route: String, body: String) {
+fn html_ok(route: String, body: String, content_type: String) {
     eprintln!("OK: {}", route);
-    println!("Content-Type: text/html; charset=utf-8\n");
+    println!("Content-Type: {}\n", content_type);
     println!("{}", body);
 }

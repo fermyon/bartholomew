@@ -52,6 +52,8 @@ The following fields are defined for Bartholomew:
 - `template`: The name of the template that should be used to render this content. It is OPTIONAL and defaults to `main` (`templates/main.hbs`).
 - `published`: A boolean (`published = true` or `published = false`, no quotes) that explicitly sets publication status. It is OPTIONAL and should be used sparingly.
 - `tags`: A list of tags. The tags should be ranked most- to least-relevant. OPTIONAL and defaults to an empty list.
+- `content_type`: A media type for the document. For example, if you are generating XML, use `text/xml`. The default is HTML. OPTIONAL and should rarely be used.
+    - NOTE: `content_type` has no impact on the formatting. That is, Markdown will still be rendered to HTML.
 - `[extra]`: The section marker that indicates that all content after it is user-defined.
     - Fields under extra MUST be in the form `name = "value"`. All values must be strings.
     - once the `[extra]` section is declared, you cannot declare top-level fields anymore.

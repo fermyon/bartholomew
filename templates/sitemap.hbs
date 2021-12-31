@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+{{!
+    For sitemap.xml, see https://www.sitemaps.org/protocol.html
+    For date/time format, see https://www.w3.org/TR/NOTE-datetime
+}}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>{{site.info.base_url}}/</loc>
+        <changfreq>daily</changfreq>
+        <priority>0.8</priority>
+    </url>
+    {{#each (sitemap site.pages) }}
+    <url>
+        <loc>{{../site.info.base_url}}{{uri}}</loc>
+        {{#if page.head.date }}<lastmod>{{date_format "%Y/%m/%dT%H:%M:%SZ" page.head.date}}</lastmod>{{/if}}
+        <changfreq>{{frequency}}</changfreq>
+        <priority>{{priority}}</priority>
+    </url>
+    {{/each}}
+</urlset>
