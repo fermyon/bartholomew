@@ -93,7 +93,7 @@ The `env` object is a set of keys and values:
 }
 ```
 
-The list of environment variables is long. Any environment variable that begins `HTTP_` is from the web browswer and should not be trust.
+The list of environment variables is long. Any environment variable that begins `HTTP_` is from the web browser and should not be trusted.
 A number of variables are [defined by Wagi](https://github.com/deislabs/wagi/blob/main/docs/environment_variables.md) and have a special meaning.
 
 You can dump the entire contents of `env` using a template like this:
