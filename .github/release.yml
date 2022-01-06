@@ -1,0 +1,24 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  assets:
+    name: Build and release assets
+    steps:
+      - name: Build WASM
+        run: |
+          make build
+      - name: Create release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+      - name: Upload bartholomew.wasm
+        uses: actions/upload-release-asset@v1
+         with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "target/wasm32-wasi/release/bartholomew.wasm"
+          asset_name: "bartholomew.wasm"
+          asset_content_type: application/wasm
