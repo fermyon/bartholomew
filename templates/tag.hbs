@@ -1,0 +1,16 @@
+{{> content_top }}
+
+<div class="col-md-8">
+    <h1>Articles about {{env.QUERY_STRING}}</h1>
+    <p>The following articles are about {{env.QUERY_STRING}}. They are ranked most relevant to least.</p>
+
+    <ul>
+        {{#each (tagged_pages site.pages env.QUERY_STRING)}}
+        <li><a href="{{this.uri}}">{{this.page.head.title}}</a> {{this.page.head.description}}</li>
+        {{/each}}
+    </ul>
+</div>
+
+{{> content_sidebar }}
+
+{{> content_bottom }}

@@ -14,6 +14,9 @@ This content is unpublished.
                 {{#if page.head.extra.author}} by <a
                     href="{{page.head.extra.author_page}}">{{page.head.extra.author}}</a>{{/if}}
             </p>
+            <div class="tag-list">
+                {{#each page.head.tags}}<span class="badge bg-secondary ms-1"><a href="/tag?{{this}}" class="text-light">{{this}}</a></span>{{/each}}
+            </div>
             {{! Since this is HTML, we use the triple-curly }}
             {{{page.body}}}
     </article>

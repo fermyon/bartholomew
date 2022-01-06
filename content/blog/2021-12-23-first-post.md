@@ -1,6 +1,7 @@
 title = "First Post!"
 description = "An example of blogging on the Bartholomew platform"
 date = "2021-12-23T15:05:19Z"
+tags = ["bartholomew", "markdown", "toml"]
 [extra]
 author = "Matt Butcher"
 author_page = "/author/butcher"

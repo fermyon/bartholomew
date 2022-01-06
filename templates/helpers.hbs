@@ -16,6 +16,15 @@
         <li>{{@key}}: {{this.head.title}}</li>
         {{/each}}
     </ul>
+    <h2>Environment</h2>
+    <p>These name/value pairs are available in the <code>env</code> object</code></p>
+    <p>For example, you can fetch the value of <code>env.PATH_INFO</code>: "{{env.PATH_INFO}}"</p>
+    <p>Any value prefaced with HTTP_ is directly from the client and should not be trusted.</p>
+    <ul>
+        {{#each env}}
+        <li><code>{{@key}}</code>: <code>"{{this}}"</code></li>
+        {{/each}}
+    </ul>
 
 </body>
 

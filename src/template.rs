@@ -28,6 +28,16 @@ pub struct TemplateContext {
     request: RequestValues,
     page: PageValues,
     site: SiteValues,
+    /// A copy of the environment variables
+    /// 
+    /// Unlike a static site generator, Bartholomew can make decisions based on request.
+    /// This provides templates with access to the request data along with custom
+    /// environment variables.
+    /// 
+    /// TODO: Should there be a way to filter out env vars that should never get to
+    /// the template layer? As of this writing, there are no such variables, but in
+    /// the future there could be.
+    env: BTreeMap<String, String>,
 }
 
 #[derive(Serialize)]
@@ -140,6 +150,8 @@ impl<'a> Renderer<'a> {
                 // 5. Determine that this is out of scope
                 pages: crate::content::all_pages(self.content_dir.clone(), self.show_unpublished)?,
             },
+            // Copy the WASI env into the env template var.
+            env: std::env::vars().collect(),
         };
         let out = self.handlebars.render(&tpl, &ctx)?;
         Ok(out)
@@ -203,6 +215,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             extra: None,
             template: None,
             published: None,
+            tags: vec![],
         },
         body: msg.to_string(),
         published: true,
