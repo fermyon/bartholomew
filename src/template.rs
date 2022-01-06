@@ -113,7 +113,8 @@ impl<'a> Renderer<'a> {
             if let Some(fn_name) = script.file_stem() {
                 eprintln!("scripts: registering {}", fn_name.to_str().unwrap_or("unknown"));
                 self.handlebars
-                    .register_script_helper_file(&fn_name.to_string_lossy(), &script)?;
+                    .register_script_helper_file(&fn_name.to_string_lossy(), &script)
+                    .map_err(|e|anyhow::anyhow!("Script {:?}: {}", &script, e))?;
             }
         }
 
@@ -153,7 +154,8 @@ impl<'a> Renderer<'a> {
             // Copy the WASI env into the env template var.
             env: std::env::vars().collect(),
         };
-        let out = self.handlebars.render(&tpl, &ctx)?;
+        let out = self.handlebars.render(&tpl, &ctx)
+            .map_err(|e|anyhow::anyhow!("Template '{}': {}", &tpl, e))?;
         Ok(out)
     }
 

@@ -65,7 +65,7 @@ pub fn all_pages(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<BTreeMa
     let mut contents = BTreeMap::new();
     for f in files {
         let raw_data = std::fs::read_to_string(&f)?;
-        let content: Content = raw_data.parse()?;
+        let content: Content = raw_data.parse().map_err(|e|anyhow::anyhow!("File {:?}: {}", &f, e))?;
         if show_unpublished || content.published {
             contents.insert(f.to_string_lossy().to_string(), content.into());
         }
@@ -161,7 +161,7 @@ impl FromStr for Content {
         let (toml_text, body) = full_document
             .split_once(DOC_SEPERATOR)
             .unwrap_or(("title = 'Untitled'", &full_document));
-        let head: Head = toml::from_str(toml_text)?;
+        let head: Head = toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
 
         Ok(Content::new(head, body.to_owned()))
     }

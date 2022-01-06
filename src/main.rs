@@ -11,12 +11,19 @@ const CONFIG_FILE: &str = "/config/site.toml";
 const DEFAULT_INDEX: &str = "/index";
 const DEFAULT_CONTENT_TYPE: &str = "text/html; charset=utf-8";
 
+const DEFAULT_500_ERR: &str = "An internal error occurred";
+
 fn main() {
+    let debug_mode = match std::env::var("SHOW_DEBUG") {
+        Ok(mode) => mode == "1",
+        Err(_) => false,
+    };
     match exec() {
         Ok(()) => {}
         Err(e) => {
             eprintln!("Internal Server Error: {}", e);
-            internal_server_error()
+            let msg = if debug_mode {e.to_string()} else {DEFAULT_500_ERR.to_owned()};
+            internal_server_error(msg)
         }
     }
 }
@@ -71,7 +78,7 @@ fn exec() -> anyhow::Result<()> {
     // Load the content
     let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
     eprintln!("Path {}", content_path.to_string_lossy());
-    match std::fs::read_to_string(content_path) {
+    match std::fs::read_to_string(&content_path) {
         Ok(full_document) => {
             let doc: content::Content = full_document.parse()?;
 
@@ -86,7 +93,7 @@ fn exec() -> anyhow::Result<()> {
 
             let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
 
-            let data = engine.render_template(doc, config)?;
+            let data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
             html_ok(path_info, data, content_type);
             Ok(())
         }
@@ -106,10 +113,10 @@ fn not_found(route: String, body: String) {
     println!("{}", body);
 }
 
-fn internal_server_error() {
+fn internal_server_error(body: String) {
     println!("Content-Type: text/plain");
     println!("Status: 500 Internal Server Error\n");
-    println!("In internal error occurred");
+    println!("{}", body);
 }
 
 fn html_ok(route: String, body: String, content_type: String) {
