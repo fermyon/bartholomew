@@ -93,7 +93,10 @@ fn exec() -> anyhow::Result<()> {
 
             let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
 
-            let data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
+            let mut data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
+            if content_type.starts_with("text/html") {
+                data = minify::html::minify(&data);
+            }
             html_ok(path_info, data, content_type);
             Ok(())
         }
