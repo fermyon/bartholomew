@@ -10,6 +10,8 @@ let disallow = [
     "/sitemap", // Don't list self.
     // "/tag", // tag will list all of the tags on a site. If you prefer this not be indexed, uncomment this line.
     "/index", // This is a duplicate of /
+    "/atom",
+    "/robots",
 ];
 
 // Param 1 should be `site.pages`
