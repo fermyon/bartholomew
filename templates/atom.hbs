@@ -1,0 +1,44 @@
+{{!
+For the specification of this format, see https://validator.w3.org/feed/docs/atom.html
+}}
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title>{{site.info.title}}</title>
+  <subtitle>{{site.info.about}}</subtitle>
+  <link href="{{site.info.base_url}}/"/>
+  <link href="{{site.info.base_url}}/atom" rel="self"/>
+  <updated>{{now "%Y-%m-%dT%H:%M:%SZ"}}</updated>{{! AFAIK, since we regenerate the feed on each request, this should always be 'now' }}
+  {{#if site.info.extra.copyright}}<author>
+    <name>{{site.info.extra.copyright}}</name>
+    {{#if site.info.extra.twitter}}<uri>{{site.info.extra.twitter}}</uri>{{/if}}
+  </author>{{/if}}
+  <id>{{site.info.base_url}}/</id>
+  {{#if site.info.extra.logo}}<logo>{{site.info.extra.logo}}</logo>{{/if}}
+  {{#if site.info.extra.favicon}}<icon>{{site.info.extra.favicon}}</icon>{{/if}}
+
+  {{!
+  This just does blogs for the feed.
+
+  Optional extra fields:
+  - author
+  - author_page
+  }}
+  {{#each (blogs site.pages)}}
+  <entry>
+    <title>{{page.head.title}}</title>
+    <link href="{{../site.info.base_url}}{{uri}}"/>
+    <id>{{../site.info.base_url}}{{uri}}</id>
+    <published>{{date_format "%Y-%m-%dT%H:%M:%SZ" page.head.date}}</published>
+    <updated>{{date_format "%Y-%m-%dT%H:%M:%SZ" page.head.date}}</updated>
+    <summary>{{page.head.description}}</summary>
+    {{#if page.head.extra.author}}
+    <author>
+        <name>{{page.head.extra.author}}</name>
+        {{#if page.head.extra.author_page}}<uri>{{../site.info.base_url}}{{page.head.extra.author_page}}</uri>{{/if}}
+    </author>
+    {{/if}}
+  </entry>
+  {{/each}}
+
+</feed>

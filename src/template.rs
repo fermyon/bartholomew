@@ -170,6 +170,10 @@ impl<'a> Renderer<'a> {
         handlebars_helper!(date_format: |format_string: String, date: DateTime<Utc>| {
             date.format(format_string.as_str()).to_string()
         });
+        handlebars_helper!(now: |format_string: String| {
+            let date = Utc::now();
+            date.format(format_string.as_str()).to_string()
+        });
         /*handlebars_helper!(pages: |_| {
             let contents = content::all_pages(self.content_dir.clone());
             contents.into::<PageValues>()
@@ -181,6 +185,7 @@ impl<'a> Renderer<'a> {
 
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
+        self.handlebars.register_helper("now", Box::new(now));
     }
 }
 
@@ -216,6 +221,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             template: None,
             published: None,
             tags: vec![],
+            content_type: None,
         },
         body: msg.to_string(),
         published: true,

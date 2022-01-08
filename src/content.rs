@@ -37,6 +37,14 @@ pub struct Head {
     /// doc.
     #[serde(default)]
     pub tags: Vec<String>,
+
+    /// Content type overrides the MIME/media type of the body.
+    /// 
+    /// This should only be used if the referenced `template` will generate a type other
+    /// than HTML. For examle, a site map may use text/xml and a robots.txt may use text/plain.
+    /// 
+    /// This may result in HTTP headers being altered.
+    pub content_type: Option<String>,
 }
 
 /// Given a PATH_INFO variable, transform it into a path for a specific markdown file

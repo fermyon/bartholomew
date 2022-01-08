@@ -143,3 +143,4 @@ The following helper functions are provided with Bartholomew
 - `upper STRING`: converts the given string to uppercase
 - `lower STRING`: converts the given string to lowercase
 - `date_format STRING DATE`: Formats a date using the given string. `date "%Y" page.head.date`. Use [strftime format](https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers).
+- `now STRING`: Formats the current date using the given string. This uses the same format as above. 

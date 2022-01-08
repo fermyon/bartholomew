@@ -8,5 +8,11 @@ copyright = "The Site Authors"
 github = "https://github.com/fermyon/bartholomew"
 twitter = "https://twitter.com/fermyontech"
 
+# Can be used by atom and other pages
+# logo = "/static/images/logo.png"
+
+# Can be used by templates to populate a favicon
+# favicon = "/static/images/favicon.png"
+
 # Style of date to print
 date_style = "%B %e, %Y"

@@ -1,11 +1,12 @@
 title = "Welcome to Bartholomew"
 description = "The Micro-CMS for Wagi"
+date = "2021-12-23T17:05:19Z"
 
 [extra]
 date = "Aug. 30, 2021"
 author = "Matt Butcher"
 author_page = "/author/butcher"
-date = "2021-12-23T17:05:19Z"
+
 ---
 It might be hard to spell, but fortunately you won't have to spell it that often.
 
