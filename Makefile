@@ -1,6 +1,7 @@
 WAGI ?= wagi
 # If PREVIEW_MODE is on then unpublished content will be displayed.
 PREVIEW_MODE ?= 0
+SHOW_DEBUG ?= 1
 
 .PHONY: build
 build:
@@ -11,7 +12,7 @@ build:
 .PHONY: serve
 serve: build
 serve:
-	$(WAGI) -c ./modules.toml --log-dir ./logs -e PREVIEW_MODE=${PREVIEW_MODE}
+	$(WAGI) -c ./modules.toml --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG)
 
 .PHONY: run
 run: serve
