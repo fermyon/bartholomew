@@ -52,7 +52,7 @@ pub struct SiteValues {
 
 /// The structured values sent to the template renderer.
 /// The body should be legal HTML that can be inserted within the <body> tag.
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct PageValues {
     pub head: Head,
     pub body: String,
@@ -62,7 +62,7 @@ pub struct PageValues {
 impl From<Content> for PageValues {
     fn from(c: Content) -> Self {
         PageValues {
-            body: c.render_markdown(),
+            body: c.render_markdown().unwrap_or_else(|e|format!("Error rendering markdown: {}", e)),
             head: c.head,
             published: c.published,
         }
@@ -75,6 +75,7 @@ pub struct Renderer<'a> {
     pub script_dir: PathBuf,
     pub content_dir: PathBuf,
     pub show_unpublished: bool,
+    pub disable_cache: bool,
     handlebars: handlebars::Handlebars<'a>,
 }
 
@@ -86,6 +87,7 @@ impl<'a> Renderer<'a> {
             script_dir,
             content_dir,
             show_unpublished: false,
+            disable_cache: false,
             handlebars: Handlebars::new(),
         }
     }
@@ -149,7 +151,7 @@ impl<'a> Renderer<'a> {
                 // 3. ???
                 // 4. Leave it like it is
                 // 5. Determine that this is out of scope
-                pages: crate::content::all_pages(self.content_dir.clone(), self.show_unpublished)?,
+                pages: crate::content::all_pages(self.content_dir.clone(), self.show_unpublished, self.disable_cache)?,
             },
             // Copy the WASI env into the env template var.
             env: std::env::vars().collect(),
@@ -176,6 +178,21 @@ impl<'a> Renderer<'a> {
             let date = Utc::now();
             date.format(format_string.as_str()).to_string()
         });
+
+        handlebars_helper!(load_page: |p: String| {
+            let rel_path = p.strip_prefix("/").unwrap_or(&p);
+            let path = PathBuf::from("/content/").join(format!("{}.md", rel_path));
+            match Content::from_path(path.clone()) {
+                Ok(content) => content.render_markdown().unwrap_or_else(|e| { 
+                    eprintln!("Error rendering markdown for {:?}: {}", &path, e);
+                    "Error rendering markdown".to_owned()
+                }),
+                Err(e) => {
+                    eprintln!("Error loading content for {:?}: {}", &path, e);
+                    "".to_string()
+                },
+            }
+        });
         /*handlebars_helper!(pages: |_| {
             let contents = content::all_pages(self.content_dir.clone());
             contents.into::<PageValues>()
@@ -188,6 +205,9 @@ impl<'a> Renderer<'a> {
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
         self.handlebars.register_helper("now", Box::new(now));
+
+        // Page content loader
+        self.handlebars.register_helper("load_page", Box::new(load_page));
     }
 }
 

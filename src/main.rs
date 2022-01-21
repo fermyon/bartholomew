@@ -39,6 +39,15 @@ fn exec() -> anyhow::Result<()> {
         },
         _ => false,
     };
+    // If this is set to 1, the page cache is disabled. This will slow down the page
+    // rendering, but makes it easier to test content development locally.
+    let disable_cache = match std::env::var("DISABLE_CACHE") {
+        Ok(val) if val == "1" => {
+            eprintln!("INFO: Bartholomew is running with DISABLE_CACHE=1");
+            true
+        },
+        _ => false,
+    };
 
     // Get the path from the WAGI env vars
     let path_info = match std::env::var("PATH_INFO") {
@@ -66,6 +75,7 @@ fn exec() -> anyhow::Result<()> {
 
     // If we are in preview mode, show unpublished content.
     engine.show_unpublished = preview_mode;
+    engine.disable_cache = disable_cache;
 
     // Load the template directory
     engine.load_template_dir()?;
@@ -78,10 +88,8 @@ fn exec() -> anyhow::Result<()> {
     // Load the content
     let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
     eprintln!("Path {}", content_path.to_string_lossy());
-    match std::fs::read_to_string(&content_path) {
-        Ok(full_document) => {
-            let doc: content::Content = full_document.parse()?;
-
+    match content::Content::from_path(content_path.clone()) {
+        Ok(doc) => {
             // Hide unpublished content unless PREVIEW_MODE is on.
             if !doc.published && !preview_mode {
                 eprintln!("WARNING: Unpublished document was requested. {}", &path_info);

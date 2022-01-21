@@ -11,7 +11,7 @@
                     href="{{page.head.extra.author_page}}">{{page.head.extra.author}}</a>{{/if}}
             </p>
             {{! Since this is HTML, we use the triple-curly }}
-            {{{page.body}}}
+            {{{load_page this.uri}}}
             <p><a href="{{this.uri}}">View the Post</a></p>
     </article>
     {{/each}}

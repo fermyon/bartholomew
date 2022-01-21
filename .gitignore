@@ -1,3 +1,4 @@
 /target
 /modules/*.wasm
 /logs
+/config/_cache.json

@@ -140,6 +140,7 @@ Note that you can create custom template helpers using [Rhai scripts](/docs/rhai
 
 The following helper functions are provided with Bartholomew
 
+- `load_page STRING`: Load HTML content for a given URI. For example `load_page "foo"` will load the page at `/content/foo.md` and return the HTML body.
 - `upper STRING`: converts the given string to uppercase
 - `lower STRING`: converts the given string to lowercase
 - `date_format STRING DATE`: Formats a date using the given string. `date "%Y" page.head.date`. Use [strftime format](https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers).

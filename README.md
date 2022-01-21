@@ -190,3 +190,20 @@ have access to the Markdown version of the document.
 
 To print the HTML body without having the output escaped, use `{{{ page.body }}}` (note the
 triple curly braces).
+
+### The Page Cache
+
+Unless the environment variable `-e DISABLE_CACHE=1` is set, the first load of a site will create a cache
+of page metadata in `config/_cache.json`. This is an optimization to reduce the number of file IO operations
+Bartholomew needs to make.
+
+If you are actively developing content, we suggest setting `DISABLE_CACHE=1`. By default, the `Makefile`'s `make serve`
+target disables the cache, as `make serve` is assumed to be used only for developers.
+
+### Debug Mode
+
+By default, Bartholomew does not send error messages to the browser.
+This can make it hard to debug templates and Rhai scripts.
+To send error messages to the browser, set `-e DEBUG_MODE=1`.
+
+The `Makefile`'s `make serve` command defaults to enabling debug mode, as `make serve` is assumed to be used only for development.
