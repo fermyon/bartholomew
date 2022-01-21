@@ -204,6 +204,6 @@ target disables the cache, as `make serve` is assumed to be used only for develo
 
 By default, Bartholomew does not send error messages to the browser.
 This can make it hard to debug templates and Rhai scripts.
-To send error messages to the browser, set `-e DEBUG_MODE=1`.
+To send error messages to the browser, set `-e SHOW_DEBUG=1`.
 
 The `Makefile`'s `make serve` command defaults to enabling debug mode, as `make serve` is assumed to be used only for development.

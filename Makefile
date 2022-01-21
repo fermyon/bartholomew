@@ -13,7 +13,6 @@ build:
 .PHONY: serve
 serve: build
 serve:
-	rm -rf config/_cache.json
 	$(WAGI) -c ./modules.toml --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG) -e DISABLE_CACHE=$(DISABLE_CACHE)
 
 .PHONY: run
@@ -23,3 +22,7 @@ run: serve
 .PHONY: date
 date:
 	date -u +"%Y-%m-%dT%H:%M:%SZ"
+
+.PHONY: clean
+clean:
+	rm -rf config/_cache.json
