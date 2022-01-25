@@ -6,6 +6,7 @@ SHOW_DEBUG ?= 1
 .PHONY: build
 build:
 	cargo build --target wasm32-wasi --release
+	wasm-opt -O target/wasm32-wasi/release/bartholomew.wasm -o target/wasm32-wasi/release/bartholomew.wasm
 	# Keep an eye on the binary size. We want it under 5M
 	@ls -lah target/wasm32-wasi/release/*.wasm
 
