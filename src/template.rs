@@ -15,11 +15,11 @@ const DEFAULT_TEMPLATE: &str = "main";
 /// Describe the site itself
 #[derive(Serialize, Deserialize)]
 pub struct SiteInfo {
-    title: String,
-    logo: Option<String>,
-    base_url: Option<String>,
-    about: Option<String>,
-    extra: BTreeMap<String, String>,
+    pub title: String,
+    pub logo: Option<String>,
+    pub base_url: Option<String>,
+    pub about: Option<String>,
+    pub extra: BTreeMap<String, String>,
 }
 
 /// Context for a template render.
