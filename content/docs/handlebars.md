@@ -65,6 +65,7 @@ In addition to the `page` object, there is also a `site` object:
     info: {
         title: "site title"
         about: "Site about information"
+        base_url: "http://localhost:3000"
         extra: {
             copyright: "site-wide copyring (this is not required, since it's in extra)"
         }
