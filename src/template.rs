@@ -169,6 +169,27 @@ impl<'a> Renderer<'a> {
         //handlebars_helper!(head: |p: String| crate::content::load_head(p).unwrap_or_else(Head{}));
         handlebars_helper!(upper: |s: String| s.to_uppercase());
         handlebars_helper!(lower: |s: String| s.to_lowercase());
+
+        handlebars_helper!(trunc: |l: usize, s: String| {
+            let mut data = s.clone();
+            data.truncate(l);
+            data
+        });
+        handlebars_helper!(abbrev: |l: usize, s: String| {
+            let mut data = s.clone();
+            if l <= 3 {
+                data.truncate(l);
+                data
+            } else if data.len() <= l {
+                data
+            } else {
+                let l = l - 3;
+                data.truncate(l);
+                format!("{}...", data)
+            }
+        });
+        handlebars_helper!(trim: |s:String| s.trim());
+
         handlebars_helper!(date_format: |format_string: String, date: DateTime<Utc>| {
             date.format(format_string.as_str()).to_string()
         });
@@ -176,18 +197,25 @@ impl<'a> Renderer<'a> {
             let date = Utc::now();
             date.format(format_string.as_str()).to_string()
         });
-        /*handlebars_helper!(pages: |_| {
-            let contents = content::all_pages(self.content_dir.clone());
-            contents.into::<PageValues>()
-        });*/
+
+        handlebars_helper!(plural: |count: usize, sing: String, plur: String| if count == 1 {
+            sing
+        } else {
+            plur
+        });
+
+
         self.handlebars.register_helper("upper", Box::new(upper));
         self.handlebars.register_helper("lower", Box::new(lower));
-        //self.handlebars
-        //    .register_helper("head", Box::new(head));
-
+        self.handlebars.register_helper("trunc", Box::new(trunc));
+        self.handlebars.register_helper("abbrev", Box::new(abbrev));
+        self.handlebars.register_helper("plural", Box::new(plural));
+        self.handlebars.register_helper("trim", Box::new(trim));
+        
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
         self.handlebars.register_helper("now", Box::new(now));
+        
     }
 }
 

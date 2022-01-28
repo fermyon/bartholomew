@@ -145,3 +145,7 @@ The following helper functions are provided with Bartholomew
 - `lower STRING`: converts the given string to lowercase
 - `date_format STRING DATE`: Formats a date using the given string. `date "%Y" page.head.date`. Use [strftime format](https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers).
 - `now STRING`: Formats the current date using the given string. This uses the same format as above. 
+- `trim STRING`: Remove whitespace from beginning and end of string.
+- `trunc UINT STRING`: Truncate the string to length `UINT`.
+- `abbrev UINT STRING`: Shorten the string to UINT with elipses. For example `abbrev 8 "Functions Example"` returns `Funct...`.
+- `plural INT SINGULAR_STRING PLURAL_STRING`: If `INT` is `1`, return the singular form. Otherwise return plural: `plural 1 "apple" "apples"` returns `apple`. But if we change `1` to `2` (or `0`) it will return `apples`.
