@@ -51,9 +51,17 @@ site:
             head:
                 date: "2022-01-11T20:08:47Z"
                 title: "Some title"
+                # These are all optional
+                description: "Some Description (if set)"
+                tags: ["tags", "if", "set"]
+                template: "template-if-set"
+                # user-defined extras go here
+                extras:
+                    any: "extras go here"
             published: true
         "/bar":
             head:
+                # These fields will always be set.
                 date: "2022-01-11T20:08:47Z"
                 title: "Some other title"
             published: true
