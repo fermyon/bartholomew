@@ -9,14 +9,15 @@ Check out [the docs](/content/docs)
 
 ## Getting Bartholomew
 
-Currently, the best way to get Bartholomew is to fetch this directory. To build 
-Bartholomew from source, just run `make build`, which basically does a
+The easiest way to start is to get the [Bartholomew site template](https://github.com/fermyon/bartholomew-site-template) and then download the [latest release of Bartholomew](https://github.com/fermyon/bartholomew/releases).
+
+### Building from Source 
+
+To build Bartholomew from source, just run `make build`, which basically does a
 `cargo build --target wasm32-wasi --release`.
 
 > `make build` also runs `wasm-opt`, which is part of the [Binaryen](https://webassembly.github.io/binaryen/) project.
 > This reduces the size of the WebAssembly module by optimizing the bytecode.
-
-You can also use the pre-built `batholomew.wasm` or the versioned bindles.
 
 To run Bartholomew, you will need a Wagi-capable runtime.
 For example, you can just download a recent release of [Wagi](https://github.com/deislabs/wagi) and put it on your `$PATH`.
