@@ -17,8 +17,8 @@ Wagi, Hippo, and Wagi.Net.
 
 <div class="card mb-3" >
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="/static/markdown.png" class="img-fluid rounded-start text-center" alt="Markdown logo">
+    <div class="col-md-4 d-flex flex-wrap align-items-center justify-content-center">
+      <img src="/static/markdown.png" class="img-fluid rounded-start" alt="Markdown logo">
     </div>
     <div class="col-md-8">
       <div class="card-body">
@@ -33,8 +33,8 @@ Just drop your content somewhere in the <code>content/</code> folder, and you're
 
 <div class="card mb-3">
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="/static/handlebars.png" class="img-fluid rounded-start text-center" alt="Handlebars logo">
+    <div class="col-md-4 d-flex flex-wrap align-items-center justify-content-center">
+      <img src="/static/handlebars.png" class="img-fluid rounded-start" alt="Handlebars logo">
     </div>
     <div class="col-md-8">
       <div class="card-body">
@@ -50,8 +50,8 @@ customizing the look and feel of this site.</p>
 
 <div class="card mb-3" >
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="/static/bootstrap.png" class="img-fluid rounded-start text-center" alt="bootstrap logo">
+    <div class="col-md-4 d-flex flex-wrap align-items-center justify-content-center">
+      <img src="/static/bootstrap.png" class="img-fluid rounded-start" alt="bootstrap logo">
     </div>
     <div class="col-md-8">
       <div class="card-body">
@@ -65,8 +65,8 @@ customizing the look and feel of this site.</p>
 
 <div class="card mb-3" >
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="/static/toml.png" class="img-fluid rounded-start text-center" alt="TOML logo">
+    <div class="col-md-4 d-flex flex-wrap align-items-center justify-content-center">
+      <img src="/static/toml.png" class="img-fluid rounded-start" alt="TOML logo">
     </div>
     <div class="col-md-8">
       <div class="card-body">
