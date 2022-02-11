@@ -204,7 +204,7 @@ impl<'a> Renderer<'a> {
             plur
         });
 
-        handlebars_helper!(implode: |delimiter: String, elements: Vec<String>|{
+        handlebars_helper!(join: |delimiter: String, elements: Vec<String>|{
             elements.join(delimiter.as_str())
         });
 
@@ -214,7 +214,7 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("abbrev", Box::new(abbrev));
         self.handlebars.register_helper("plural", Box::new(plural));
         self.handlebars.register_helper("trim", Box::new(trim));
-        self.handlebars.register_helper("implode", Box::new(implode));
+        self.handlebars.register_helper("join", Box::new(join));
         
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
