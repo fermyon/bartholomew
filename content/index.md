@@ -33,8 +33,8 @@ Just drop your content somewhere in the <code>content/</code> folder, and you're
 
 <div class="card mb-3">
   <div class="row g-0">
-    <div class="col-md-4 d-flex flex-wrap align-items-center justify-content-center">
-      <img src="/static/handlebars.png" class="img-fluid rounded-start" alt="Handlebars logo">
+    <div class="col-md-4 d-flex flex-wrap align-items-center justify-content-center ">
+      <img src="/static/handlebars.png" style="background-color: #dd6011" class="img-fluid rounded-3 g p-2" width="175" height="175" alt="Handlebars logo">
     </div>
     <div class="col-md-8">
       <div class="card-body">
