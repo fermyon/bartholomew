@@ -12,6 +12,7 @@ const DEFAULT_INDEX: &str = "/index";
 const DEFAULT_CONTENT_TYPE: &str = "text/html; charset=utf-8";
 
 const DEFAULT_500_ERR: &str = "An internal error occurred";
+const DEFAULT_3XX_CODE: &str = "301 Moved Permanently";
 
 fn main() {
     let debug_mode = match std::env::var("SHOW_DEBUG") {
@@ -99,13 +100,25 @@ fn exec() -> anyhow::Result<()> {
 
             let status_opt = doc.head.status.clone();
             let loc_opt = doc.head.redirect.clone();
-            let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
 
-            let mut data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
-            if content_type.starts_with("text/html") {
-                data = minify::html::minify(&data);
+            match loc_opt {
+                Some(location) => {
+                    let status = status_opt.unwrap_or_else(|| DEFAULT_3XX_CODE.to_owned());
+                    send_redirect(path_info, location, status);
+                }
+                None => {
+                    let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
+
+                    let mut data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
+                    if content_type.starts_with("text/html") {
+                        data = minify::html::minify(&data);
+                    }
+                    send_result(path_info, data, content_type, status_opt);
+
+                }
             }
-            send_result(path_info, data, content_type, status_opt, loc_opt);
+
+            
             Ok(())
         }
         Err(_) => {
@@ -131,22 +144,18 @@ fn internal_server_error(body: String) {
 }
 
 // This function is getting a little gnarly.
-fn send_result(route: String, body: String, content_type: String, status_opt: Option<String>, location_opt: Option<String>) {
+fn send_result(route: String, body: String, content_type: String, status_opt: Option<String>) {
     eprintln!("responded: {}", route);
 
-    match location_opt {
-        Some(loc) => {
-            let status = status_opt.unwrap_or_else(|| "301 Moved Permanently".to_owned());
-            println!("Status: {}\nLocation: {}\n", status, loc)
-        },
-        None => {
-            // Intentionally do not override the Wagi default behavior with a default Bartholomew message.
-            if let Some(status) = status_opt {
-                println!("Status: {}", status);
-            }
-            println!("Content-Type: {}\n", content_type);
-            println!("{}", body);
-        }
+    // Intentionally do not override the Wagi default behavior with a default Bartholomew message.
+    if let Some(status) = status_opt {
+        println!("Status: {}", status);
     }
-    
+    println!("Content-Type: {}\n", content_type);
+    println!("{}", body);
+}
+
+fn send_redirect(route: String, location: String, status: String) {
+    eprintln!("redirected {} to {} (Code: {})", route, &location, &status);
+    println!("Status: {}\nLocation: {}\n", status, location)
 }
