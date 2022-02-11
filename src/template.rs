@@ -212,6 +212,10 @@ impl<'a> Renderer<'a> {
             input.split(delimiter.as_str()).collect::<Vec<&str>>()
         });
 
+        handlebars_helper!(splitn: |delimiter: String, count: usize, input: String|{
+            input.splitn(count, delimiter.as_str()).collect::<Vec<&str>>()
+        });
+
         self.handlebars.register_helper("upper", Box::new(upper));
         self.handlebars.register_helper("lower", Box::new(lower));
         self.handlebars.register_helper("trunc", Box::new(trunc));
@@ -220,6 +224,7 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("trim", Box::new(trim));
         self.handlebars.register_helper("join", Box::new(join));
         self.handlebars.register_helper("split", Box::new(split));
+        self.handlebars.register_helper("splitn", Box::new(splitn));
         
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
