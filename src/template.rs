@@ -216,6 +216,12 @@ impl<'a> Renderer<'a> {
             input.splitn(count, delimiter.as_str()).collect::<Vec<&str>>()
         });
 
+        handlebars_helper!(sort_alpha: |input: Vec<String>|{
+            let mut data = input.clone();
+            data.sort();
+            data
+        });
+
         self.handlebars.register_helper("upper", Box::new(upper));
         self.handlebars.register_helper("lower", Box::new(lower));
         self.handlebars.register_helper("trunc", Box::new(trunc));
@@ -225,7 +231,8 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("join", Box::new(join));
         self.handlebars.register_helper("split", Box::new(split));
         self.handlebars.register_helper("splitn", Box::new(splitn));
-        
+        self.handlebars.register_helper("sort_alpha", Box::new(sort_alpha));
+
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
         self.handlebars.register_helper("now", Box::new(now));
