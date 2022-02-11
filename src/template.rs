@@ -204,8 +204,22 @@ impl<'a> Renderer<'a> {
             plur
         });
 
-        handlebars_helper!(implode: |delimiter: String, elements: Vec<String>|{
+        handlebars_helper!(join: |delimiter: String, elements: Vec<String>|{
             elements.join(delimiter.as_str())
+        });
+
+        handlebars_helper!(split: |delimiter: String, input: String|{
+            input.split(delimiter.as_str()).collect::<Vec<&str>>()
+        });
+
+        handlebars_helper!(splitn: |delimiter: String, count: usize, input: String|{
+            input.splitn(count, delimiter.as_str()).collect::<Vec<&str>>()
+        });
+
+        handlebars_helper!(sort_alpha: |input: Vec<String>|{
+            let mut data = input.clone();
+            data.sort();
+            data
         });
 
         self.handlebars.register_helper("upper", Box::new(upper));
@@ -214,8 +228,11 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("abbrev", Box::new(abbrev));
         self.handlebars.register_helper("plural", Box::new(plural));
         self.handlebars.register_helper("trim", Box::new(trim));
-        self.handlebars.register_helper("implode", Box::new(implode));
-        
+        self.handlebars.register_helper("join", Box::new(join));
+        self.handlebars.register_helper("split", Box::new(split));
+        self.handlebars.register_helper("splitn", Box::new(splitn));
+        self.handlebars.register_helper("sort_alpha", Box::new(sort_alpha));
+
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
         self.handlebars.register_helper("now", Box::new(now));
