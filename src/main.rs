@@ -97,13 +97,15 @@ fn exec() -> anyhow::Result<()> {
                 return Ok(())
             }
 
+            let status_opt = doc.head.status.clone();
+            let loc_opt = doc.head.redirect.clone();
             let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
 
             let mut data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
             if content_type.starts_with("text/html") {
                 data = minify::html::minify(&data);
             }
-            html_ok(path_info, data, content_type);
+            send_result(path_info, data, content_type, status_opt, loc_opt);
             Ok(())
         }
         Err(_) => {
@@ -128,8 +130,23 @@ fn internal_server_error(body: String) {
     println!("{}", body);
 }
 
-fn html_ok(route: String, body: String, content_type: String) {
-    eprintln!("OK: {}", route);
-    println!("Content-Type: {}\n", content_type);
-    println!("{}", body);
+// This function is getting a little gnarly.
+fn send_result(route: String, body: String, content_type: String, status_opt: Option<String>, location_opt: Option<String>) {
+    eprintln!("responded: {}", route);
+
+    match location_opt {
+        Some(loc) => {
+            let status = status_opt.unwrap_or_else(|| "301 Moved Permanently".to_owned());
+            println!("Status: {}\nLocation: {}\n", status, loc)
+        },
+        None => {
+            // Intentionally do not override the Wagi default behavior with a default Bartholomew message.
+            if let Some(status) = status_opt {
+                println!("Status: {}", status);
+            }
+            println!("Content-Type: {}\n", content_type);
+            println!("{}", body);
+        }
+    }
+    
 }
