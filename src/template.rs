@@ -208,6 +208,10 @@ impl<'a> Renderer<'a> {
             elements.join(delimiter.as_str())
         });
 
+        handlebars_helper!(split: |delimiter: String, input: String|{
+            input.split(delimiter.as_str()).collect::<Vec<&str>>()
+        });
+
         self.handlebars.register_helper("upper", Box::new(upper));
         self.handlebars.register_helper("lower", Box::new(lower));
         self.handlebars.register_helper("trunc", Box::new(trunc));
@@ -215,6 +219,7 @@ impl<'a> Renderer<'a> {
         self.handlebars.register_helper("plural", Box::new(plural));
         self.handlebars.register_helper("trim", Box::new(trim));
         self.handlebars.register_helper("join", Box::new(join));
+        self.handlebars.register_helper("split", Box::new(split));
         
         // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
         self.handlebars.register_helper("date_format", Box::new(date_format));
