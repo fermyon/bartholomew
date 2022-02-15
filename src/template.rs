@@ -273,6 +273,8 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             published: None,
             tags: vec![],
             content_type: None,
+            status: None,
+            redirect: None,
         },
         body: msg.to_string(),
         published: true,

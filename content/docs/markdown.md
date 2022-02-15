@@ -54,6 +54,8 @@ The following fields are defined for Bartholomew:
 - `tags`: A list of tags. The tags should be ranked most- to least-relevant. OPTIONAL and defaults to an empty list.
 - `content_type`: A media type for the document. For example, if you are generating XML, use `text/xml`. The default is HTML. OPTIONAL and should rarely be used.
     - NOTE: `content_type` has no impact on the formatting. That is, Markdown will still be rendered to HTML.
+- `status`: (EXPERT) Status code and message for HTTP. E.g. "302 Found"
+- `redirect`: (EXPERT) Send a redirect to the given fully qualified URL. Default redirect type is `301 Moved Permanently`. Use `status` to set another redirect type. When this is set, no body is sent to the client.
 - `[extra]`: The section marker that indicates that all content after it is user-defined.
     - Fields under extra MUST be in the form `name = "value"`. All values must be strings.
     - once the `[extra]` section is declared, you cannot declare top-level fields anymore.

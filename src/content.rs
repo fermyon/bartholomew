@@ -45,6 +45,19 @@ pub struct Head {
     /// 
     /// This may result in HTTP headers being altered.
     pub content_type: Option<String>,
+
+    /// An optional status line
+    /// 
+    /// This should only ever be set if the status code is _not_ 200.
+    /// It can be used for redirects (3xx), intentional error messages (4xx, 5xx) or
+    /// for specialized responses (2xx). It should not be used for 1xx codes unless
+    /// you really know what you are doing.
+    pub status: Option<String>,
+
+    /// A fully qualified URL to another resources.
+    /// 
+    /// If no status code is set, this will set the status code to 301 Moved Permanently
+    pub redirect: Option<String>,
 }
 
 /// Given a PATH_INFO variable, transform it into a path for a specific markdown file
