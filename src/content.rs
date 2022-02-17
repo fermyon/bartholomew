@@ -64,7 +64,12 @@ pub fn all_pages(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<BTreeMa
     let files = all_files(dir)?;
     let mut contents = BTreeMap::new();
     for f in files {
-        let raw_data = std::fs::read_to_string(&f)?;
+        // Dotfiles should not be loaded.
+        if f.file_name().map(|f| f.to_string_lossy().starts_with(".")).unwrap_or(false) {
+            eprintln!("Skipping dotfile {:?}", f);
+            continue;
+        }
+        let raw_data = std::fs::read_to_string(&f).map_err(|e| anyhow::anyhow!("File is not string data: {:?}: {}", &f, e))?;
         let content: Content = raw_data.parse().map_err(|e|anyhow::anyhow!("File {:?}: {}", &f, e))?;
         if show_unpublished || content.published {
             contents.insert(f.to_string_lossy().to_string(), content.into());
