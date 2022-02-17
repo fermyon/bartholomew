@@ -2,11 +2,10 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use super::content::{Content, Head};
-use handlebars::{
-    handlebars_helper, Handlebars,
-};
+use handlebars::Handlebars;
 use serde::{Deserialize, Serialize};
-use chrono::{DateTime, Utc};
+
+use handlebars_sprig;
 
 /// The name of the default template.
 /// This will be resolved to $TEMPLATE_DIR/$DEFAULT_TEMPLATE.hbs
@@ -161,82 +160,7 @@ impl<'a> Renderer<'a> {
 
     /// Add all of the helper functions to this renderer.
     fn register_helpers(&mut self) {
-        // This is a mess right now. I am trying to figure out what helpers should be
-        // included by default.
-
-        //let cdir = self.content_dir.clone();
-        // TODO: Don't capture the error.
-        //handlebars_helper!(head: |p: String| crate::content::load_head(p).unwrap_or_else(Head{}));
-        handlebars_helper!(upper: |s: String| s.to_uppercase());
-        handlebars_helper!(lower: |s: String| s.to_lowercase());
-
-        handlebars_helper!(trunc: |l: usize, s: String| {
-            let mut data = s.clone();
-            data.truncate(l);
-            data
-        });
-        handlebars_helper!(abbrev: |l: usize, s: String| {
-            let mut data = s.clone();
-            if l <= 3 {
-                data.truncate(l);
-                data
-            } else if data.len() <= l {
-                data
-            } else {
-                let l = l - 3;
-                data.truncate(l);
-                format!("{}...", data)
-            }
-        });
-        handlebars_helper!(trim: |s:String| s.trim());
-
-        handlebars_helper!(date_format: |format_string: String, date: DateTime<Utc>| {
-            date.format(format_string.as_str()).to_string()
-        });
-        handlebars_helper!(now: |format_string: String| {
-            let date = Utc::now();
-            date.format(format_string.as_str()).to_string()
-        });
-
-        handlebars_helper!(plural: |count: usize, sing: String, plur: String| if count == 1 {
-            sing
-        } else {
-            plur
-        });
-
-        handlebars_helper!(join: |delimiter: String, elements: Vec<String>|{
-            elements.join(delimiter.as_str())
-        });
-
-        handlebars_helper!(split: |delimiter: String, input: String|{
-            input.split(delimiter.as_str()).collect::<Vec<&str>>()
-        });
-
-        handlebars_helper!(splitn: |delimiter: String, count: usize, input: String|{
-            input.splitn(count, delimiter.as_str()).collect::<Vec<&str>>()
-        });
-
-        handlebars_helper!(sort_alpha: |input: Vec<String>|{
-            let mut data = input.clone();
-            data.sort();
-            data
-        });
-
-        self.handlebars.register_helper("upper", Box::new(upper));
-        self.handlebars.register_helper("lower", Box::new(lower));
-        self.handlebars.register_helper("trunc", Box::new(trunc));
-        self.handlebars.register_helper("abbrev", Box::new(abbrev));
-        self.handlebars.register_helper("plural", Box::new(plural));
-        self.handlebars.register_helper("trim", Box::new(trim));
-        self.handlebars.register_helper("join", Box::new(join));
-        self.handlebars.register_helper("split", Box::new(split));
-        self.handlebars.register_helper("splitn", Box::new(splitn));
-        self.handlebars.register_helper("sort_alpha", Box::new(sort_alpha));
-
-        // Formatting dates: https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers
-        self.handlebars.register_helper("date_format", Box::new(date_format));
-        self.handlebars.register_helper("now", Box::new(now));
-        
+        handlebars_sprig::addhelpers(&mut self.handlebars)
     }
 }
 
