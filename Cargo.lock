@@ -32,6 +32,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "handlebars",
+ "handlebars_sprig",
  "minify",
  "pulldown-cmark",
  "serde",
@@ -147,6 +148,17 @@ dependencies = [
  "serde",
  "serde_json",
  "walkdir",
+]
+
+[[package]]
+name = "handlebars_sprig"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6210edb901c98fffdd11347f309c91391cb51ddd362bd2dad7a1e1345c900e65"
+dependencies = [
+ "chrono",
+ "handlebars",
+ "serde_json",
 ]
 
 [[package]]
