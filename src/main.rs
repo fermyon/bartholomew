@@ -59,6 +59,12 @@ fn exec() -> anyhow::Result<()> {
     let raw_config = std::fs::read(CONFIG_FILE)?;
     let mut config: template::SiteInfo = toml::from_slice(&raw_config)?;
 
+    //if gzip encoding enabled
+    let gzip_encoding = match config.content_encoding.as_ref() {
+        Some(encoding) if encoding == "gzip" => true,
+        _ => false,
+    };
+
     let base_url = std::env::var("BASE_URL");
     if base_url.is_ok() {
         config.base_url = Some(base_url.unwrap());
@@ -114,8 +120,12 @@ fn exec() -> anyhow::Result<()> {
                     if content_type.starts_with("text/html") {
                         data = minify::html::minify(&data);
                     }
-                    response::send_result(path_info, data, content_type, status_opt);
-
+                    
+                    if gzip_encoding {
+                        response::send_gzip_result(path_info, data, content_type, status_opt);
+                    } else {
+                        response::send_result(path_info, data, content_type, status_opt);
+                    }
                 }
             }
 
