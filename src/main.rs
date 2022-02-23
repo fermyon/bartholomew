@@ -59,9 +59,23 @@ fn exec() -> anyhow::Result<()> {
     let raw_config = std::fs::read(CONFIG_FILE)?;
     let mut config: template::SiteInfo = toml::from_slice(&raw_config)?;
 
+    let client_gzip_support = match std::env::var("HTTP_ACCEPT_ENCODING") {
+        Ok(encoding) => {
+            let mut found = false;
+            for en in encoding.split(",") {
+                if en.trim() == "gzip" {
+                    found = true;
+                    break;
+                }
+            }
+            found
+        }
+        _ => false,
+    };
+
     //if gzip encoding enabled
     let gzip_encoding = match config.content_encoding.as_ref() {
-        Some(encoding) if encoding == "gzip" => true,
+        Some(encoding) if encoding == "gzip" && client_gzip_support => true,
         _ => false,
     };
 
