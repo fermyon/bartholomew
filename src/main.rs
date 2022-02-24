@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 mod content;
+mod response;
 mod template;
 
 const CONTENT_PATH: &str = "/content/";
@@ -24,7 +25,7 @@ fn main() {
         Err(e) => {
             eprintln!("Internal Server Error: {}", e);
             let msg = if debug_mode {e.to_string()} else {DEFAULT_500_ERR.to_owned()};
-            internal_server_error(msg)
+            response::internal_server_error(msg)
         }
     }
 }
@@ -57,6 +58,26 @@ fn exec() -> anyhow::Result<()> {
     // Load the site config
     let raw_config = std::fs::read(CONFIG_FILE)?;
     let mut config: template::SiteInfo = toml::from_slice(&raw_config)?;
+
+    let client_gzip_support = match std::env::var("HTTP_ACCEPT_ENCODING") {
+        Ok(encoding) => {
+            let mut found = false;
+            for en in encoding.split(",") {
+                if en.trim() == "gzip" {
+                    found = true;
+                    break;
+                }
+            }
+            found
+        }
+        _ => false,
+    };
+
+    //if gzip encoding enabled
+    let gzip_encoding = match config.content_encoding.as_ref() {
+        Some(encoding) if encoding == "gzip" && client_gzip_support => true,
+        _ => false,
+    };
 
     let base_url = std::env::var("BASE_URL");
     if base_url.is_ok() {
@@ -94,7 +115,7 @@ fn exec() -> anyhow::Result<()> {
                 eprintln!("WARNING: Unpublished document was requested. {}", &path_info);
                 let err_vals = template::error_values("Not Found", "The requested page was not found.");
                 let body = engine.render_template(err_vals, config)?;
-                not_found(path_info, body);
+                response::not_found(path_info, body);
                 return Ok(())
             }
 
@@ -104,7 +125,7 @@ fn exec() -> anyhow::Result<()> {
             match loc_opt {
                 Some(location) => {
                     let status = status_opt.unwrap_or_else(|| DEFAULT_3XX_CODE.to_owned());
-                    send_redirect(path_info, location, status);
+                    response::send_redirect(path_info, location, status);
                 }
                 None => {
                     let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
@@ -113,8 +134,12 @@ fn exec() -> anyhow::Result<()> {
                     if content_type.starts_with("text/html") {
                         data = minify::html::minify(&data);
                     }
-                    send_result(path_info, data, content_type, status_opt);
-
+                    
+                    if gzip_encoding {
+                        response::send_gzip_result(path_info, data, content_type, status_opt);
+                    } else {
+                        response::send_result(path_info, data, content_type, status_opt);
+                    }
                 }
             }
 
@@ -124,38 +149,8 @@ fn exec() -> anyhow::Result<()> {
         Err(_) => {
             let err_vals = template::error_values("Not Found", "The requested page was not found.");
             let body = engine.render_template(err_vals, config)?;
-            not_found(path_info, body);
+            response::not_found(path_info, body);
             Ok(())
         }
     }
-}
-
-fn not_found(route: String, body: String) {
-    eprintln!("Not Found: {}", route);
-    println!("Content-Type: text/html; charset=utf-8");
-    println!("Status: 404 Not Found\n");
-    println!("{}", body);
-}
-
-fn internal_server_error(body: String) {
-    println!("Content-Type: text/plain");
-    println!("Status: 500 Internal Server Error\n");
-    println!("{}", body);
-}
-
-// This function is getting a little gnarly.
-fn send_result(route: String, body: String, content_type: String, status_opt: Option<String>) {
-    eprintln!("responded: {}", route);
-
-    // Intentionally do not override the Wagi default behavior with a default Bartholomew message.
-    if let Some(status) = status_opt {
-        println!("Status: {}", status);
-    }
-    println!("Content-Type: {}\n", content_type);
-    println!("{}", body);
-}
-
-fn send_redirect(route: String, location: String, status: String) {
-    eprintln!("redirected {} to {} (Code: {})", route, &location, &status);
-    println!("Status: {}\nLocation: {}\n", status, location)
 }

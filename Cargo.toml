@@ -13,3 +13,4 @@ toml = "0.5"
 chrono = {version = "0.4", features = ["serde"]}
 minify = "1.2"
 handlebars_sprig = { version = "0.1.0" }
+flate2 = "1.0.22"
