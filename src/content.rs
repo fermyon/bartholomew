@@ -83,9 +83,17 @@ pub fn all_pages(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<BTreeMa
             continue;
         }
         let raw_data = std::fs::read_to_string(&f).map_err(|e| anyhow::anyhow!("File is not string data: {:?}: {}", &f, e))?;
-        let content: Content = raw_data.parse().map_err(|e|anyhow::anyhow!("File {:?}: {}", &f, e))?;
-        if show_unpublished || content.published {
-            contents.insert(f.to_string_lossy().to_string(), content.into());
+        match raw_data.parse::<Content>() {
+            Ok(content) => {
+                if show_unpublished || content.published {
+                    contents.insert(f.to_string_lossy().to_string(), content.into());
+                }
+            },
+            Err(e) => {
+                // If a parse fails, don't take down the entire site. Just skip this piece of content.
+                eprintln!("File {:?}: {}", &f, e);
+                continue
+            }
         }
     }
     Ok(contents)
