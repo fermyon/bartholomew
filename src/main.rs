@@ -59,25 +59,10 @@ fn exec() -> anyhow::Result<()> {
     let raw_config = std::fs::read(CONFIG_FILE)?;
     let mut config: template::SiteInfo = toml::from_slice(&raw_config)?;
 
-    let client_gzip_support = match std::env::var("HTTP_ACCEPT_ENCODING") {
-        Ok(encoding) => {
-            let mut found = false;
-            for en in encoding.split(',') {
-                if en.trim() == "gzip" {
-                    found = true;
-                    break;
-                }
-            }
-            found
-        }
-        _ => false,
-    };
-
-    //if gzip encoding enabled
-    let gzip_encoding = matches!(config.content_encoding.as_ref(), Some(encoding) if encoding == "gzip" && client_gzip_support);
-
-    config.base_url = std::env::var("BASE_URL").ok();
-
+    let base_url = std::env::var("BASE_URL");
+    if base_url.is_ok() {
+        config.base_url = Some(base_url.unwrap());
+    }
     eprintln!("Base URL: {:?}", &config.base_url);
 
     let mut engine = template::Renderer::new(
@@ -135,12 +120,8 @@ fn exec() -> anyhow::Result<()> {
                     let data = engine
                         .render_template(doc, config)
                         .map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
-
-                    if gzip_encoding {
-                        response::send_gzip_result(path_info, data, content_type, status_opt);
-                    } else {
-                        response::send_result(path_info, data, content_type, status_opt);
-                    }
+                    
+                    response::send_result(path_info, data, content_type, status_opt);
                 }
             }
 
