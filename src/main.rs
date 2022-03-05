@@ -1,8 +1,5 @@
+use bartholomew::{content, response, template};
 use std::path::PathBuf;
-
-mod content;
-mod response;
-mod template;
 
 const CONTENT_PATH: &str = "/content/";
 const TEMPLATE_PATH: &str = "/templates/";
@@ -24,7 +21,11 @@ fn main() {
         Ok(()) => {}
         Err(e) => {
             eprintln!("Internal Server Error: {}", e);
-            let msg = if debug_mode {e.to_string()} else {DEFAULT_500_ERR.to_owned()};
+            let msg = if debug_mode {
+                e.to_string()
+            } else {
+                DEFAULT_500_ERR.to_owned()
+            };
             response::internal_server_error(msg)
         }
     }
@@ -32,13 +33,12 @@ fn main() {
 
 /// The main entrypoint. This is executed for each HTTP request.
 fn exec() -> anyhow::Result<()> {
-
     // Preview mode lets you see content marked unpublished.
     let preview_mode = match std::env::var("PREVIEW_MODE") {
         Ok(val) if val == "1" => {
             eprintln!("INFO: Bartholomew is running in PREVIEW_MODE");
             true
-        },
+        }
         _ => false,
     };
 
@@ -62,7 +62,7 @@ fn exec() -> anyhow::Result<()> {
     let client_gzip_support = match std::env::var("HTTP_ACCEPT_ENCODING") {
         Ok(encoding) => {
             let mut found = false;
-            for en in encoding.split(",") {
+            for en in encoding.split(',') {
                 if en.trim() == "gzip" {
                     found = true;
                     break;
@@ -74,18 +74,12 @@ fn exec() -> anyhow::Result<()> {
     };
 
     //if gzip encoding enabled
-    let gzip_encoding = match config.content_encoding.as_ref() {
-        Some(encoding) if encoding == "gzip" && client_gzip_support => true,
-        _ => false,
-    };
+    let gzip_encoding = matches!(config.content_encoding.as_ref(), Some(encoding) if encoding == "gzip" && client_gzip_support);
 
-    let base_url = std::env::var("BASE_URL");
-    if base_url.is_ok() {
-        config.base_url = Some(base_url.unwrap());
-    }
+    config.base_url = std::env::var("BASE_URL").ok();
+
     eprintln!("Base URL: {:?}", &config.base_url);
 
-    
     let mut engine = template::Renderer::new(
         PathBuf::from(TEMPLATE_PATH),
         PathBuf::from(SCRIPT_PATH),
@@ -112,11 +106,15 @@ fn exec() -> anyhow::Result<()> {
 
             // Hide unpublished content unless PREVIEW_MODE is on.
             if !doc.published && !preview_mode {
-                eprintln!("WARNING: Unpublished document was requested. {}", &path_info);
-                let err_vals = template::error_values("Not Found", "The requested page was not found.");
+                eprintln!(
+                    "WARNING: Unpublished document was requested. {}",
+                    &path_info
+                );
+                let err_vals =
+                    template::error_values("Not Found", "The requested page was not found.");
                 let body = engine.render_template(err_vals, config)?;
                 response::not_found(path_info, body);
-                return Ok(())
+                return Ok(());
             }
 
             let status_opt = doc.head.status.clone();
@@ -128,13 +126,19 @@ fn exec() -> anyhow::Result<()> {
                     response::send_redirect(path_info, location, status);
                 }
                 None => {
-                    let content_type = doc.head.content_type.clone().unwrap_or_else(||DEFAULT_CONTENT_TYPE.to_owned());
+                    let content_type = doc
+                        .head
+                        .content_type
+                        .clone()
+                        .unwrap_or_else(|| DEFAULT_CONTENT_TYPE.to_owned());
 
-                    let mut data = engine.render_template(doc, config).map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
+                    let mut data = engine
+                        .render_template(doc, config)
+                        .map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
                     if content_type.starts_with("text/html") {
                         data = minify::html::minify(&data);
                     }
-                    
+
                     if gzip_encoding {
                         response::send_gzip_result(path_info, data, content_type, status_opt);
                     } else {
@@ -143,7 +147,6 @@ fn exec() -> anyhow::Result<()> {
                 }
             }
 
-            
             Ok(())
         }
         Err(_) => {

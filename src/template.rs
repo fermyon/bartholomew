@@ -29,11 +29,11 @@ pub struct TemplateContext {
     page: PageValues,
     site: SiteValues,
     /// A copy of the environment variables
-    /// 
+    ///
     /// Unlike a static site generator, Bartholomew can make decisions based on request.
     /// This provides templates with access to the request data along with custom
     /// environment variables.
-    /// 
+    ///
     /// TODO: Should there be a way to filter out env vars that should never get to
     /// the template layer? As of this writing, there are no such variables, but in
     /// the future there could be.
@@ -111,10 +111,13 @@ impl<'a> Renderer<'a> {
             // Relative file name without extension. Note that we skip any file
             // that doesn't have this.
             if let Some(fn_name) = script.file_stem() {
-                eprintln!("scripts: registering {}", fn_name.to_str().unwrap_or("unknown"));
+                eprintln!(
+                    "scripts: registering {}",
+                    fn_name.to_str().unwrap_or("unknown")
+                );
                 self.handlebars
                     .register_script_helper_file(&fn_name.to_string_lossy(), &script)
-                    .map_err(|e|anyhow::anyhow!("Script {:?}: {}", &script, e))?;
+                    .map_err(|e| anyhow::anyhow!("Script {:?}: {}", &script, e))?;
             }
         }
 
@@ -154,8 +157,10 @@ impl<'a> Renderer<'a> {
             // Copy the WASI env into the env template var.
             env: std::env::vars().collect(),
         };
-        let out = self.handlebars.render(&tpl, &ctx)
-            .map_err(|e|anyhow::anyhow!("Template '{}': {}", &tpl, e))?;
+        let out = self
+            .handlebars
+            .render(&tpl, &ctx)
+            .map_err(|e| anyhow::anyhow!("Template '{}': {}", &tpl, e))?;
         Ok(out)
     }
 

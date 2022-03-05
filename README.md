@@ -11,7 +11,7 @@ Check out [the docs](/content/docs)
 
 The easiest way to start is to get the [Bartholomew site template](https://github.com/fermyon/bartholomew-site-template) and then download the [latest release of Bartholomew](https://github.com/fermyon/bartholomew/releases).
 
-### Building from Source 
+### Building from Source
 
 To build Bartholomew from source, just run `make build`, which basically does a
 `cargo build --target wasm32-wasi --release`.
@@ -176,7 +176,7 @@ Bartholomew uses a [version of the Handlebars template language](https://crates.
 The template syntax is describe in the [Handlebars documentation](https://handlebarsjs.com/).
 
 Every file in the `templates/` directory will be compiled to a template. The file is then
-accessible by its relative name, minus the extension. For example. `templates/main.hbs` 
+accessible by its relative name, minus the extension. For example. `templates/main.hbs`
 will be accessible as `main`.
 
 Note that Bartholomew _expects_ to find a template named `main`. This template is used as
@@ -194,3 +194,19 @@ have access to the Markdown version of the document.
 
 To print the HTML body without having the output escaped, use `{{{ page.body }}}` (note the
 triple curly braces).
+
+## The Bartholomew CLI
+
+This is a very early work in progress implementation for a CLI that simplifies
+working with Bartholomew applications:
+
+```
+ ➜ bart calendar ./content
+Wed, Dec 22, 2021 - 'Documentation' index.md
+Thu, Dec 23, 2021 - 'First Post!' 2021-12-23-first-post.md
+Thu, Dec 23, 2021 - 'What Is Markdown?' 2021-12-23-what-is-markdown.md
+Thu, Dec 23, 2021 - 'Markdown examples' markdown.md
+
+ ➜ bart new post content/blog --author "Radu Matei" --template abc --title "Writing a new post using Bart"
+Wrote new post in file content/blog/untitled.md
+```
