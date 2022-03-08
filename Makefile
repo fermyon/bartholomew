@@ -11,6 +11,16 @@ build:
 	# Keep an eye on the binary size. We want it under 5M
 	@ls -lah target/wasm32-wasi/release/*.wasm
 
+.PHONY: bart
+bart:
+	cargo build --release --manifest-path=bart/Cargo.toml
+
+.PHONY: test
+test:
+	RUST_LOG=$(LOG_LEVEL) cargo test --all -- --nocapture
+	cargo clippy --all-targets --all-features -- -D warnings
+	cargo fmt --all -- --check
+
 .PHONY: serve
 serve: build
 serve:

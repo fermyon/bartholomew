@@ -44,7 +44,7 @@ pub fn send_gzip_result(
     if let Some(status) = status_opt {
         println!("Status: {}", status);
     }
-    println!("Content-Encoding: {}", "gzip");
+    println!("Content-Encoding: gzip");
     println!("Content-Type: {}\n", content_type);
 
     let mut e = GzEncoder::new(Vec::new(), Compression::default());

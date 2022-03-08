@@ -1,0 +1,17 @@
+[package]
+name = "bart"
+version = "0.1.0"
+edition = "2021"
+authors = ["Fermyon Engineering <engineering@fermyon.com>"]
+
+[dependencies]
+anyhow = "1.0.42"
+bartholomew = { path = "../" }
+chrono = { version = "0.4.19", features = ["serde"] }
+colorful = "0.2.1"
+structopt = "0.3.22"
+tokio = { version = "1.8.1", features = [ "full" ] }
+toml = "0.5.8"
+tracing = { version = "0.1.26", features = [ "log" ] }
+tracing-futures = "0.2.5"
+tracing-subscriber = { version = "0.2.19", features = [ "env-filter" ] }
