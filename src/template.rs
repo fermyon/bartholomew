@@ -17,7 +17,6 @@ pub struct SiteInfo {
     pub title: String,
     pub logo: Option<String>,
     pub base_url: Option<String>,
-    pub content_encoding: Option<String>,
     pub about: Option<String>,
     pub extra: BTreeMap<String, String>,
 }
