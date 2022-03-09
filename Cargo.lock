@@ -52,16 +52,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
-<<<<<<< HEAD
 name = "bart"
 version = "0.1.0"
-||||||| parent of 5493585 (Update cargo.lock)
-name = "bartholomew"
-version = "0.1.0"
-=======
-name = "bartholomew"
-version = "0.2.0"
->>>>>>> 5493585 (Update cargo.lock)
 dependencies = [
  "anyhow",
  "bartholomew",
