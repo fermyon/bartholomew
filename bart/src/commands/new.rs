@@ -57,7 +57,11 @@ impl NewPostCommand {
         extra.insert("type".to_string(), self.post_type);
 
         let description = self.description;
-        let published = Some(true);
+        // Published means...
+        // - If 'Some(true)', always mark it published
+        // - If 'Some(false)', never mark it published
+        // - If 'None', use the regular publishing rules (e.g. date)
+        let published = None;
 
         let extra = Some(extra);
         let head = Head {
