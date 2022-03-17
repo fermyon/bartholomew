@@ -132,12 +132,9 @@ fn exec() -> anyhow::Result<()> {
                         .clone()
                         .unwrap_or_else(|| DEFAULT_CONTENT_TYPE.to_owned());
 
-                    let mut data = engine
+                    let data = engine
                         .render_template(doc, config)
                         .map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
-                    if content_type.starts_with("text/html") {
-                        data = minify::html::minify(&data);
-                    }
 
                     if gzip_encoding {
                         response::send_gzip_result(path_info, data, content_type, status_opt);
