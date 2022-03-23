@@ -120,7 +120,7 @@ fn exec() -> anyhow::Result<()> {
                     let data = engine
                         .render_template(doc, config)
                         .map_err(|e| anyhow::anyhow!("Rendering {:?}: {}", &content_path, e))?;
-                    
+
                     response::send_result(path_info, data, content_type, status_opt);
                 }
             }
