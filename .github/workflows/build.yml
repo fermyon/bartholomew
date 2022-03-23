@@ -1,0 +1,16 @@
+name: Build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    steps:
+      - name: Build
+        run: |
+          make build
+      - name: Test
+        run: |
+          make test
