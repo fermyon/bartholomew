@@ -14,7 +14,6 @@ jobs:
       - name: Install Dependencies
         run: |
           rustup target add wasm32-wasi
-          cargo install cargo-wasi
 
       - name: Build
         run: |
