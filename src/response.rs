@@ -79,7 +79,7 @@ pub fn send_redirect(route: String, location: String, status: String) {
 fn content_encoding() -> ContentEncoding {
     match std::env::var("HTTP_ACCEPT_ENCODING") {
         Ok(encoding) => {
-            encoding.split(",").map(|s| {
+            encoding.split(',').map(|s| {
                 let enc = s.trim();
                 match enc {
                     "gzip" => ContentEncoding::Gzip,

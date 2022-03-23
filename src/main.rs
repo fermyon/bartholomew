@@ -60,7 +60,7 @@ fn exec() -> anyhow::Result<()> {
     let mut config: template::SiteInfo = toml::from_slice(&raw_config)?;
 
     let base_url = std::env::var("BASE_URL");
-    if base_url.is_ok() {
+    if let Ok(..) = base_url {
         config.base_url = Some(base_url.unwrap());
     }
     eprintln!("Base URL: {:?}", &config.base_url);
