@@ -3,6 +3,8 @@ use std::collections::{BTreeMap, HashMap};
 use std::fs::{read_dir, DirEntry};
 use std::path::PathBuf;
 use std::str::FromStr;
+use handlebars::Handlebars;
+
 
 use chrono::{DateTime, Utc};
 use pulldown_cmark as markdown;
@@ -10,6 +12,9 @@ use pulldown_cmark as markdown;
 use crate::template::PageValues;
 
 const DOC_SEPARATOR: &str = "\n---\n";
+
+const SHORTCODE_PATH: &str = "/shortcodes/";
+
 
 /// Head contains the front matter for a document
 #[derive(Default, Deserialize, Serialize)]
@@ -133,7 +138,7 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
 
 /// The envelope for a page's content
 /// The head contains front matter, while the body is the markdown body of the document.
-pub struct Content {
+pub struct Content<'a> {
     /// The front matter for this content.
     pub head: Head,
     /// The unparsed Markdown for this content.
@@ -151,15 +156,19 @@ pub struct Content {
     ///
     /// Practically speaking, what this means is that content is published by default.
     pub published: bool,
+    pub shortcode_dir: PathBuf,
+    handlebars: handlebars::Handlebars<'a>,
+
+
 }
 
-impl Content {
+impl <'a> Content<'a>{
     /// Create new content from a head and a body.
     ///
     /// This determines published state based on the head.
     ///
     /// The environment is copied from the system environment. This is safe when executed inside of Wagi or a WASI runtime.
-    pub fn new(head: Head, body: String) -> Self {
+    pub fn new(head: Head, body: String,  shortcode_dir: PathBuf) -> Self {
         let pdate = head.date;
 
         // If explicitly published in the front matter, mark it published
@@ -173,23 +182,63 @@ impl Content {
             head,
             body,
             published,
+            shortcode_dir,
+            handlebars: Handlebars::new(),
+
         }
     }
 
+        pub fn load_shortcode_dir(&mut self) -> anyhow::Result<()> {
+        // TODO: rewrite all_files so we don't need to clone here.
+        let scripts = all_files(self.shortcode_dir.clone())?;
+        for script in scripts {
+            // Relative file name without extension. Note that we skip any file
+            // that doesn't have this.
+            if let Some(fn_name) = script.file_stem() {
+                eprintln!(
+                    "scripts: registering {}",
+                    fn_name.to_str().unwrap_or("unknown")
+                );
+                self.handlebars
+                    .register_script_helper_file(&fn_name.to_string_lossy(), &script)
+                    .map_err(|e| anyhow::anyhow!("Script {:?}: {}", &script, e))?;
+            }
+        }
+
+        Ok(())
+    }
+
+
     /// Render the body using a Markdown renderer
-    pub fn render_markdown(&self) -> String {
+    pub fn render_markdown(&mut self) -> String {
         let mut buf = String::new();
+        let _ = &self.load_shortcode_dir().unwrap();
+
+        // don't escape HTML so that rhai scripts can return html that will
+        // be rendered as HTML
+        let _ = &self.handlebars.register_escape_fn(handlebars::no_escape);
+
+        // run the markdown through the template engine to
+        // enable any script helpers
+        let out = self
+            .handlebars
+            .render_template(&self.body, &{}).unwrap_or_else(|e| {
+                // print the error
+                eprintln!("Error rendering markdown: {}", e);
+                // return nothing
+                "Template Error".to_string()
+            });
 
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
-        let parser = markdown::Parser::new_ext(&self.body, opt);
+        let parser = markdown::Parser::new_ext(&out, opt);
         markdown::html::push_html(&mut buf, parser);
 
         buf
     }
 }
 
-impl FromStr for Content {
+impl <'a> FromStr for Content<'a> {
     type Err = anyhow::Error;
     fn from_str(full_document: &str) -> Result<Self, Self::Err> {
         let (toml_text, body) = full_document
@@ -198,6 +247,9 @@ impl FromStr for Content {
         let head: Head =
             toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
 
-        Ok(Content::new(head, body.to_owned()))
+        Ok(Content::new(head, body.to_owned(),
+        PathBuf::from(SHORTCODE_PATH)))
+
+
     }
 }

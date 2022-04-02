@@ -6,4 +6,4 @@ volumes = {"/" = "static/"}
 [[module]]
 module = "target/wasm32-wasi/release/bartholomew.wasm"
 route = "/..."
-volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = "scripts/", "config/" = "config/"}
+volumes = { "content/" = "content/" , "templates/" = "templates/", "shortcodes/" = "shortcodes/", "scripts/" = "scripts/", "config/" = "config/"}

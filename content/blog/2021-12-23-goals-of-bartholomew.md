@@ -7,6 +7,7 @@ author = "Matt Butcher"
 author_page = "/author/butcher"
 ---
 
+
 Bartholomew is intended to be three things:
 
 1. A simple-to-use CMS-like system that feels like Jekyll or other static site generators
@@ -23,6 +24,9 @@ just written in plain text, and is rendered into HTML. Menus and navigation are
 built up automatically. And dealing with images and other files is as easy as dropping
 a file in a directory. We love that experience. So we tried to combine the best of the
 static site generator with a server-side technology.
+
+{{ alert "warning" "Bartholomew is a work in progress" }}
+
 
 Bartholomew works like PHP (the language Wordpress and Drupal are written in). Each
 time the server receives a request, it starts up a new Bartholomew instance, which only

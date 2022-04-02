@@ -58,8 +58,8 @@ pub struct PageValues {
     pub published: bool,
 }
 
-impl From<Content> for PageValues {
-    fn from(c: Content) -> Self {
+impl<'a> From<Content<'a>> for PageValues {
+    fn from(mut c: Content) -> Self {
         PageValues {
             body: c.render_markdown(),
             head: c.head,
