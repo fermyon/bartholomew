@@ -20,14 +20,21 @@ impl CheckCommand {
         let mut exit_with_err = false;
         for file_path in self.paths {
             if file_path.is_dir() {
-                continue
+                continue;
             }
             match check_file(&file_path).await {
-                Ok(()) => println!("✅ {}", &file_path.to_str().unwrap_or("").color(Color::Green)),
+                Ok(()) => println!(
+                    "✅ {}",
+                    &file_path.to_str().unwrap_or("").color(Color::Green)
+                ),
                 Err(e) => {
-                    println!("❌ {}\t{}", &file_path.to_str().unwrap_or("").color(Color::Red), e);
+                    println!(
+                        "❌ {}\t{}",
+                        &file_path.to_str().unwrap_or("").color(Color::Red),
+                        e
+                    );
                     exit_with_err = true;
-                },
+                }
             }
         }
         if exit_with_err {
@@ -36,15 +43,15 @@ impl CheckCommand {
         } else {
             Ok(())
         }
-        
     }
-
-    
 }
 
 async fn check_file(p: &Path) -> Result<()> {
-    let raw_data = std::fs::read_to_string(p).map_err(|e| anyhow::anyhow!("Could not read file {:?} as a string: {}", &p, e))?;
-    let content: Content = raw_data.parse().map_err(|e| anyhow::anyhow!("Could not parse file {:?}: {}", &p, e))?;
+    let raw_data = std::fs::read_to_string(p)
+        .map_err(|e| anyhow::anyhow!("Could not read file {:?} as a string: {}", &p, e))?;
+    let content: Content = raw_data
+        .parse()
+        .map_err(|e| anyhow::anyhow!("Could not parse file {:?}: {}", &p, e))?;
 
     // This will catch (only) panic cases.
     let _html = content.render_markdown();
@@ -56,8 +63,12 @@ async fn check_file(p: &Path) -> Result<()> {
 
     if let Some(tpl) = content.head.template {
         let tpl_path = Path::new("templates").join(format!("{}.hbs", &tpl));
-        if let Err(e)  = std::fs::metadata(&tpl_path) {
-            return Err(anyhow::anyhow!("Failed to open template {:?}: {}", tpl_path, e))
+        if let Err(e) = std::fs::metadata(&tpl_path) {
+            return Err(anyhow::anyhow!(
+                "Failed to open template {:?}: {}",
+                tpl_path,
+                e
+            ));
         }
     }
 

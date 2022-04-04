@@ -1,5 +1,5 @@
 use anyhow::Result;
-use commands::{calendar::CalendarCommand, new::NewCommand, check::CheckCommand};
+use commands::{calendar::CalendarCommand, check::CheckCommand, new::NewCommand};
 use structopt::{clap::AppSettings, StructOpt};
 
 mod commands;
