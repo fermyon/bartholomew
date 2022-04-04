@@ -23,7 +23,7 @@ impl CalendarCommand {
     pub async fn run(self) -> Result<()> {
         let now = Utc::now();
 
-        // Print a content calendar for every given director.
+        // Print a content calendar for every given directory.
         for dir in self.paths {
             // Walk the content directory.
             let files = content::all_files(dir)?;

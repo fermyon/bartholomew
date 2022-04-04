@@ -1,0 +1,65 @@
+use anyhow::Result;
+use bartholomew::content::Content;
+use colorful::{Color, Colorful};
+use std::path::{Path, PathBuf};
+use structopt::StructOpt;
+
+/// Check content and identify errors or warnings.
+#[derive(StructOpt, Debug)]
+pub struct CheckCommand {
+    /// The path to check.
+    #[structopt()]
+    pub paths: Vec<PathBuf>,
+}
+
+impl CheckCommand {
+    pub async fn run(self) -> Result<()> {
+        if self.paths.is_empty() {
+            anyhow::bail!("Supply one or more content files to check.")
+        }
+        let mut exit_with_err = false;
+        for file_path in self.paths {
+            if file_path.is_dir() {
+                continue
+            }
+            match check_file(&file_path).await {
+                Ok(()) => println!("✅ {}", &file_path.to_str().unwrap_or("").color(Color::Green)),
+                Err(e) => {
+                    println!("❌ {}\t{}", &file_path.to_str().unwrap_or("").color(Color::Red), e);
+                    exit_with_err = true;
+                },
+            }
+        }
+        if exit_with_err {
+            let msg = "One or more pieces of content are invalid".color(Color::Red);
+            Err(anyhow::anyhow!("{}", msg))
+        } else {
+            Ok(())
+        }
+        
+    }
+
+    
+}
+
+async fn check_file(p: &Path) -> Result<()> {
+    let raw_data = std::fs::read_to_string(p).map_err(|e| anyhow::anyhow!("Could not read file {:?} as a string: {}", &p, e))?;
+    let content: Content = raw_data.parse().map_err(|e| anyhow::anyhow!("Could not parse file {:?}: {}", &p, e))?;
+
+    // This will catch (only) panic cases.
+    let _html = content.render_markdown();
+
+    // Things we could do from here:
+    // - Check whether requested template is known
+    // - Check that date parses correctly (Actually, is done already)
+    // - Warn if there is a publish date
+
+    if let Some(tpl) = content.head.template {
+        let tpl_path = Path::new("templates").join(format!("{}.hbs", &tpl));
+        if let Err(e)  = std::fs::metadata(&tpl_path) {
+            return Err(anyhow::anyhow!("Failed to open template {:?}: {}", tpl_path, e))
+        }
+    }
+
+    Ok(())
+}

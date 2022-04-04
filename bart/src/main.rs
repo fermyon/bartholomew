@@ -1,5 +1,5 @@
 use anyhow::Result;
-use commands::{calendar::CalendarCommand, new::NewCommand};
+use commands::{calendar::CalendarCommand, new::NewCommand, check::CheckCommand};
 use structopt::{clap::AppSettings, StructOpt};
 
 mod commands;
@@ -24,6 +24,7 @@ async fn main() -> Result<()> {
     ])]
 enum BartApp {
     Calendar(CalendarCommand),
+    Check(CheckCommand),
     New(NewCommand),
 }
 
@@ -32,6 +33,7 @@ impl BartApp {
     pub async fn run(self) -> Result<()> {
         match self {
             BartApp::Calendar(cmd) => cmd.run().await,
+            BartApp::Check(cmd) => cmd.run().await,
             BartApp::New(cmd) => cmd.run().await,
         }
     }
