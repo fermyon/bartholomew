@@ -196,12 +196,12 @@ impl <'a> Content<'a>{
             // that doesn't have this.
             if let Some(fn_name) = script.file_stem() {
                 eprintln!(
-                    "scripts: registering {}",
+                    "shortcodes: registering {}",
                     fn_name.to_str().unwrap_or("unknown")
                 );
                 self.handlebars
                     .register_script_helper_file(&fn_name.to_string_lossy(), &script)
-                    .map_err(|e| anyhow::anyhow!("Script {:?}: {}", &script, e))?;
+                    .map_err(|e| anyhow::anyhow!("Shortcode {:?}: {}", &script, e))?;
             }
         }
 
@@ -226,7 +226,7 @@ impl <'a> Content<'a>{
                 // print the error
                 eprintln!("Error rendering markdown: {}", e);
                 // return nothing
-                "Template Error".to_string()
+                e.to_string()
             });
 
         // Might as well turn on all the lights on the Christmas tree
