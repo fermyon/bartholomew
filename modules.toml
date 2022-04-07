@@ -7,3 +7,4 @@ volumes = {"/" = "static/"}
 module = "target/wasm32-wasi/release/bartholomew.wasm"
 route = "/..."
 volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = "scripts/", "config/" = "config/"}
+allowed_hosts = ["https://publish.twitter.com"]
