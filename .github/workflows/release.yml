@@ -1,32 +1,31 @@
 name: Release
+
 on:
   push:
     tags:
       - "v*"
+
 jobs:
   assets:
     name: Build and release assets
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: |
-          rustup target add wasm32-wasi
+        run: rustup target add wasm32-wasi
 
       - name: Build WASM
-        run: |
-          make build
+        run: make build
+
+      - name: Build bart
+        run: make bart
 
       - name: Create release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-
-      - name: Upload bartholomew.wasm
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "target/wasm32-wasi/release/bartholomew.wasm"
-          asset_name: "bartholomew.wasm"
-          asset_content_type: application/wasm
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          files: |
+            target/wasm32-wasi/release/bartholomew.wasm
+            target/release/bart
