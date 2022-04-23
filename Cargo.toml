@@ -1,20 +1,32 @@
 [package]
 name = "bartholomew"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Fermyon Engineering <engineering@fermyon.com>"]
 
+[lib]
+crate-type = ["cdylib", "lib"]
+
 [dependencies]
-anyhow = "1.0"
-brotli = "3.3"
-chrono = {version = "0.4", features = ["serde"]}
-flate2 = "1.0"
-handlebars = {version = "4.1", features = ["dir_source", "script_helper"]}
-handlebars_sprig = { version = "0.3.0" }
-pulldown-cmark = { version = "0.8", default-features = false }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-toml = "0.5"
+anyhow = "1.0.57"
+brotli = "3.3.4"
+bytes = "1.1.0"
+chrono = { version = "0.4.19", features = ["serde"] }
+flate2 = "1.0.23"
+handlebars = { version = "4.2.2", features = ["dir_source", "script_helper"] }
+handlebars_sprig = "0.3.0"
+http = "0.2.6"
+pulldown-cmark = { version = "0.9.1", default-features = false }
+serde = { version = "1.0.136", features = ["derive"] }
+serde_json = "1.0.79"
+spin-sdk = { git = "https://github.com/fermyon/spin", optional = true }
+toml = "0.5.9"
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen", rev = "2f46ce4cc072107153da0cefe15bdc69aa5b84d0", default-features = false }
 
 [workspace]
 members = ["bart"]
+
+
+[features]
+default = ["spin"]
+spin = ["dep:spin-sdk"]

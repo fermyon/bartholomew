@@ -1,7 +1,7 @@
 # Bartholomew MicroCMS
 
 Bartholomew is a simple CMS-like tool for hosting a website. It is compiled entirely
-to WebAssembly, and can run in any Wagi-capable system.
+to WebAssembly, and can run in any Spin-capable system.
 
 ![Bartholomew screenshot](static/bartholomew-screenshot.png)
 
@@ -19,27 +19,27 @@ To build Bartholomew from source, just run `make build`, which basically does a
 > `make build` also runs `wasm-opt`, which is part of the [Binaryen](https://webassembly.github.io/binaryen/) project.
 > This reduces the size of the WebAssembly module by optimizing the bytecode.
 
-To run Bartholomew, you will need a Wagi-capable runtime.
-For example, you can just download a recent release of [Wagi](https://github.com/deislabs/wagi) and put it on your `$PATH`.
+To run Bartholomew, you will need a Spin-capable runtime.
+For example, you can just download a recent release of [Spin](https://github.com/fermyon/spin) and put it on your `$PATH`.
 Then the `make serve` command can start it all up for you.
 
 ### Install the Fileserver
 
-Bartholomew uses an external file server called [Wagi-Fileserver](https://github.com/deislabs/wagi-fileserver/releases).
+Bartholomew uses an external file server called [Spin-Fileserver](https://github.com/fermyon/spin-fileserver).
 
-Download the latest release and put it in the `modules/` directory. When you are done, you should see:
+Build the WebAssembly module and copy it in the `modules/` directory. When you are done, you should see:
 
-```consle
+```console
 $ ls modules                                 
-README.md          fileserver.gr.wasm
+README.md          spin_static_fs.wasm
 ```
 
 ## Running Bartholomew
 
-With Wagi:
+With Spin:
 
 ```
-$ wagi -c modules.toml
+$ spin up
 ```
 
 With `make`:
@@ -48,13 +48,7 @@ With `make`:
 $ make serve
 ```
 
-With Hippo:
-
-```
-$ hippo push
-```
-
-For convenience, `make serve` builds the code, and then runs `wagi -c`.
+For convenience, `make serve` builds the code, and then runs `spin up`.
 
 ### Preview Mode
 
@@ -66,10 +60,10 @@ Content is unpublished if either:
 
 To view unpublished content, turn on `PREVIEW_MODE`.
 
-Wagi:
+Spin:
 
 ```
-$ wagi -c modules.toml -e PREVIEW_MODE=1
+$ spin up -e PREVIEW_MODE=1
 ```
 
 Make:
@@ -78,14 +72,10 @@ Make:
 $ PREVIEW_MODE=1 make serve
 ```
 
-Hippo:
-
-Add the environment variable PREVIEW_MODE=1 to the desired channel.
-
 ## Configuring Bartholomew
 
-Bartholomew can run inside of any CGI environment that supports directly executing
-Wasm modules. That basically means Hippo, Wagi, and Wagi.net. (If you get it running
+Bartholomew can run inside of any Spin environment that supports directly executing
+Wasm modules. That basically means Hippo and Spin. (If you get it running
 in another environment, please tell us!)
 
 Bartholomew requires that several directories are mounted into the Wasm module:
@@ -108,7 +98,7 @@ volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = 
 ```
 
 At the time of this writing, Bartholomew does not serve static files. Instead, use
-the [fileserver](https://github.com/deislabs/wagi-fileserver) for Wagi:
+the [fileserver](https://github.com/fermyon/spin-fileserver) for Spin:
 
 ```
 [[module]]
@@ -167,7 +157,7 @@ key = "your custom name value pairs go hear, but values MUST be strings"
 ### Markdown Body
 
 Markdown support includes all the usual stuff plus fenced codeblocks. Image links are
-supported, but you need to use the external [fileserver](https://github.com/deislabs/wagi-fileserver)
+supported, but you need to use the external [fileserver](https://github.com/fermyon/spin-fileserver)
 library to display the images.
 
 ## Templates

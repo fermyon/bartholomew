@@ -1,3 +1,7 @@
 pub mod content;
-pub mod response;
 pub mod template;
+
+#[cfg(feature = "spin")]
+pub mod bartholomew;
+#[cfg(feature = "spin")]
+pub mod response;
