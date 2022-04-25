@@ -1,0 +1,21 @@
+name = "bartholomew-docs"
+spin_version = "1"
+version = "0.1.0"
+description = "The Bartholomew documentation website running on... Spin."
+authors = [ "Fermyon Engineering <engineering@fermyon.com>" ]
+trigger = { type = "http", base = "/" }
+
+[[component]]
+source = "modules/bartholomew-wagi.wasm"
+id = "bartholomew"
+files = [ "content/**/*" , "templates/*", "scripts/*", "config/*"]
+[component.trigger]
+route = "/..."
+executor = { type = "wagi" }
+
+[[component]]
+source = "modules/spin_static_fs.wasm"
+id = "fileserver"
+files = [ { source = "static/", destination = "/" } ]
+[component.trigger]
+route = "/static/..."

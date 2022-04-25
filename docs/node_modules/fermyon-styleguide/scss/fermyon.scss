@@ -1,0 +1,25 @@
+/* FERMYON SHINY VENEER
+=======================
+For the benefit of browser-based experiences, websites and application user 
+interfaces. This Sass file should be compiled to a CSS stylesheet and served 
+after a base framework such as Bulma, Bootstrap or similar base grid system.
+
+to generate to css:
+https://sass-lang.com/install 
+
+then run:
+sass --watch static/sass/styles.scss static/css/style.css --style compressed
+
+
+TABLE OF CONTENTS
+=================
+0.1. Brand Colors
+0.2. Variables and Mixins
+0.3. Global Layout
+0.4. Typography
+*/
+
+@import "fermyon-color";
+@import "fermyon-mixins";
+@import "fermyon-base";
+@import "fermyon-type";

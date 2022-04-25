@@ -1,0 +1,30 @@
+{
+  "name": "msgpackr-extract",
+  "author": "Kris Zyp",
+  "version": "1.0.16",
+  "description": "Node addon for string extraction for msgpackr",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kriszyp/msgpackr-extract"
+  },
+  "scripts": {
+    "install": "node-gyp-build",
+    "recompile": "node-gyp build",
+    "before-publish": "prebuildify-ci download && prebuildify --target 17.2.0 && prebuildify --target 16.13.0 && prebuildify --target 15.5.0 && prebuildify --target 14.17.6 && prebuildify --target 12.22.7 && prebuildify --target electron@15.2.0",
+    "prebuild": "prebuildify --target 17.2.0 && prebuildify --target 16.13.0 && prebuildify --target 15.5.0 && prebuildify --target 14.17.6 && prebuildify --target 12.22.7 && prebuildify --target electron@15.2.0",
+    "prebuild-musl": "prebuildify --target 17.2.0 --libc musl --tag-libc && prebuildify --target 16.13.0 --libc musl --tag-libc && prebuildify --target 14.17.6 --libc musl --tag-libc && prebuildify --target 12.22.7 --libc musl --tag-libc",
+    "prebuild-arm64": "prebuildify --arch=arm64 --target 17.2.0 --libc musl && prebuildify --arch=arm64 --target 16.13.0 && prebuildify --arch=arm64 --target 14.17.6 && prebuildify --arch=arm64 --target electron@15.2.0",
+    "test": ""
+  },
+  "main": "./index.js",
+  "gypfile": true,
+  "dependencies": {
+    "nan": "^2.14.2",
+    "node-gyp-build": "^4.2.3"
+  },
+  "devDependencies": {
+    "prebuildify": "^5.0.0",
+    "prebuildify-ci": "^1.0.5"
+  }
+}

@@ -1,0 +1,32 @@
+/* 2.
+   Variables and Mixins
+*/
+
+$sen: Sen, Europa, Avenir, system, -apple-system, ".SFNSText-Regular", "San Francisco", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+$mono: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;
+
+@mixin transition($property:all, $duration:0.3s, $easing:ease-in-out) {
+    transition: $property $duration $easing;
+}
+
+@mixin border-radius($radius1:3px, $radius2:3px) {
+    -webkit-border-radius: $radius1 $radius2 $radius1 $radius2;
+    -moz-border-radius: $radius1 $radius2 $radius1 $radius2;
+    border-radius: $radius1 $radius2 $radius1 $radius2;
+}
+
+@mixin box-shadow($xlength:0, $ylength:2px, $size:0, $color:rgba(30,30,30,0.25)) {
+    -webkit-box-shadow: $xlength $ylength $size $color;
+    -moz-box-shadow: $xlength $ylength $size $color;
+    box-shadow: $xlength $ylength $size $color;
+}
+
+@mixin verticalCenter {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@mixin sen {
+    letter-spacing: 0.025em;
+}
