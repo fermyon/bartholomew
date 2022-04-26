@@ -62,9 +62,9 @@ async fn check_file(p: &Path) -> Result<()> {
     // - Warn if there is a publish date
 
     if content.head.title.len() == 0 {
-        return anyhow::bail!("Title should not be empty");
+        anyhow::bail!("Title should not be empty");
     } else if content.head.title == "Untitled" {
-        return anyhow::bail!("Document seems to be missing title. Is there TOML metadata?");
+        anyhow::bail!("Document seems to be missing title. Is there TOML metadata?");
     }
 
     if let Some(tpl) = content.head.template {
