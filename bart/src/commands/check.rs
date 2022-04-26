@@ -61,6 +61,12 @@ async fn check_file(p: &Path) -> Result<()> {
     // - Check that date parses correctly (Actually, is done already)
     // - Warn if there is a publish date
 
+    if content.head.title.len() == 0 {
+        anyhow::bail!("Title should not be empty");
+    } else if content.head.title == "Untitled" {
+        anyhow::bail!("Document seems to be missing title. Is there TOML metadata?");
+    }
+
     if let Some(tpl) = content.head.template {
         let tpl_path = Path::new("templates").join(format!("{}.hbs", &tpl));
         if let Err(e) = std::fs::metadata(&tpl_path) {
