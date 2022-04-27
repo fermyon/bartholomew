@@ -1,7 +1,7 @@
 title = "Bartholomew"
 # logo = "URL to logo"
 base_url = "http://localhost:3000"
-about = "This site is generated with Bartholomew, the Wagi micro-CMS. And this message is in site.toml."
+about = "This site is generated with Bartholomew, the Spin micro-CMS. And this message is in site.toml."
 
 [extra]
 copyright = "The Site Authors"
