@@ -18,8 +18,8 @@ Bartholomew has the following features:
 
 ### Overview
 
-Bartholomew is built as a [Wagi](https://github.com/deislabs/wagi) application, and will run inside of [Hippo](https://github.com/deislabs/hippo) or inside of [Krustlet](https://krustlet.dev/) if you have the Wagi extension. At Fermyon, we run ours using Hippo deploying to a [Nomad](https://www.nomadproject.io/) cluster.
+Bartholomew is built as a [Wagi](https://github.com/deislabs/wagi) application and will run inside of [Hippo](https://github.com/deislabs/hippo) or inside of [Krustlet](https://krustlet.dev/) if you have the Wagi extension. At Fermyon, we run ours using Hippo deploying to a [Nomad](https://www.nomadproject.io/) cluster.
 
 Bartholomew offers a feature set that should be familiar to users of popular static site generators like Hugo. However, Bartholomew is not a static site generator. 
 
-In the next section, we will [build our first site](/quickstart) with Barthomew.
+In the next section, we will [build our first site](/quickstart) with Bartholomew.

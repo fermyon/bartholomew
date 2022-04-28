@@ -2,7 +2,7 @@ title = "Building a site with Bartholomew"
 template = "main"
 date = "2022-03-14T00:22:56Z"
 [extra]
-url = "https://github.com/fermyon/spin/blob/main/docs/content/url-shortener.md"
+url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/bart-tutorial.md"
 ---
 
 This tutorial will walk you through building a Spin component that
@@ -93,7 +93,7 @@ pub fn redirect(self, req: Request) -> Result<Response> {
 The `redirect` function is straightforward — it reads the request path from the
 `PATH_INFO` header (make sure to read the [document about the HTTP trigger](/http-trigger)
 for an overview of the HTTP headers present in Spin components), selects the
-corresponding destination from the router configuration, then sends the
+corresponding destination from the router configuration and then sends the
 HTTP redirect to the new location.
 
 At this point, we can build the module with `cargo` and run it with Spin:
@@ -138,13 +138,13 @@ $ spin bindle push --file spin.toml
 pushed: url-shortener/1.0.0
 ```
 
-And now we can run the application directly from the registry:
+And now, we can run the application directly from the registry:
 
 ```bash
 $ spin up --bindle url-shortener/1.0.0
 ```
 
-In this tutorial we built a simple URL shortener as a Spin component.
-In the future we will expand this tutorial by storing the router configuration
+In this tutorial, we have built a simple URL shortener as a Spin component.
+In the future, we will expand this tutorial by storing the router configuration
 in a database supported by Spin, and potentially create another component that
 can be used to add new routes to the configuration.

@@ -5,7 +5,7 @@ date = "2022-03-14T00:22:56Z"
 url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/body.md"
 ---
 
-Along with front matter, Bartholomew supports generic Markdown support including the usual features such as fenced codeblocks. Image links are also supported but require the use of the [Wagi fileserver](https://github.com/deislabs/wagi-fileserver) library to display the images.
+Along with front matter, Bartholomew supports generic Markdown support, including usual features like fenced codeblocks. Image links are also supported but require the use of the [Wagi fileserver](https://github.com/deislabs/wagi-fileserver) library to display the images.
 
 A typical content file would look like this, including the header:
 

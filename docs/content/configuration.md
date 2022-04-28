@@ -2,17 +2,18 @@ title = "Configuration for Bartholomew"
 template = "main"
 date = "2022-04-24T21:51:00Z"
 [extra]
-url = "https://github.com/fermyon/spin/blob/main/docs/content/configuration.md"
+url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/configuration.md"
 ---
 
 Bartholomew can run inside of any CGI environment that supports directly executing Wasm modules. That basically means [Hippo](https://github.com/deislabs/hippo), [Wagi](https://github.com/deislabs/wagi), and [Wagi.net](https://github.com/deislabs/wagi-dotnet). (If you get it running in another environment, please tell us!)
 
 Bartholomew requires that several directories are mounted into the Wasm module:
 
-* `templates/` should contain Handlebars templates.
-* `content/` should contain Markdown files.
-* `scripts/` contains Rhai scripts that are available as template helpers.
-* `config/site.toml` is the main site configuration file
+* `content/`: Your markdown files go in here.
+* `scripts/`: (advanced): If you want to write your owh Rhai scripts, they go here.
+* `config/site.toml`: The main site configuration file
+* `static/`: Static assets like images, CSS, and downloads go in here.
+* `templates/`: Your Handlebars templates go here.
 
 By convention, we suggest putting all of your Wasm modules in a directory called `modules/`. However, there is no hard-coded reason why you need to do this.
 

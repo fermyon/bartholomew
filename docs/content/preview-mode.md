@@ -2,7 +2,7 @@ title = "Displaying unpublished content"
 template = "main"
 date = "2022-03-14T00:22:56Z"
 [extra]
-url = "https://github.com/fermyon/spin/blob/main/docs/content/rust-components.md"
+url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/preview-mode.md"
 ---
 
 By default, Bartholomew will not display content that is unpublished. Content is unpublished if either:
