@@ -22,6 +22,4 @@ With all the buzz around cloud-native WebAssembly, the team at Fermyon was influ
 
 The result: An adaptable WebAssembly CMS that uses a Functions-as-a-Service model for page rendering instead of requiring the entire site to be pre-generated to static HTML.
 
-Bartholomew is built as a [Wagi](https://github.com/deislabs/wagi) application and will run inside of [Hippo](https://github.com/deislabs/hippo) or inside of [Krustlet](https://krustlet.dev/) if you have the Wagi extension. At Fermyon, we run our website using Hippo deploying to a [Nomad](https://www.nomadproject.io/) cluster.
-
 In the next section, we will [build our first site](/quickstart) with Bartholomew.
