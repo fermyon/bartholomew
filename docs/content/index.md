@@ -18,8 +18,10 @@ Bartholomew has the following features:
 
 ### Overview
 
-Bartholomew is built as a [Wagi](https://github.com/deislabs/wagi) application and will run inside of [Hippo](https://github.com/deislabs/hippo) or inside of [Krustlet](https://krustlet.dev/) if you have the Wagi extension. At Fermyon, we run ours using Hippo deploying to a [Nomad](https://www.nomadproject.io/) cluster.
+With all the buzz around cloud-native WebAssembly, the team at Fermyon was influenced to build a project that leveraged some of the cooler bits of Wasm. We ended up settling on the decision to build a CMS, which ended up turning into Bartholomew. The day we launched Fermyon, we decided that our first project would be to host our own website on our new WebAssembly stack. That gave us a feature set to target for Bartholomew’s first release.
 
-Bartholomew offers a feature set that should be familiar to users of popular static site generators like Hugo. However, Bartholomew is not a static site generator. 
+The result: An adaptable WebAssembly CMS that uses a Functions-as-a-Service model for page rendering instead of requiring the entire site to be pre-generated to static HTML.
+
+Bartholomew is built as a [Wagi](https://github.com/deislabs/wagi) application and will run inside of [Hippo](https://github.com/deislabs/hippo) or inside of [Krustlet](https://krustlet.dev/) if you have the Wagi extension. At Fermyon, we run our website using Hippo deploying to a [Nomad](https://www.nomadproject.io/) cluster.
 
 In the next section, we will [build our first site](/quickstart) with Bartholomew.
