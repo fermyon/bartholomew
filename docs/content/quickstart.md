@@ -79,4 +79,4 @@ Wrote new post in file content/blog/untitled.md
 Error: One or more pieces of content are invalid
 ```
 
-You will have to install the binary at `/target/releases/bart` onto your `$PATH` to use it. 
+You will have to install the binary at `/target/release/bart` onto your `$PATH` to use it. 
