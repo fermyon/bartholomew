@@ -73,6 +73,7 @@ Wrote new post in file content/blog/untitled.md
 Error: One or more pieces of content are invalid
 ```
 
+<<<<<<< HEAD
 To use the binary, you will have to build Bartholomew from source targeting the `bart/cargo.toml` manifest:
 
 ```
@@ -80,3 +81,6 @@ cargo build --release --manifest-file bart/Cargo.toml
 ```
 
 The generated binary will show up in the `/target/release/` directory and you will then need to move this artifact onto your `$PATH`.cd 
+=======
+You will have to install the binary at `/target/release/bart` onto your `$PATH` to use it. 
+>>>>>>> 7902aa97122cf88bea01316ab1172bf678b508a2
