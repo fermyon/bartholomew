@@ -1,5 +1,5 @@
 title = "Welcome to Bartholomew"
-description = "The Micro-CMS for Wagi"
+description = "The Micro-CMS for Spin"
 date = "2021-12-23T17:05:19Z"
 
 [extra]
@@ -11,8 +11,7 @@ author_page = "/author/butcher"
 It might be hard to spell, but fortunately you won't have to spell it that often.
 
 Bartholomew is a Micro-CMS for hosting Markdown content on a WebAssembly server.
-It can run on any [Wagi-compliant runtime](https://github.com/deislabs/wagi), including
-Wagi, Hippo, and Wagi.Net.
+It can run on any [Spin-compliant runtime](https://github.com/fermyon/spin).
 
 
 <div class="card mb-3" >

@@ -71,7 +71,8 @@ impl CalendarCommand {
     }
 }
 
-fn from_file(doc: String, path: &Path) -> Result<Metadata> {
+fn from_file(full_doc: String, path: &Path) -> Result<Metadata> {
+    let doc = full_doc.replace("\r\n", "\n");
     let (toml_text, _) = doc
         .split_once(DOC_SEPARATOR)
         .unwrap_or(("title = 'Untitled'", &doc));

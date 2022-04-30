@@ -47,7 +47,7 @@ pub struct Head {
     /// It can be used for redirects (3xx), intentional error messages (4xx, 5xx) or
     /// for specialized responses (2xx). It should not be used for 1xx codes unless
     /// you really know what you are doing.
-    pub status: Option<String>,
+    pub status: Option<u16>,
     /// A fully qualified URL to another resources.
     ///
     /// If no status code is set, this will set the status code to 301 Moved Permanently
@@ -158,7 +158,7 @@ impl Content {
     ///
     /// This determines published state based on the head.
     ///
-    /// The environment is copied from the system environment. This is safe when executed inside of Wagi or a WASI runtime.
+    /// The environment is copied from the system environment. This is safe when executed inside of Spin or a WASI runtime.
     pub fn new(head: Head, body: String) -> Self {
         let pdate = head.date;
 
@@ -192,9 +192,12 @@ impl Content {
 impl FromStr for Content {
     type Err = anyhow::Error;
     fn from_str(full_document: &str) -> Result<Self, Self::Err> {
-        let (toml_text, body) = full_document
+        // This is a heavy-handed way of normalizing the document to only use "\n"
+        // for line endings. This simplifies a number of things, including Rhai scripting.
+        let doc = full_document.replace("\r\n", "\n");
+        let (toml_text, body) = doc
             .split_once(DOC_SEPARATOR)
-            .unwrap_or(("title = 'Untitled'", full_document));
+            .unwrap_or(("title = 'Untitled'", &doc));
         let head: Head =
             toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
 

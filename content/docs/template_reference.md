@@ -67,28 +67,6 @@ site:
             published: true
 
 env: # Information about the environment
-    PATH_INFO: "/foo" # The absolute path to this page, from the URI
-    SERVER_PROTOCOL: "HTTP/1.1"
-    REQUEST_METHOD: GET
-    REMOTE_HOST: 172.31.28.227
-    HTTP_HOST: example.com
-    SERVER_NAME: internal.example.com
-    SERVER_PORT: 3000
-    SCRIPT_NAME: /
-    GATEWAY_INTERFACE: CGI/1.1
-    HTTP_X_FORWARDED_PROTO: https
-    REMOTE_ADDR: 172.31.28.227
-    HTTP_X_FORWARDED_PORT: 443
-    PATH_TRANSLATED: "/foo"
-    X_FULL_URL: http:/example.com:3000/
-    HTTP_ACCEPT_LANGUAGE: en-US,en;q=0.9
-    SERVER_SOFTWARE: WAGI/1
-    X_MATCHED_ROUTE: /
-    HTTP_ACCEPT: "text/html"
-    QUERY_STRING: ""
-    HTTP_USER_AGENT: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
-    CONTENT_LENGTH: 0
-    CONTENT_TYPE: ""
 ```
 
 Given the above, for example, you can write a template to create a link to the current page:

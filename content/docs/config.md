@@ -13,7 +13,7 @@ Your site's `config/` directory has one configuration file in it, called `site.t
 title = "Bartholomew"
 # logo = "URL to logo"
 base_url = "http://localhost:3000"
-about = "This site is generated with Bartholomew, the Wagi micro-CMS. And this message is in site.toml."
+about = "This site is generated with Bartholomew, the Spin micro-CMS. And this message is in site.toml."
 
 [extra]
 copyright = "The Site Authors"
@@ -27,7 +27,7 @@ It has a few pre-defined fields:
 
 - title: the title of your website
 - logo: a URL or static path to your logo
-- base_url: a base URL that templates can use to construct full URLs to content. This can be overridden by setting the `-e BASE_URL="https://example.com"` environment variable for Wagi.
+- base_url: a base URL that templates can use to construct full URLs to content. This can be overridden by setting the `-e BASE_URL="https://example.com"` environment variable for Spin.
 - about: a brief description of the site
 
 You can define your own fields in the `[extra]` section. Anything in `[extra]` is not
