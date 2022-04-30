@@ -5,7 +5,7 @@ date = "2022-04-24T21:51:00Z"
 url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/configuration.md"
 ---
 
-Bartholomew can run inside of any CGI environment that supports directly executing Wasm modules. That basically means [Hippo](https://github.com/deislabs/hippo), [Wagi](https://github.com/deislabs/wagi), and [Wagi.net](https://github.com/deislabs/wagi-dotnet). (If you get it running in another environment, please tell us!)
+Bartholomew can run inside of any Spin environment that supports directly executing Wasm modules. That basically means Hippo and Spin. (If you get it running in another environment, please tell us!)
 
 Bartholomew requires that several directories are mounted into the Wasm module:
 
@@ -26,7 +26,7 @@ route = "/..."
 volumes = { "content/" = "content/" , "templates/" = "templates/", "scripts/" = "scripts/", "config/" = "config/"}
 ```
 
-At the time of this writing, Bartholomew does not serve static files. Instead, use the [fileserver](https://github.com/deislabs/wagi-fileserver) for Wagi:
+At the time of this writing, Bartholomew does not serve static files. Instead, use the [fileserver](https://github.com/fermyon/spin-fileserver) for Spin:
 
 ```toml
 [[module]]

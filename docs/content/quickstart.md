@@ -11,27 +11,27 @@ To build Bartholomew from source, just run `make build`, which basically does a 
 
 > `make build` also runs `wasm-opt`, which is part of the [Binaryen](https://webassembly.github.io/binaryen/) project. This reduces the size of the WebAssembly module by optimizing the bytecode.
 
-To run Bartholomew, you will need a Wagi-capable runtime. For example, you can just download a recent release of `Wagi` and put it on your `$PATH`. Then the `make serve` command can start it all up for you.
+To run Bartholomew, you will need a Spin-capable runtime. For example, you can just download a recent release of `Spin` and put it on your `$PATH`. Then the `make serve` command can start it all up for you.
 
 ## Install the Fileserver
 
-Bartholomew uses an external file server called [Wagi-Fileserver](https://github.com/deislabs/wagi-fileserver/releases).
+Bartholomew uses an external file server called [Spin-Fileserver](https://github.com/fermyon/spin-fileserver).
 
 Download the latest release and put it in the `modules/` directory. When you are done, you should see:
 
 ```console
 $ ls modules                                 
-README.md          fileserver.gr.wasm
+README.md          spin_static_fs.wasm
 ```
 
 ## Running Bartholomew
 
-Bartholomew offers multiple ways to run a website as long as you have a wagi-capable runtime:
+Bartholomew offers multiple ways to run a website as long as you have a Spin-capable runtime:
 
-With Wagi:
+With Spin:
 
 ```console
-$ wagi -c modules.toml
+$ spin up
 ```
 
 With make:
@@ -40,13 +40,7 @@ With make:
 $ make serve
 ```
 
-With Hippo:
-
-```console
-$ hippo push
-```
-
-For convenience, `make serve` builds the code and then runs `wagi -c`.
+For convenience, `make serve` builds the code and then runs `spin up`.
 
 ## The Bart CLI
 
@@ -79,4 +73,10 @@ Wrote new post in file content/blog/untitled.md
 Error: One or more pieces of content are invalid
 ```
 
-You will have to install the binary at `/target/releases/bart` onto your `$PATH` to use it. 
+To use the binary, you will have to build Bartholomew from source targeting the `bart/cargo.toml` manifest:
+
+```
+cargo build --release --manifest-file bart/Cargo.toml
+```
+
+The generated binary will show up in the `/target/release/` directory and you will then need to move this artifact onto your `$PATH`.cd 

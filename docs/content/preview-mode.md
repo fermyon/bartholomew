@@ -12,10 +12,10 @@ By default, Bartholomew will not display content that is unpublished. Content is
 
 To view unpublished content, turn on `PREVIEW_MODE`.
 
-Wagi:
+Spin:
 
 ```console
-$ wagi -c modules.toml -e PREVIEW_MODE=1
+$ spin up -e PREVIEW_MODE=1
 ```
 
 Make:
@@ -23,6 +23,3 @@ Make:
 ```console
 $ PREVIEW_MODE=1 make serve
 ```
-Hippo:
-
-Add the environment variable `PREVIEW_MODE=1` to the desired channel.

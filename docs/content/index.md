@@ -13,7 +13,7 @@ Bartholomew has the following features:
 * Create custom templates using the popular Handlebars template language.
 * Build custom template functions in the Rhai scripting language.
 * Generate your first Bartholomew site from our easy site template
-* Deliver static files with the Wagi fileserver.
+* Deliver static files with the Spin fileserver.
 * Get instant SEO optimization with dynamically generated (and easily customizable) Atom syndication, sitemap.xml, and robots.txt files.
 
 ### Overview
