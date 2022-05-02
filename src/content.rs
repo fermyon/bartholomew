@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::fs::{read_dir, DirEntry};
+use std::iter;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -131,6 +132,41 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
     Ok(())
 }
 
+/// Translate links of the form "./<name>.md" and "<name>.md" into "/<name>"
+fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
+    if let Some(dest) = dest.strip_suffix(".md") {
+        if let Some(dest) = dest.strip_prefix("./") {
+            return iter::once('/')
+                .chain(dest.chars())
+                .collect::<String>()
+                .into();
+        } else if !dest.contains('/') {
+            return iter::once('/')
+                .chain(dest.chars())
+                .collect::<String>()
+                .into();
+        }
+    }
+
+    dest
+}
+
+/// Look for relative Markdown links of the form "./<name>.md" or "<name>.md" and translate them into "/<name>"
+///
+/// See also `maybe_translate_relative_link`.
+fn translate_relative_links(event: markdown::Event) -> markdown::Event {
+    match event {
+        markdown::Event::Start(markdown::Tag::Link(markdown::LinkType::Inline, dest, title)) => {
+            markdown::Event::Start(markdown::Tag::Link(
+                markdown::LinkType::Inline,
+                maybe_translate_relative_link(dest),
+                title,
+            ))
+        }
+        _ => event,
+    }
+}
+
 /// The envelope for a page's content
 /// The head contains front matter, while the body is the markdown body of the document.
 pub struct Content {
@@ -182,7 +218,7 @@ impl Content {
 
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
-        let parser = markdown::Parser::new_ext(&self.body, opt);
+        let parser = markdown::Parser::new_ext(&self.body, opt).map(translate_relative_links);
         markdown::html::push_html(&mut buf, parser);
 
         buf
@@ -202,5 +238,26 @@ impl FromStr for Content {
             toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
 
         Ok(Content::new(head, body.to_owned()))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn translate_relative_links() {
+        let input = r#"
+This is a [relative link](./relative.md), but this is a [URL](https://en.wikipedia.org/).
+Here's another [relative link](elsewhere.md), and here's [something else](/foo).
+"#;
+
+        let expected_output = r#"<p>This is a <a href="/relative">relative link</a>, but this is a <a href="https://en.wikipedia.org/">URL</a>.
+Here’s another <a href="/elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.</p>
+"#;
+
+        let actual_output = &Content::new(Head::default(), input.to_string()).render_markdown();
+
+        assert_eq!(expected_output, actual_output)
     }
 }

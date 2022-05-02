@@ -20,6 +20,7 @@ bart:
 
 .PHONY: test
 test:
+	cargo test --all --no-fail-fast -- --nocapture
 	cargo clippy --all-targets --all-features -- -D warnings
 	cargo fmt --all -- --check
 
