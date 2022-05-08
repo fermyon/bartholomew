@@ -38,7 +38,7 @@ pub struct NewPostCommand {
     #[structopt(long = "description")]
     pub description: Option<String>,
     /// Template for the post.
-    #[structopt(long = "template", default_value = "blog")]
+    #[structopt(long = "template", default_value = "main")]
     pub template: String,
     /// Type of the post.
     #[structopt(long = "type", default_value = "post")]
