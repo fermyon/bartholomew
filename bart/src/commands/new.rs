@@ -1,21 +1,23 @@
 use crate::commands::calendar::DOC_SEPARATOR;
-use anyhow::Result;
+use anyhow::{bail, Result};
 use bartholomew::content::{Content, Head};
 use chrono::Utc;
 use std::{collections::HashMap, path::PathBuf};
 use structopt::StructOpt;
-use tokio::{fs::File, io::AsyncWriteExt};
+use tokio::{fs::File, io::AsyncWriteExt, process::Command};
 
 /// Create a new page or website from a template.
 #[derive(StructOpt, Debug)]
 pub enum NewCommand {
     Post(NewPostCommand),
+    Site(NewSiteCommand),
 }
 
 impl NewCommand {
     pub async fn run(self) -> Result<()> {
         match self {
             NewCommand::Post(cmd) => cmd.run().await,
+            NewCommand::Site(cmd) => cmd.run().await,
         }
     }
 }
@@ -97,6 +99,57 @@ Begin with intro paragraph
         println!("Wrote new post in file {}", path.display());
 
         Ok(())
+    }
+}
+
+/// Create a new site from a Bartholomew Git template.
+#[derive(StructOpt, Debug)]
+pub struct NewSiteCommand {
+    /// Path to the directory where to create the new site.
+    pub dir: PathBuf,
+
+    /// Git URL for the Bartholomew template
+    #[structopt(long = "git", short = "g")]
+    pub git: String,
+
+    /// Git branch for the Bartholomew template
+    #[structopt(long = "branch", short = "b")]
+    pub branch: Option<String>,
+}
+
+impl NewSiteCommand {
+    pub async fn run(self) -> Result<()> {
+        self.clone_repo().await
+    }
+
+    async fn clone_repo(&self) -> Result<()> {
+        let mut git = Command::new("git");
+        git.arg("clone");
+
+        if let Some(b) = &self.branch {
+            git.arg("--branch").arg(b);
+        }
+
+        let clone_result = git.arg(&self.git).arg(&self.dir).output().await?;
+        match clone_result.status.success() {
+            true => {
+                println!(
+                    "Successfully created new Bartholomew website in directory {}.",
+                    &self.dir.display()
+                );
+                println!(
+                    "Run spin up --file {}/spin.toml to start your website locally.",
+                    &self.dir.display()
+                );
+                Ok(())
+            }
+            false => bail!(
+                "Error cloning Git repo {}: {}",
+                &self.git,
+                String::from_utf8(clone_result.stderr)
+                    .unwrap_or_else(|_| "(cannot get error)".to_owned())
+            ),
+        }
     }
 }
 
