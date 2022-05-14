@@ -20,7 +20,7 @@ templates.
 
 ## Overview
 
-Bartholomew is built using aa Functions-as-a-Service (FaaS) model, similar to
+Bartholomew is built using as Functions-as-a-Service (FaaS) model, similar to
 one you might find in AWS Lambda or Azure Functions. The CMS is only running when
 it needs to handle incoming requests, reducing the load on the servers
 running it.

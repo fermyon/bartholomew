@@ -123,7 +123,7 @@ Note that we drop the `.hbs` suffix when including this way.
 
 ## Calling template helpers
 
-There are a few template helpers define in Bartholomew.
+There are a few template helpers defined in Bartholomew.
 
 For example, to change a piece of text to all-caps, use the `upper` helper:
 
@@ -133,7 +133,7 @@ For example, to change a piece of text to all-caps, use the `upper` helper:
 
 The above will render `HELLO`.
 
-Note that you can create custom template helpers using [Rhai scripts](/docs/rhai).
+Note that you can create custom template helpers using [Rhai scripts](./scripting.md).
 
 ### Defined helper functions
 

@@ -93,7 +93,7 @@ The above produces:
 - List
 
 Make text italic by wrapping it in underscores: `_hello_` becomes _hello_. And use
-asterisks for bold. `*goodbye*` becomes *goodbye*.
+double asterisks for bold. `**goodbye**` becomes **goodbye**.
 
 There are other Markdown goodies, but one you should know is how to make a link.
 Links are built by putting text in square brackets, and the URL in parentheses.

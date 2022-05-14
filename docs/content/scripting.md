@@ -20,7 +20,7 @@ Rust, Go, and Python. The integration with Bartholomew is easy to work with.
 4. Use it in a template.
 
 For example, let's take a look at the `scripts/echo.rhai` script. Note that because
-it is named `echo.rhai`, it will be accessible inside of templates as `echi` (just remove
+it is named `echo.rhai`, it will be accessible inside of templates as `echo` (just remove
 the `.rhai`).
 
 ```rust
