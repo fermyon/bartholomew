@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::fs::{read_dir, DirEntry};
-use std::iter;
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -136,15 +135,9 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
 fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
     if let Some(dest) = dest.strip_suffix(".md") {
         if let Some(dest) = dest.strip_prefix("./") {
-            return iter::once('/')
-                .chain(dest.chars())
-                .collect::<String>()
-                .into();
+            return format!("/{dest}").into();
         } else if !dest.contains('/') {
-            return iter::once('/')
-                .chain(dest.chars())
-                .collect::<String>()
-                .into();
+            return format!("/{dest}").into();
         }
     }
 
