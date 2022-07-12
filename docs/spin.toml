@@ -1,7 +1,7 @@
-name = "docs-website-template"
+name = "bartholomew-docs"
 spin_version = "1"
 version = "0.1.0"
-description = "Your new documentation website."
+description = "The Bartholomew documentation website"
 authors = [ "Fermyon Engineering <engineering@fermyon.com>" ]
 trigger = { type = "http", base = "/" }
 
