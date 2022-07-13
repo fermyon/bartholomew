@@ -36,3 +36,5 @@ You can define your own fields in the `[extra]` section. Anything in `[extra]` i
 used by the system itself. But it's a useful way to pass information from one central
 place to all of your templates. For example, a template can access the `copyright` value
 using `{{site.info.extra.copyright}}`.
+
+Let's take a look at how you can do something special in your templates [using scripting](./scripting.md).
