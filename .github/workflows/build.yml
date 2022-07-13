@@ -26,3 +26,7 @@ jobs:
       - name: Test
         run: |
           make test
+
+      - name: Check Docs
+        run: |
+          make check-content

@@ -24,6 +24,10 @@ test:
 	cargo clippy --all-targets --all-features -- -D warnings
 	cargo fmt --all -- --check
 
+.PHONY: check-content
+check-content:
+	cd docs && ../target/release/bart check content/**
+
 .PHONY: serve
 serve: build
 serve:
