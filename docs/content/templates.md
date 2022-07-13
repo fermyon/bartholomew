@@ -231,3 +231,5 @@ The following template functions are built into Bartholomew:
 - `lower STRING`: Given a string, return a lowercase version (`lower "Hello World"` prints `hello world`)
 - `now`: Return the current time in the format used by the `date` field
 - `date_format STRING DATE`: Given a [format string](https://docs.rs/chrono/latest/chrono/format/strftime/index.html#specifiers) and a date, format the date. (`date_format "%B %d, %Y" "2022-01-11T20:08:47Z"` produces `January 11, 2022`)
+
+Next, let's dive into [how site configuration works](./configuration.md).
