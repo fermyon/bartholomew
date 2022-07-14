@@ -125,7 +125,7 @@ The final stage of a successfull contribution will be a notification that the PR
 
 At this point you have performed a significant amount of work which is greatly appreciated. 
 
-Thank you for contributing.
+Thank you for contributing!
 
 Please keep in touch and contribute again in the future. We would love to see you back here.
 
