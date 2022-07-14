@@ -73,7 +73,7 @@ git config user.email "youremail@somemail.com"
 
 ## Add changes
 
-Move to a top level directory, underwhich your changes exist i.e. `cd ~/my_bartholomew_contribution/bartholomew`.
+Move to a top level directory, under which your changes exist i.e. `cd ~/my_bartholomew_contribution/bartholomew`.
 
 Add your changes using the following command.
 
