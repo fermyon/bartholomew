@@ -107,6 +107,28 @@ git push -u origin my_new_branch
 
 # Create a Pull Request (PR)
 
+If you return to your GitHub repository in your browser, you will notice that a PR has automatically been generated for you.
+
+![PR for Bartholomew](../static/image/docs/pull-request-I.png)
+
+Clicking on the green "Compare and pull request" button will send your contributions to the original repository for comment, review and merging.
+
+Please keep an eye on the PR; answering any questions as part of the collaboration process.
+
+# Merged
+
+The final stage of a successfull contribution will be a notification that the PR has been merged.
+
+![PR merged](../static/image/docs/merged.png)
+
+## Thank you
+
+At this point you have performed a significant amount of work which is greatly appreciated. 
+
+Thank you for contributing.
+
+Please keep in touch and contribute again in the future. We would love to see you back here.
+
 
 
 
