@@ -111,9 +111,11 @@ If you return to your GitHub repository in your browser, you will notice that a 
 
 ![PR for Bartholomew](../static/image/docs/pull-request-I.png)
 
-Clicking on the green "Compare and pull request" button will send your contributions to the original repository for comment, review and merging.
+Clicking on the green "Compare and pull request" button will allow you to add a title and description as part of the PR. You can also add any information in the textbox provided below the title. For example, screen captures and/or code/console/terminal snippets of your contribution working correctly and/or tests passing etc.
 
-Please keep an eye on the PR; answering any questions as part of the collaboration process.
+There is one final step (another green button to push) ... Create Pull Request!
+
+Once you have finished creating your PR, please keep an eye on the PR; answering any questions as part of the collaboration process.
 
 # Merged
 
