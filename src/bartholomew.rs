@@ -43,8 +43,20 @@ pub fn render(req: Request) -> Result<Response> {
     }
     eprintln!("Base URL: {:?}", &config.base_url);
 
+    let theme_dir: Option<PathBuf>;
+
+    // If a theme is specifed, create theme path
+    if config.theme.is_some() {
+        let mut path: PathBuf = PathBuf::from(THEME_PATH);
+        path.push(config.theme.as_ref().unwrap());
+        theme_dir = Some(PathBuf::from(path));
+    } else {
+        theme_dir = None;
+    }  
+
     let mut engine = template::Renderer::new(
         PathBuf::from(TEMPLATE_PATH),
+        theme_dir,
         PathBuf::from(SCRIPT_PATH),
         PathBuf::from(CONTENT_PATH),
     );
