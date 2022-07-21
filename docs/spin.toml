@@ -15,6 +15,6 @@ route = "/..."
 [[component]]
 source = "modules/spin_static_fs.wasm"
 id = "fileserver"
-files = [ {source = "themes/fermyon/static", destination ="/"}, { source = "static/", destination = "/" }, ]
+files = [{ source = "static/", destination = "/" }, ]
 [component.trigger]
 route = "/static/..."
