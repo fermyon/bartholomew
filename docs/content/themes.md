@@ -31,7 +31,7 @@ To choose a theme for the website, the `theme` attribute in `config/site.toml` m
 title = "Bartholomew Documentation"
 base_url = "http://localhost:3000"
 about = "The Micro-CMS for WebAssembly and Spin"
-theme = "<name of theme>"
+theme = "<theme-directory>"
 
 [extra]
 copyright = "Fermyon"
@@ -79,6 +79,6 @@ Once the git repository is initialized, create the three required directories.
 mkdir templates scripts static
 ```
 
-Create the custom theme by placing the handlebar templates in the `template/` folder while the rhai scripts are places in the `scripts/` folder. All the static assets like the images, js and CSS are placed in the static folder. For reference on creating templates, refer to the [templates section](/templates).
+Create the custom theme by placing the handlebar templates in the `template/` folder while the Rhai scripts are places in the `scripts/` folder. All the static assets like the images, JS and CSS are placed in the static folder. For reference on creating templates, refer to the [templates section](/templates).
 
 Once the required changes are done, commit and push the changes to a remote repository, so as to allow for the theme to cloned as a submodule that can be used for themeing a site. 
