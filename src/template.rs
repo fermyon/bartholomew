@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 use super::content::{Content, Head};
 use handlebars::Handlebars;
-use serde::{Deserialize, Serialize};
 use http::HeaderMap;
+use serde::{Deserialize, Serialize};
 
 use handlebars_sprig;
 
