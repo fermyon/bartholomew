@@ -76,7 +76,7 @@ pub fn render(req: Request) -> Result<Response> {
                 );
                 let err_vals =
                     template::error_values("Not Found", "The requested page was not found.");
-                let body = engine.render_template(err_vals, config)?;
+                let body = engine.render_template(err_vals, config, req.headers().to_owned())?;
                 return response::not_found(path_info, body);
             }
 
@@ -97,7 +97,7 @@ pub fn render(req: Request) -> Result<Response> {
                         .unwrap_or_else(|| DEFAULT_CONTENT_TYPE.to_owned());
 
                     let data = engine
-                        .render_template(doc, config)
+                        .render_template(doc, config, req.headers().to_owned())
                         .map_err(|e| anyhow!("Rendering {:?}: {}", &content_path, e))?;
 
                     let content_encoding = req.headers().get(http::header::ACCEPT_ENCODING);
@@ -108,7 +108,7 @@ pub fn render(req: Request) -> Result<Response> {
         }
         Err(_) => {
             let err_vals = template::error_values("Not Found", "The requested page was not found.");
-            let body = engine.render_template(err_vals, config)?;
+            let body = engine.render_template(err_vals, config, req.headers().to_owned())?;
             response::not_found(path_info, body)
         }
     }

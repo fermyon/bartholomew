@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use super::content::{Content, Head};
 use handlebars::Handlebars;
 use serde::{Deserialize, Serialize};
+use http::HeaderMap;
 
 use handlebars_sprig;
 
@@ -24,7 +25,7 @@ pub struct SiteInfo {
 /// Context for a template render.
 #[derive(Serialize)]
 pub struct TemplateContext {
-    request: RequestValues,
+    request: BTreeMap<String, String>,
     page: PageValues,
     site: SiteValues,
     /// A copy of the environment variables
@@ -39,8 +40,8 @@ pub struct TemplateContext {
     env: BTreeMap<String, String>,
 }
 
-#[derive(Serialize)]
-pub struct RequestValues {}
+// #[derive(Serialize)]
+// pub struct RequestValues {}
 
 /// Information about the site, including site info and all of the pages.
 #[derive(Serialize)]
@@ -128,6 +129,7 @@ impl<'a> Renderer<'a> {
         &self,
         values: T,
         info: SiteInfo,
+        request: HeaderMap,
     ) -> anyhow::Result<String> {
         let page: PageValues = values.into();
         let tpl = page
@@ -136,9 +138,15 @@ impl<'a> Renderer<'a> {
             .clone()
             .unwrap_or_else(|| DEFAULT_TEMPLATE.to_owned());
 
+        let mut request_headers: BTreeMap<String, String> = BTreeMap::new();
+        for (key, value) in request.iter() {
+            let val = value.to_str()?;
+            request_headers.insert(String::from(key.as_str()), String::from(val));
+        }
+
         let ctx = TemplateContext {
             page,
-            request: RequestValues {},
+            request: request_headers,
             site: SiteValues {
                 info,
                 // Right now, we literally include ALL OF THE CONTENT in its rendered
