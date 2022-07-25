@@ -119,4 +119,104 @@ from the `page` object.
 
 That's how you can use Rhai to add custom formatters to the site.
 
+## Building on the example.
+
+When a site has a lot of blog posts, it would make sense to implement pagination for the content. This will introduce the idea of working with objects and nesting function calls. 
+
+Firstly, we will need need a script to parse the URL to obtain the page number to generate the pagination list.
+```rust
+let full_url = params[0];
+let query_params = #{page: 0};
+let query_string;
+let query_param;
+
+if full_url.contains("?") {
+    // Get the query string
+    query_string = full_url.sub_string(full_url.index_of("?") + 1);
+    do {
+        // Seperate by parameters
+        if query_string.contains("&") {
+            query_param = query_string.sub_string(0, query_string.index_of("&"));
+            query_string = query_string.sub_string(query_string.index_of("&") + 1);
+        } else {
+            query_param = query_string;
+            query_string.clear();
+        }
+        // set the page parameter to the value from the url
+        if query_param.sub_string(0, query_param.index_of("=")) == "page" {
+            try {
+            query_params.page = parse_int(query_param.sub_string(query_param.index_of("=") + 1));
+            } catch {
+                query_params.page = 0;
+            }
+        }
+    } while ( query_string.len() > 0)
+}
+
+// Return the query_params
+query_params
+```
+The script above currently return an object containing only the page parameter. It can be easily extended to include other parameters as required. To access the object inside handlebars template, the following can be used.
+
+```html
+{{#with (url_query_params request.spin-full-url)}}
+    <span> Page number: {{page}} </span> 
+{{/with}}
+```
+
+The `#with` keyword brings the parameters of the object into the context of the template part allowing to be directly used.
+
+The next step to create pagination would be to create the logic for pagination.
+
+```rust
+let arr = params[0];
+let index = params[1];
+let offset = params[2];
+
+let pagination = #{
+    prev: "",
+    next: "",
+    subarr: []
+};
+
+pagination.subarr = arr.extract(index * offset, offset);
+
+if (arr.len > (index*offset) + offset ) {
+    pagination.next = index + 1;
+}
+
+if index > 0 {
+    if (arr.len < index*offset) {
+        pagination.prev = arr.len/offset;
+    }
+    else {
+        pagination.prev = index - 1;
+    }
+}
+pagination
+```
+
+This script allows takes in 3 arguments, one for the array to paginate, one for the index and the last one for the offset and provides a pagination object with the sub array along with the index to the current and previous index. The pagination object can be used to create the listing along with the navigation.
+
+```html
+{{#with (url_query_params request.spin-full-url)}}
+    {{#with (pagination (blog site.pages) page 2)}}
+        <div class="p-4">
+            <h4 class="fst-italic">Posts</h4>
+            <ol class="list-unstyled mb-0">
+                {{#each subarray}}<li><a href="{{uri}}">{{page.head.title}}</a></li>
+                {{/each }}
+            </ol>
+            {{#if prev}}
+                <a href="/blog?page={{prev}}">Previous</a>
+            {{/if}}
+            {{#if next}}
+                <a href="/blog?page={{next}}">Next</a>
+            {{/if}}
+        </div>
+    {{/with}}
+{{/with}}
+```
+
+
 No site would be complete without quality content, so let's take a look at the [markdown guide](./markdown.md) which will help you create and format your awesome content.
