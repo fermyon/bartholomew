@@ -9,10 +9,14 @@ use pulldown_cmark as markdown;
 
 use crate::template::PageValues;
 
+use handlebars::Handlebars;
+
 const DOC_SEPARATOR: &str = "\n---\n";
 
+const SHORTCODE_PATH: &str = "/shortcodes/";
+
 /// Head contains the front matter for a document
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize, Debug)]
 pub struct Head {
     /// The title of the document
     pub title: String,
@@ -52,6 +56,8 @@ pub struct Head {
     ///
     /// If no status code is set, this will set the status code to 301 Moved Permanently
     pub redirect: Option<String>,
+
+    pub enable_shortcodes: Option<bool>,
     /// A map of string/string pairs that are user-customizable.
     pub extra: Option<HashMap<String, String>>,
 }
@@ -180,15 +186,16 @@ pub struct Content {
     ///
     /// Practically speaking, what this means is that content is published by default.
     pub published: bool,
+    pub shortcode_dir: PathBuf,
 }
 
-impl Content {
+impl<'a> Content {
     /// Create new content from a head and a body.
     ///
     /// This determines published state based on the head.
     ///
     /// The environment is copied from the system environment. This is safe when executed inside of Spin or a WASI runtime.
-    pub fn new(head: Head, body: String) -> Self {
+    pub fn new(head: Head, body: String, shortcode_dir: PathBuf) -> Self {
         let pdate = head.date;
 
         // If explicitly published in the front matter, mark it published
@@ -202,23 +209,67 @@ impl Content {
             head,
             body,
             published,
+            shortcode_dir,
         }
+    }
+    pub fn load_shortcode_dir(&mut self, handlebar: &mut handlebars::Handlebars) -> anyhow::Result<()> {
+        // TODO: rewrite all_files so we don't need to clone here.
+        let scripts = all_files(self.shortcode_dir.clone())?;
+        for script in scripts {
+            // Relative file name without extension. Note that we skip any file
+            // that doesn't have this.
+            if let Some(fn_name) = script.file_stem() {
+                eprintln!(
+                    "shortcodes: registering {}",
+                    fn_name.to_str().unwrap_or("unknown")
+                );
+                handlebar
+                    .register_script_helper_file(&fn_name.to_string_lossy(), &script)
+                    .map_err(|e| anyhow::anyhow!("Shortcode {:?}: {}", &script, e))?;
+            }
+        }
+        Ok(())
     }
 
     /// Render the body using a Markdown renderer
-    pub fn render_markdown(&self) -> String {
+    pub fn render_markdown(&mut self) -> String {
         let mut buf = String::new();
-
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
-        let parser = markdown::Parser::new_ext(&self.body, opt).map(translate_relative_links);
+
+        let out;
+
+        if self.head.enable_shortcodes == Some(true) {
+            println!("ENabling shirtcodes");
+            let mut handlebars = Handlebars::new();
+            let _ = &self.load_shortcode_dir(&mut handlebars).unwrap();
+
+            // don't escape HTML so that rhai scripts can return html that will
+            // be rendered as HTML
+            let _ = handlebars.register_escape_fn(handlebars::no_escape);
+
+            // run the markdown through the template engine to
+            // enable any script helpers
+            out = handlebars
+                .render_template(&self.body, &{})
+                .unwrap_or_else(|e| {
+                    // print the error
+                    eprintln!("Error rendering markdown: {}", e);
+                    // return nothing
+                    e.to_string()
+                });
+        } else {
+            println!("Disabling shirtcodes");
+            out = self.body.clone();
+        }
+        let parser = markdown::Parser::new_ext(&out, opt).map(translate_relative_links);
         markdown::html::push_html(&mut buf, parser);
 
         buf
     }
 }
 
-impl FromStr for Content {
+impl<'a> FromStr for Content {
     type Err = anyhow::Error;
     fn from_str(full_document: &str) -> Result<Self, Self::Err> {
         // This is a heavy-handed way of normalizing the document to only use "\n"
@@ -230,7 +281,11 @@ impl FromStr for Content {
         let head: Head =
             toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
 
-        Ok(Content::new(head, body.to_owned()))
+        Ok(Content::new(
+            head,
+            body.to_owned(),
+            PathBuf::from(SHORTCODE_PATH),
+        ))
     }
 }
 
@@ -249,7 +304,12 @@ Here's another [relative link](elsewhere.md), and here's [something else](/foo).
 Here’s another <a href="/elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.</p>
 "#;
 
-        let actual_output = &Content::new(Head::default(), input.to_string()).render_markdown();
+        let actual_output = &Content::new(
+            Head::default(),
+            input.to_string(),
+            PathBuf::from(SHORTCODE_PATH),
+        )
+        .render_markdown();
 
         assert_eq!(expected_output, actual_output)
     }

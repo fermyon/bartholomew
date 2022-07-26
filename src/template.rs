@@ -58,8 +58,8 @@ pub struct PageValues {
     pub published: bool,
 }
 
-impl From<Content> for PageValues {
-    fn from(c: Content) -> Self {
+impl<'a> From<Content<>> for PageValues {
+    fn from(mut c: Content) -> Self {
         PageValues {
             body: c.render_markdown(),
             head: c.head,
@@ -204,6 +204,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             content_type: None,
             status: None,
             redirect: None,
+            enable_shortcodes: None
         },
         body: msg.to_string(),
         published: true,
