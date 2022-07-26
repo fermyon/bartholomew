@@ -79,7 +79,6 @@ pub fn all_pages(
     dir: PathBuf,
     show_unpublished: bool,
 ) -> anyhow::Result<BTreeMap<String, PageValues>> {
-
     let files = all_files(dir)?;
     let mut contents = BTreeMap::new();
     for f in files {
@@ -114,7 +113,6 @@ pub fn all_pages(
 /// Note that this will return files that contain unpublished content, as publish state cannot be determined
 /// until a file has been read.
 pub fn all_files(dir: PathBuf) -> anyhow::Result<Vec<PathBuf>> {
-
     let mut files = vec![];
     let mut cb = |d: &DirEntry| {
         files.push(d.path());
