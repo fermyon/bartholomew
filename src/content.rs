@@ -244,7 +244,7 @@ impl Content {
 
             // don't escape HTML so that rhai scripts can return html that will
             // be rendered as HTML
-            let _ = handlebars.register_escape_fn(handlebars::no_escape);
+            handlebars.register_escape_fn(handlebars::no_escape);
 
             // run the markdown through the template engine to
             // enable any script helpers
