@@ -58,7 +58,7 @@ pub struct PageValues {
     pub published: bool,
 }
 
-impl<'a> From<Content<>> for PageValues {
+impl<'a> From<Content> for PageValues {
     fn from(mut c: Content) -> Self {
         PageValues {
             body: c.render_markdown(),
@@ -135,7 +135,6 @@ impl<'a> Renderer<'a> {
             .template
             .clone()
             .unwrap_or_else(|| DEFAULT_TEMPLATE.to_owned());
-
         let ctx = TemplateContext {
             page,
             request: RequestValues {},
@@ -156,6 +155,7 @@ impl<'a> Renderer<'a> {
             // Copy the WASI env into the env template var.
             env: std::env::vars().collect(),
         };
+
         let out = self
             .handlebars
             .render(&tpl, &ctx)
@@ -204,7 +204,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             content_type: None,
             status: None,
             redirect: None,
-            enable_shortcodes: None
+            enable_shortcodes: None,
         },
         body: msg.to_string(),
         published: true,

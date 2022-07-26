@@ -79,6 +79,7 @@ pub fn all_pages(
     dir: PathBuf,
     show_unpublished: bool,
 ) -> anyhow::Result<BTreeMap<String, PageValues>> {
+
     let files = all_files(dir)?;
     let mut contents = BTreeMap::new();
     for f in files {
@@ -113,6 +114,7 @@ pub fn all_pages(
 /// Note that this will return files that contain unpublished content, as publish state cannot be determined
 /// until a file has been read.
 pub fn all_files(dir: PathBuf) -> anyhow::Result<Vec<PathBuf>> {
+
     let mut files = vec![];
     let mut cb = |d: &DirEntry| {
         files.push(d.path());
@@ -186,7 +188,6 @@ pub struct Content {
     ///
     /// Practically speaking, what this means is that content is published by default.
     pub published: bool,
-    pub shortcode_dir: PathBuf,
 }
 
 impl<'a> Content {
@@ -195,7 +196,7 @@ impl<'a> Content {
     /// This determines published state based on the head.
     ///
     /// The environment is copied from the system environment. This is safe when executed inside of Spin or a WASI runtime.
-    pub fn new(head: Head, body: String, shortcode_dir: PathBuf) -> Self {
+    pub fn new(head: Head, body: String) -> Self {
         let pdate = head.date;
 
         // If explicitly published in the front matter, mark it published
@@ -209,12 +210,14 @@ impl<'a> Content {
             head,
             body,
             published,
-            shortcode_dir,
         }
     }
-    pub fn load_shortcode_dir(&mut self, handlebar: &mut handlebars::Handlebars) -> anyhow::Result<()> {
+    pub fn load_shortcode_dir(
+        &mut self,
+        handlebar: &mut handlebars::Handlebars,
+    ) -> anyhow::Result<()> {
         // TODO: rewrite all_files so we don't need to clone here.
-        let scripts = all_files(self.shortcode_dir.clone())?;
+        let scripts = all_files(PathBuf::from(SHORTCODE_PATH))?;
         for script in scripts {
             // Relative file name without extension. Note that we skip any file
             // that doesn't have this.
@@ -236,11 +239,8 @@ impl<'a> Content {
         let mut buf = String::new();
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
-
-        let out;
-
-        if self.head.enable_shortcodes == Some(true) {
-            println!("ENabling shirtcodes");
+        let out: String;
+        let parser = if self.head.enable_shortcodes == Some(true) {
             let mut handlebars = Handlebars::new();
             let _ = &self.load_shortcode_dir(&mut handlebars).unwrap();
 
@@ -258,11 +258,10 @@ impl<'a> Content {
                     // return nothing
                     e.to_string()
                 });
+            markdown::Parser::new_ext(&out, opt).map(translate_relative_links)
         } else {
-            println!("Disabling shirtcodes");
-            out = self.body.clone();
-        }
-        let parser = markdown::Parser::new_ext(&out, opt).map(translate_relative_links);
+            markdown::Parser::new_ext(&self.body, opt).map(translate_relative_links)
+        };
         markdown::html::push_html(&mut buf, parser);
 
         buf
@@ -281,11 +280,7 @@ impl<'a> FromStr for Content {
         let head: Head =
             toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
 
-        Ok(Content::new(
-            head,
-            body.to_owned(),
-            PathBuf::from(SHORTCODE_PATH),
-        ))
+        Ok(Content::new(head, body.to_owned()))
     }
 }
 
@@ -304,12 +299,7 @@ Here's another [relative link](elsewhere.md), and here's [something else](/foo).
 Here’s another <a href="/elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.</p>
 "#;
 
-        let actual_output = &Content::new(
-            Head::default(),
-            input.to_string(),
-            PathBuf::from(SHORTCODE_PATH),
-        )
-        .render_markdown();
+        let actual_output = &Content::new(Head::default(), input.to_string()).render_markdown();
 
         assert_eq!(expected_output, actual_output)
     }
