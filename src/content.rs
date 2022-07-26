@@ -16,7 +16,7 @@ const DOC_SEPARATOR: &str = "\n---\n";
 const SHORTCODE_PATH: &str = "/shortcodes/";
 
 /// Head contains the front matter for a document
-#[derive(Default, Deserialize, Serialize, Debug)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct Head {
     /// The title of the document
     pub title: String,
@@ -190,7 +190,7 @@ pub struct Content {
     pub published: bool,
 }
 
-impl<'a> Content {
+impl Content {
     /// Create new content from a head and a body.
     ///
     /// This determines published state based on the head.
@@ -268,7 +268,7 @@ impl<'a> Content {
     }
 }
 
-impl<'a> FromStr for Content {
+impl FromStr for Content {
     type Err = anyhow::Error;
     fn from_str(full_document: &str) -> Result<Self, Self::Err> {
         // This is a heavy-handed way of normalizing the document to only use "\n"

@@ -1,6 +1,5 @@
 title = "Scripting guide"
 date = "2022-05-08T14:05:02.118466Z"
-enable_shortcodes = true
 
 [extra]
 url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/scripting.md"
@@ -41,7 +40,7 @@ That's all there is to a simple Rhai script.
 From a template, we can then use this script like this:
 
 ```
-{{ echo "world" }}
+\{{ echo "world" }}
 ```
 
 When we run the template, we will see:
