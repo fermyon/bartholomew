@@ -11,6 +11,8 @@ The screenshot below shows how Bartholomew is implemented as the official Fermyo
 
 Check out [the docs](https://bartholomew.fermyon.dev/) and please raise any issues or ask any questions; we are here to help :)
 
+------
+
 ### Option 1: Get the Bartholomew site template & latest release of Bartholomew
 
 The easiest way to start is to get the [Bartholomew site template](https://github.com/fermyon/bartholomew-site-template) and then download the [latest release of Bartholomew](https://github.com/fermyon/bartholomew/releases).
@@ -45,6 +47,7 @@ Once you have used the aforementioned `make build` command you will be able to v
 ls /home/my_bartholomew_installation/bartholomew/target/wasm32-wasi/release
 bartholomew.d       bartholomew.wasm    build           deps            examples        incremental     libbartholomew.d    libbartholomew.rlib
 ```
+------
 
 ### Building the Bartholomew Command Line Interface (CLI) tool
 
