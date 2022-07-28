@@ -8,13 +8,13 @@ trigger = { type = "http", base = "/" }
 [[component]]
 source = "modules/bartholomew.wasm"
 id = "bartholomew"
-files = [ "content/**/*" , "templates/*", "scripts/*", "config/*"]
+files = [ "content/**/*" , "templates/*", "themes/**/*", "scripts/*", "config/*"]
 [component.trigger]
 route = "/..."
 
 [[component]]
 source = "modules/spin_static_fs.wasm"
 id = "fileserver"
-files = [ { source = "static/", destination = "/" } ]
+files = [{ source = "static/", destination = "/" }, ]
 [component.trigger]
 route = "/static/..."

@@ -19,6 +19,7 @@ pub struct SiteInfo {
     pub logo: Option<String>,
     pub base_url: Option<String>,
     pub about: Option<String>,
+    pub theme: Option<String>,
     pub extra: BTreeMap<String, String>,
 }
 
@@ -72,6 +73,7 @@ impl From<Content> for PageValues {
 /// Renderer can execute a handlebars template and render the results into HTML.
 pub struct Renderer<'a> {
     pub template_dir: PathBuf,
+    pub theme_dir: Option<PathBuf>,
     pub script_dir: PathBuf,
     pub content_dir: PathBuf,
     pub show_unpublished: bool,
@@ -80,9 +82,15 @@ pub struct Renderer<'a> {
 
 impl<'a> Renderer<'a> {
     /// Create a new renderer with the necessary directories attached.
-    pub fn new(template_dir: PathBuf, script_dir: PathBuf, content_dir: PathBuf) -> Self {
+    pub fn new(
+        template_dir: PathBuf,
+        theme_dir: Option<PathBuf>,
+        script_dir: PathBuf,
+        content_dir: PathBuf,
+    ) -> Self {
         Renderer {
             template_dir,
+            theme_dir,
             script_dir,
             content_dir,
             show_unpublished: false,
@@ -98,6 +106,15 @@ impl<'a> Renderer<'a> {
     /// Load the template directory.
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
         self.register_helpers();
+
+        // If there is a theme, load the templates provided by it first
+        // Allows for user defined tempaltes to take precedence
+        if self.theme_dir.is_some() {
+            let mut templates = self.theme_dir.as_ref().unwrap().to_owned();
+            templates.push("templates");
+            self.handlebars
+                .register_templates_directory(".hbs", templates)?;
+        }
         self.handlebars
             .register_templates_directory(".hbs", &self.template_dir)?;
         Ok(())
@@ -105,8 +122,18 @@ impl<'a> Renderer<'a> {
 
     /// Load the scripts directory
     pub fn load_script_dir(&mut self) -> anyhow::Result<()> {
+        let mut theme_scripts: Vec<PathBuf> = Vec::new();
+
+        // If theme has scripts,load it first to follow proper precedence
+        if self.theme_dir.is_some() {
+            let mut theme_scripts_path = self.theme_dir.as_ref().unwrap().to_owned();
+            theme_scripts_path.push("scripts");
+            theme_scripts = crate::content::all_files(theme_scripts_path)?;
+        }
+        let user_scripts = crate::content::all_files(self.script_dir.clone())?;
         // TODO: rewrite all_files so we don't need to clone here.
-        let scripts = crate::content::all_files(self.script_dir.clone())?;
+        let scripts = [theme_scripts, user_scripts].concat();
+
         for script in scripts {
             // Relative file name without extension. Note that we skip any file
             // that doesn't have this.
