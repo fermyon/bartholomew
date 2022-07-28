@@ -7,7 +7,9 @@ The screenshot below shows how Bartholomew is implemented as the official Fermyo
 
 ![Bartholomew screenshot](docs/static/image/bartholomew-screenshot.png)
 
-Check out [the docs](https://bartholomew.fermyon.dev/)
+## Bartholomew documentation
+
+Check out [the docs](https://bartholomew.fermyon.dev/) and please raise any issues or ask any questions; we are here to help :)
 
 ## Getting Bartholomew
 
