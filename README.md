@@ -107,6 +107,23 @@ cd /home/my_new_cms
 /home/my_bartholomew_installation/bartholomew/target/release/bart check content/*
 ```
 
+The output from the above command is as follows.
+
+```
+✅ content/about.md
+✅ content/atom.md
+✅ content/code-of-conduct.md
+✅ content/index.md
+✅ content/open-source-promise.md
+✅ content/platform.md
+✅ content/privacy-policy.md
+✅ content/robots.md
+✅ content/sitemap.md
+✅ content/tag.md
+✅ content/thanks.md
+✅ content/values.md
+```
+
 ### Check blog posts
 
 ```bash
@@ -116,6 +133,33 @@ cd /home/my_new_cms/content
 /home/my_bartholomew_installation/bartholomew/target/release/bart check blog/*
 ```
 
+The output from the above command is as follows (albeit snipped a little to save space)
+
+```
+✅ content/blog/2022-02-08-hello-world.md
+✅ content/blog/bindle-what-is-it.md
+✅ content/blog/dockercon.md
+✅ content/blog/dont-repatriate-servers.md
+✅ content/blog/dotnet-wasi.md
+✅ content/blog/fermyon-discord.md
+✅ content/blog/finicky-whiskers-part-1-intro.md
+✅ content/blog/finicky-whiskers-part-2-fileserver.md
+✅ content/blog/finicky-whiskers-part-3-microservices.md
+✅ content/blog/finicky-whiskers-part-4-infrastructure.md
+
+/// snip ///
+
+✅ content/blog/spin-v03.md
+✅ content/blog/spin-webhooks.md
+✅ content/blog/tinygo-webassembly-favicon-server.md
+✅ content/blog/wasm-builders-announcement.md
+✅ content/blog/wasm-day.md
+✅ content/blog/wasm-wasi-wagi.md
+✅ content/blog/webassembly-component-model.md
+✅ content/blog/webassembly-languages.md
+✅ content/blog/webassembly-vs-containers.md
+✅ content/blog/why-and-how-wasm-cms-bartholomew.md
+```
 
 ## The relationship between Bartholomew and Spin
 
