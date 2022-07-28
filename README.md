@@ -5,25 +5,121 @@ to WebAssembly, and can run in any Spin-capable system.
 
 ![Bartholomew screenshot](static/bartholomew-screenshot.png)
 
-Check out [the docs](/content/docs)
+Check out [the docs](https://bartholomew.fermyon.dev/)
 
 ## Getting Bartholomew
 
 The easiest way to start is to get the [Bartholomew site template](https://github.com/fermyon/bartholomew-site-template) and then download the [latest release of Bartholomew](https://github.com/fermyon/bartholomew/releases).
 
-### Building from Source
+### Building the Bartholomew Server from Source
 
-To build Bartholomew from source, just run `make build`, which basically does a
-`cargo build --target wasm32-wasi --release`.
+Create (and change into) a new directory where you would like to install Bartholomew.
+
+```bash
+mkdir /home/my_bartholomew_installation
+cd /home/my_bartholomew_installation
+```
+
+To build the Bartholomew Server from source, clone the source code from [the repository](https://github.com/fermyon/bartholomew), change into the newly created directory and build it.
+
+```bash
+cd /home/my_bartholomew_installation/bartholomew
+make build
+```
+
+The `make build` command basically does a `cargo build --target wasm32-wasi --release`.
 
 > `make build` also runs `wasm-opt`, which is part of the [Binaryen](https://webassembly.github.io/binaryen/) project.
 > This reduces the size of the WebAssembly module by optimizing the bytecode.
 
-To run Bartholomew, you will need a Spin-capable runtime.
-For example, you can just download a recent release of [Spin](https://github.com/fermyon/spin) and put it on your `$PATH`.
+Once you have used the aforementioned `make build` command you will be able to view some newly created files in your `/home/my_bartholomew_installation/bartholomew/target/wasm32-wasi/release` directory.
+
+```
+ls /home/my_bartholomew_installation/bartholomew/target/wasm32-wasi/release
+bartholomew.d       bartholomew.wasm    build           deps            examples        incremental     libbartholomew.d    libbartholomew.rlib
+```
+
+### Building the Bartholomew Command Line Interface (CLI) tool
+
+The `bart` CLI is something that you could/would use a lot i.e. it can be used to create a new blog post using a single line command.
+
+To build the Bartholomew CLI from source, perform the following commands
+
+```bash
+cd /home/my_bartholomew_installation/bartholomew
+make bart
+```
+
+Once built, you will find the very useful `bart` CLI executable in the `/home/my_bartholomew_installation/bartholomew/target/release` directory. 
+
+For more information about how to use the CLI, please type `/home/my_bartholomew_installation/bartholomew/target/release --help`, as shown below.
+
+```bash
+/home/my_bartholomew_installation/bartholomew/target/release/bart --help    
+bart 0.1.0
+The Bartholomew CLI
+
+USAGE:
+    bart <SUBCOMMAND>
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+SUBCOMMANDS:
+    calendar    Print the content calendar for a Bartholomew website
+    check       Check content and identify errors or warnings
+    help        Prints this message or the help of the given subcommand(s)
+    new         Create a new page or website from a template
+```
+
+The Bartholomew CLI also has some other great features i.e. the `bart` command can automatically check content (i.e. parse your web page and/or blog post markdown files) and identify & report any issues. See example of test output below
+
+```
+✅ content/about.md
+✅ content/atom.md
+✅ content/code-of-conduct.md
+✅ content/index.md
+✅ content/open-source-promise.md
+✅ content/platform.md
+✅ content/privacy-policy.md
+✅ content/robots.md
+✅ content/sitemap.md
+✅ content/tag.md
+✅ content/thanks.md
+✅ content/values.md
+```
+
+Please note that when you use the `bart` command to check content you must use the following procedure.
+
+First, go to your actual CMS's location on the file system and change into the directory directly above where the `.md` content (to be analysed) is housed. Once at this location then call the `bart` command by explicitly mentioning the directory which houses the `.md` files. Here are two examples.
+
+### Check web pages
+
+```bash
+# Note we are inside the actual CMS where we create our content for our site which we publish
+cd /home/my_new_cms
+# Note the "bart check" command is being run, as an absolute path, from where we installed bartholomew from source (notice how we are passing in the "content/*" as a parameter to bart's "check" subcommand).
+/home/my_bartholomew_installation/bartholomew/target/release/bart check content/*
+```
+
+### Check blog posts
+
+```bash
+# Note that we are still inside the CMS, just one level deeper to that we can now check the blog md files instead
+cd /home/my_new_cms/content
+# Note the "bart check" command is still being run, as an absolute path, from where we installed bartholomew from source (notice how we are passing in the "blog/*" as a parameter to bart's "check" subcommand this time around).
+/home/my_bartholomew_installation/bartholomew/target/release/bart check blog/*
+```
+
+
+## The relationship between Bartholomew and Spin
+
+To run Bartholomew, you will need a Spin-capable runtime. For example, you can just download a recent release of [Spin](https://github.com/fermyon/spin) and put it on your `$PATH`.
+
 Then the `make serve` command can start it all up for you.
 
-### Install the Fileserver
+### The relationship between Bartholomew and the Spin Fileserver
 
 Bartholomew uses an external file server called [Spin-Fileserver](https://github.com/fermyon/spin-fileserver).
 
