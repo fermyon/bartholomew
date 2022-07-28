@@ -11,11 +11,14 @@ The screenshot below shows how Bartholomew is implemented as the official Fermyo
 
 Check out [the docs](https://bartholomew.fermyon.dev/) and please raise any issues or ask any questions; we are here to help :)
 
-## Getting Bartholomew
+### Option 1: Get the Bartholomew site template & latest release of Bartholomew
 
 The easiest way to start is to get the [Bartholomew site template](https://github.com/fermyon/bartholomew-site-template) and then download the [latest release of Bartholomew](https://github.com/fermyon/bartholomew/releases).
 
-### Building the Bartholomew Server from Source
+**Note:** To ensure that your Bartholomew site template is actually running the latest release of Bartholomew, is recommended that you copy the `bartholomew.wasm` file (which you just downloaded as part of the latest release of Bartholomew) to the following location (in the Bartholomew site template that you also just downloaded) `bartholomew-site-template/modules/bartholomew.wasm`.
+
+
+### Option 2: Building the Bartholomew Server from Source
 
 Create (and change into) a new directory where you would like to install Bartholomew.
 
@@ -45,7 +48,7 @@ bartholomew.d       bartholomew.wasm    build           deps            examples
 
 ### Building the Bartholomew Command Line Interface (CLI) tool
 
-The `bart` CLI is something that you could/would use a lot i.e. it can be used to create a new blog post using a single line command.
+The `bart` CLI is a useful tool i.e. it can be used to create a new blog post using a single line command and more. Installing the Bartholomew CLI is a separate task, over and above the aforementioned installation documentation in this document. Installing the Bartholomew CLI is worth it, so take a few seconds to make it happen.
 
 To build the Bartholomew CLI from source, perform the following commands
 
@@ -98,7 +101,7 @@ Please note that when you use the `bart` command to check content you must use t
 
 First, go to your actual CMS's location on the file system and change into the directory directly above where the `.md` content (to be analysed) is housed. Once at this location then call the `bart` command by explicitly mentioning the directory which houses the `.md` files. Here are two examples.
 
-### Check web pages
+#### Check web pages
 
 ```bash
 # Note we are inside the actual CMS where we create our content for our site which we publish
@@ -124,7 +127,7 @@ The output from the above command is as follows.
 ✅ content/values.md
 ```
 
-### Check blog posts
+#### Check blog posts
 
 ```bash
 # Note that we are still inside the CMS, just one level deeper to that we can now check the blog md files instead
@@ -161,7 +164,7 @@ The output from the above command is as follows (albeit snipped a little to save
 ✅ content/blog/why-and-how-wasm-cms-bartholomew.md
 ```
 
-## The relationship between Bartholomew and Spin
+### The relationship between Bartholomew and Spin
 
 To run Bartholomew, you will need a Spin-capable runtime. For example, you can just download a recent release of [Spin](https://github.com/fermyon/spin) and put it on your `$PATH`.
 
@@ -171,12 +174,7 @@ Then the `make serve` command can start it all up for you.
 
 Bartholomew uses an external file server called [Spin-Fileserver](https://github.com/fermyon/spin-fileserver).
 
-Build the WebAssembly module and copy it in the `modules/` directory. When you are done, you should see:
-
-```console
-$ ls modules                                 
-README.md          spin_static_fs.wasm
-```
+Please build the spin-fileserver and then copy the resulting `spin_static_fs.wasm` file into the `modules/` directory. This will ensure that you are running the latest release of the spin-fileserver.
 
 ## Running Bartholomew
 
