@@ -3,7 +3,9 @@
 Bartholomew is a simple CMS-like tool for hosting a website. It is compiled entirely
 to WebAssembly, and can run in any Spin-capable system.
 
-![Bartholomew screenshot](static/bartholomew-screenshot.png)
+The screenshot below shows how Bartholomew is implemented as the official Fermyon website.
+
+![Bartholomew screenshot](docs/static/image/bartholomew-screenshot.png)
 
 Check out [the docs](https://bartholomew.fermyon.dev/)
 
