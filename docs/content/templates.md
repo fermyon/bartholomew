@@ -85,8 +85,7 @@ This part of the API may change in the future, as it does not scale terribly wel
 
 ### The `env` object
 
-The third top-level object is `env`, which holds all of the environment data, including details about
-the HTTP request, the path of this resource, and other Spin information.
+The third top-level object is `env`, which holds all of the environment data.
 
 The `env` object is a set of keys and values:
 
