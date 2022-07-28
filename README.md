@@ -56,7 +56,7 @@ make bart
 
 Once built, you will find the very useful `bart` CLI executable in the `/home/my_bartholomew_installation/bartholomew/target/release` directory. 
 
-For more information about how to use the CLI, please type `/home/my_bartholomew_installation/bartholomew/target/release --help`, as shown below.
+For more information about how to use the CLI, please type `/home/my_bartholomew_installation/bartholomew/target/release/bart --help`, as shown below.
 
 ```bash
 /home/my_bartholomew_installation/bartholomew/target/release/bart --help    
