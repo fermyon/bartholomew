@@ -9,6 +9,7 @@ use std::io::Write;
 
 pub const CONTENT_PATH: &str = "/content/";
 pub const TEMPLATE_PATH: &str = "/templates/";
+pub const THEME_PATH: &str = "/themes/";
 pub const SCRIPT_PATH: &str = "/scripts/";
 pub const CONFIG_FILE: &str = "/config/site.toml";
 

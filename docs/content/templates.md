@@ -107,7 +107,29 @@ You can dump the entire contents of `env` using a template like this:
 </ul>
 ```
 
-Note that very little data validation is done on incoming environment variables, so you should validate or scrub any values before showing them to the user.
+### The `request` object
+
+The fourth top-level object is `request`, which holds all the details about
+the HTTP request, the path of this resource, and other Spin information.
+
+The `request` object is a set of keys and values:
+
+```
+{
+    spin-full-url: "http://localhost:3000/test"
+    ...
+}
+```
+
+You can dump the entire contents of `request` using a template like this:
+
+```
+<ul>
+    {{#each request}}
+    <li><code>{{@key}}</code>: <code>"{{this}}"</code></li>
+    {{/each}}
+</ul>
+```
 
 ## Including a template
 

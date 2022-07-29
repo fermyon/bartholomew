@@ -3,6 +3,7 @@ use std::path::PathBuf;
 
 use super::content::{Content, Head};
 use handlebars::Handlebars;
+use http::HeaderMap;
 use serde::{Deserialize, Serialize};
 
 use handlebars_sprig;
@@ -18,13 +19,14 @@ pub struct SiteInfo {
     pub logo: Option<String>,
     pub base_url: Option<String>,
     pub about: Option<String>,
+    pub theme: Option<String>,
     pub extra: BTreeMap<String, String>,
 }
 
 /// Context for a template render.
 #[derive(Serialize)]
 pub struct TemplateContext {
-    request: RequestValues,
+    request: BTreeMap<String, String>,
     page: PageValues,
     site: SiteValues,
     /// A copy of the environment variables
@@ -39,8 +41,8 @@ pub struct TemplateContext {
     env: BTreeMap<String, String>,
 }
 
-#[derive(Serialize)]
-pub struct RequestValues {}
+// #[derive(Serialize)]
+// pub struct RequestValues {}
 
 /// Information about the site, including site info and all of the pages.
 #[derive(Serialize)]
@@ -71,6 +73,7 @@ impl From<Content> for PageValues {
 /// Renderer can execute a handlebars template and render the results into HTML.
 pub struct Renderer<'a> {
     pub template_dir: PathBuf,
+    pub theme_dir: Option<PathBuf>,
     pub script_dir: PathBuf,
     pub content_dir: PathBuf,
     pub show_unpublished: bool,
@@ -79,9 +82,15 @@ pub struct Renderer<'a> {
 
 impl<'a> Renderer<'a> {
     /// Create a new renderer with the necessary directories attached.
-    pub fn new(template_dir: PathBuf, script_dir: PathBuf, content_dir: PathBuf) -> Self {
+    pub fn new(
+        template_dir: PathBuf,
+        theme_dir: Option<PathBuf>,
+        script_dir: PathBuf,
+        content_dir: PathBuf,
+    ) -> Self {
         Renderer {
             template_dir,
+            theme_dir,
             script_dir,
             content_dir,
             show_unpublished: false,
@@ -97,6 +106,15 @@ impl<'a> Renderer<'a> {
     /// Load the template directory.
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
         self.register_helpers();
+
+        // If there is a theme, load the templates provided by it first
+        // Allows for user defined tempaltes to take precedence
+        if self.theme_dir.is_some() {
+            let mut templates = self.theme_dir.as_ref().unwrap().to_owned();
+            templates.push("templates");
+            self.handlebars
+                .register_templates_directory(".hbs", templates)?;
+        }
         self.handlebars
             .register_templates_directory(".hbs", &self.template_dir)?;
         Ok(())
@@ -104,8 +122,18 @@ impl<'a> Renderer<'a> {
 
     /// Load the scripts directory
     pub fn load_script_dir(&mut self) -> anyhow::Result<()> {
+        let mut theme_scripts: Vec<PathBuf> = Vec::new();
+
+        // If theme has scripts,load it first to follow proper precedence
+        if self.theme_dir.is_some() {
+            let mut theme_scripts_path = self.theme_dir.as_ref().unwrap().to_owned();
+            theme_scripts_path.push("scripts");
+            theme_scripts = crate::content::all_files(theme_scripts_path)?;
+        }
+        let user_scripts = crate::content::all_files(self.script_dir.clone())?;
         // TODO: rewrite all_files so we don't need to clone here.
-        let scripts = crate::content::all_files(self.script_dir.clone())?;
+        let scripts = [theme_scripts, user_scripts].concat();
+
         for script in scripts {
             // Relative file name without extension. Note that we skip any file
             // that doesn't have this.
@@ -128,6 +156,7 @@ impl<'a> Renderer<'a> {
         &self,
         values: T,
         info: SiteInfo,
+        request: HeaderMap,
     ) -> anyhow::Result<String> {
         let page: PageValues = values.into();
         let tpl = page
@@ -135,9 +164,16 @@ impl<'a> Renderer<'a> {
             .template
             .clone()
             .unwrap_or_else(|| DEFAULT_TEMPLATE.to_owned());
+
+        let mut request_headers: BTreeMap<String, String> = BTreeMap::new();
+        for (key, value) in request.iter() {
+            let val = value.to_str()?;
+            request_headers.insert(String::from(key.as_str()), String::from(val));
+        }
+
         let ctx = TemplateContext {
             page,
-            request: RequestValues {},
+            request: request_headers,
             site: SiteValues {
                 info,
                 // Right now, we literally include ALL OF THE CONTENT in its rendered
