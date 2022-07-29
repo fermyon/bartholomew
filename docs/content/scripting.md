@@ -40,7 +40,7 @@ That's all there is to a simple Rhai script.
 From a template, we can then use this script like this:
 
 ```
-\{{ echo "world" }}
+{{ echo "world" }}
 ```
 
 When we run the template, we will see:

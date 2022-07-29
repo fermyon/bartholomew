@@ -8,7 +8,7 @@ url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/shortcodes.
 
 Shortcodes are simple reusable snippets can be used inside the markdown content.
 
-Bartholomew supports shortcodes simplyfying sharing content between different markdown files. 
+Bartholomew supports shortcodes simplify sharing content between different markdown files. 
 
 ## The basic
 
@@ -20,7 +20,7 @@ Bartholomew supports shortcodes simplyfying sharing content between different ma
 
 ## Creating the shortcode
 
-An example of a shortcode is in `shortcodes/alert.rhai`. The shortcode are available in the mardown file as `alert` just like the scripts.
+An example of a shortcode is in `shortcodes/alert.rhai`. The shortcode is available in the mardown file as `alert` just like for scripts.
 
 ```rust
 let type = params[0];
@@ -72,7 +72,7 @@ let icons = #{
 
 ## Enabling shortcodes
 
-To enable the shortcode support for a particular document, the value of `enable_shortcodes = true` must be set in the page head.
+To enable shortcode support for a particular document, the value of `enable_shortcodes = true` must be set in the page head.
 
 ```
 title = "A New Article"
@@ -86,7 +86,7 @@ enable_shortcodes = true
 
 ## Using the shortcode
 
-Now the shortcode can be used in the markdown file by calling it with the required arguments which for the alerts scripts is the type of alert and the message to be displayed.
+Now the shortcode can be used in the markdown file by calling it with the required arguments. For the alerts script, this is the type of alert and the message to be displayed.
 
 ```
 \{{ alert "warning" "Bartholomew is a work in progress" }}
@@ -97,8 +97,12 @@ Which renders as the following.
 
 ## Note while using shortcodes
 
-An important note to be considered while using shortcodes is that the `\{{ }}` must be escaped if they are not meant to be executed. This is only required in the content files where shortcodes is enabled.
+An important note to be considered while using shortcodes is that the `\{{ }}` must be escaped if they are not meant to be executed. This is only required in the content files where shortcodes are enabled.
 
-To escape the code, the `\` is used like `\\{\{ alert "warning" "Bartholomew is a work in progress" }}` which will render `\{{ alert "warning" "Bartholomew is a work in progress" }}` instead of running the shortcode.
+To escape the code, the `\` is used like 
+{{{{raw}}}}
+`\\{{ alert "warning" "Bartholomew is a work in progress" }}`
+{{{{/raw}}}}
+which will render `\{{ alert "warning" "Bartholomew is a work in progress" }}` instead of running the shortcode.
 
 
