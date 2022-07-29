@@ -49,7 +49,7 @@ impl CheckCommand {
 async fn check_file(p: &Path) -> Result<()> {
     let raw_data = std::fs::read_to_string(p)
         .map_err(|e| anyhow::anyhow!("Could not read file {:?} as a string: {}", &p, e))?;
-    let content: Content = raw_data
+    let mut content: Content = raw_data
         .parse()
         .map_err(|e| anyhow::anyhow!("Could not parse file {:?}: {}", &p, e))?;
 

@@ -61,7 +61,7 @@ pub struct PageValues {
 }
 
 impl From<Content> for PageValues {
-    fn from(c: Content) -> Self {
+    fn from(mut c: Content) -> Self {
         PageValues {
             body: c.render_markdown(),
             head: c.head,
@@ -191,6 +191,7 @@ impl<'a> Renderer<'a> {
             // Copy the WASI env into the env template var.
             env: std::env::vars().collect(),
         };
+
         let out = self
             .handlebars
             .render(&tpl, &ctx)
@@ -239,6 +240,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             content_type: None,
             status: None,
             redirect: None,
+            enable_shortcodes: None,
         },
         body: msg.to_string(),
         published: true,

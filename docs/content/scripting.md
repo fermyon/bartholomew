@@ -120,3 +120,4 @@ from the `page` object.
 That's how you can use Rhai to add custom formatters to the site.
 
 No site would be complete without quality content, so let's take a look at the [markdown guide](./markdown.md) which will help you create and format your awesome content.
+
