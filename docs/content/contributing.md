@@ -65,7 +65,6 @@ Also, when contributing, please ensure that you notice any unwritten conventions
 Once you have made the required changes, test the code to make sure all the test cases are satisfied. You can test the code using the following command in the top level directory, under which your changes exist. 
 
 ```
-cd ~/my_bartholomew_contribution/bartholomew
 make test
 ```
 
