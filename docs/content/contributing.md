@@ -60,6 +60,14 @@ Keep in mind that the developers who potentially merge your changes into the ori
 
 Also, when contributing, please ensure that you notice any unwritten conventions which are obvious. For example if an entire folder of images are named using underscores i.e. image_1.png, image_2.png ensure that you don't upload an image with a different format like Image3.png or image-4.png. The same applies for written code, keep an eye out for conventions such as camel case and so forth when creating new variables. This will surely make the collaboration process smoother and faster.
 
+# Testing your changes
+
+Once you have made the required changes, test the code to make sure all the test cases are satisfied. You can test the code using the following command in the top level directory, under which your changes exist. 
+
+```
+make test
+```
+
 # Adding, commiting and pushing via GitHub
 
 Once you are satisfied with your contribution, please ensure that your GitHub installation is configured sufficiently so that you can `--signoff` as part of the `git commit` command. For example, please ensure that the `user.name` and `user.email` are configured in your terminal. You can check if these are set by typing `git config --list`.

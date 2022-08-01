@@ -85,8 +85,7 @@ This part of the API may change in the future, as it does not scale terribly wel
 
 ### The `env` object
 
-The third top-level object is `env`, which holds all of the environment data, including details about
-the HTTP request, the path of this resource, and other Spin information.
+The third top-level object is `env`, which holds all of the environment data.
 
 The `env` object is a set of keys and values:
 
@@ -172,11 +171,12 @@ The following helper functions are provided with Bartholomew
 
 ### Values reference
 
-The following values are available in the template. This is formatted in YAML for readability. The three top-level objects are:
+The following values are available in the template. This is formatted in YAML for readability. The four top-level objects are:
 
 - *page:* The content for the current page
 - *site:* Info about the entire site
-- *env:* Information from the browser or the request, presented as environment variables.
+- *env:* Information about the environment variables.
+- *request* - Information about the browser, HTTP request and other spin information.
 
 To reference a particular value, use dotted notation. For example, `page` has a `head`, which has the page's `title`.
 To access the title, use `{{ page.head.title }}`.
@@ -232,11 +232,13 @@ site:
             published: true
 
 env: # Environment variables set in the Bartholomew Wasm module
+
+request: # HTTP request data along with spin information.
 ```
 
 Given the above, for example, you can write a template to create a link to the current page:
 
-```handlebars
+```html
 <a href="{{site.info.base_url}}{{env.PATH_INFO}}">{{page.head.title}}</a>
 ```
 
