@@ -31,7 +31,7 @@ check-content:
 .PHONY: serve
 serve: build
 serve:
-	$(SPIN) up --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG) -e BASE_URL=$(BASE_URL)
+	$(SPIN) up --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG) -e BASE_URL=$(BASE_URL) -f docs/spin.toml
 
 .PHONY: run
 run: serve
