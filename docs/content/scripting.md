@@ -119,7 +119,7 @@ from the `page` object.
 
 That's how you can use Rhai to add custom formatters to the site.
 
-## Building on the example.
+## Building on the example
 
 When a site has a lot of blog posts, it would make sense to implement pagination for the content. This will introduce the idea of working with objects and nesting function calls. 
 
@@ -196,7 +196,7 @@ if index > 0 {
 pagination
 ```
 
-This script allows takes in 3 arguments, one for the array to paginate, one for the index and the last one for the offset and provides a pagination object with the sub array along with the index to the current and previous index. The pagination object can be used to create the listing along with the navigation.
+This script allows takes in 3 arguments, one for the array to paginate, one for the index and the last one for the offset. It returns a pagination object with the sub array along with the index to the next and previous index. The pagination object can be used to create the listing along with the navigation, where each page has 2 objects.
 
 ```html
 {{#with (url_query_params request.spin-full-url)}}
@@ -217,6 +217,5 @@ This script allows takes in 3 arguments, one for the array to paginate, one for 
     {{/with}}
 {{/with}}
 ```
-
 
 No site would be complete without quality content, so let's take a look at the [markdown guide](./markdown.md) which will help you create and format your awesome content.
