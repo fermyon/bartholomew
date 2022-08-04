@@ -87,6 +87,7 @@ Begin with intro paragraph
             head,
             body,
             published: true,
+            is_requested: false,
         };
 
         let content = serialize_content(&content)?;

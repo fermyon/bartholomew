@@ -63,7 +63,10 @@ pub struct PageValues {
 impl From<Content> for PageValues {
     fn from(c: Content) -> Self {
         PageValues {
-            body: c.render_markdown(),
+            body: match c.is_requested {
+                true => c.render_markdown(),
+                _ => String::from(""),
+            },
             head: c.head,
             published: c.published,
         }

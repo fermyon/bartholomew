@@ -180,6 +180,8 @@ pub struct Content {
     ///
     /// Practically speaking, what this means is that content is published by default.
     pub published: bool,
+    /// Flag to specify if this file was the requested content
+    pub is_requested: bool,
 }
 
 impl Content {
@@ -202,6 +204,7 @@ impl Content {
             head,
             body,
             published,
+            is_requested: false,
         }
     }
 

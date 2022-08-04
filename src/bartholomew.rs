@@ -76,8 +76,8 @@ pub fn render(req: Request) -> Result<Response> {
 
     match std::fs::read_to_string(&content_path) {
         Ok(full_document) => {
-            let doc: content::Content = full_document.parse()?;
-
+            let mut doc: content::Content = full_document.parse()?;
+            doc.is_requested = true;
             // Hide unpublished content unless PREVIEW_MODE is on.
             if !doc.published && !preview_mode {
                 eprintln!(
