@@ -9,7 +9,11 @@ use pulldown_cmark as markdown;
 
 use crate::template::PageValues;
 
+use handlebars::Handlebars;
+
 const DOC_SEPARATOR: &str = "\n---\n";
+
+const SHORTCODE_PATH: &str = "/shortcodes/";
 
 /// Head contains the front matter for a document
 #[derive(Default, Deserialize, Serialize)]
@@ -52,6 +56,8 @@ pub struct Head {
     ///
     /// If no status code is set, this will set the status code to 301 Moved Permanently
     pub redirect: Option<String>,
+    /// If set to true, this will enable shortcode support for the document
+    pub enable_shortcodes: Option<bool>,
     /// A map of string/string pairs that are user-customizable.
     pub extra: Option<HashMap<String, String>>,
 }
@@ -204,14 +210,56 @@ impl Content {
             published,
         }
     }
+    pub fn load_shortcodes_dir(
+        &mut self,
+        handlebar: &mut handlebars::Handlebars,
+    ) -> anyhow::Result<()> {
+        let scripts = all_files(PathBuf::from(SHORTCODE_PATH))?;
+        for script in scripts {
+            // Relative file name without extension. Note that we skip any file
+            // that doesn't have this.
+            if let Some(fn_name) = script.file_stem() {
+                eprintln!(
+                    "shortcodes: registering {}",
+                    fn_name.to_str().unwrap_or("unknown")
+                );
+                handlebar
+                    .register_script_helper_file(&fn_name.to_string_lossy(), &script)
+                    .map_err(|e| anyhow::anyhow!("Shortcode {:?}: {}", &script, e))?;
+            }
+        }
+        Ok(())
+    }
 
     /// Render the body using a Markdown renderer
-    pub fn render_markdown(&self) -> String {
+    pub fn render_markdown(&mut self) -> String {
         let mut buf = String::new();
-
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
-        let parser = markdown::Parser::new_ext(&self.body, opt).map(translate_relative_links);
+        let out: String;
+        let parser = match self.head.enable_shortcodes {
+            Some(true) => {
+                let mut handlebars = Handlebars::new();
+                let _ = &self.load_shortcodes_dir(&mut handlebars);
+
+                // don't escape HTML so that rhai scripts can return html that will
+                // be rendered as HTML
+                handlebars.register_escape_fn(handlebars::no_escape);
+
+                // run the markdown through the template engine to
+                // enable any script helpers
+                out = handlebars
+                    .render_template(&self.body, &{})
+                    .unwrap_or_else(|e| {
+                        // print the error
+                        eprintln!("Error rendering markdown: {}", e);
+                        // return nothing
+                        e.to_string()
+                    });
+                markdown::Parser::new_ext(&out, opt).map(translate_relative_links)
+            }
+            _ => markdown::Parser::new_ext(&self.body, opt).map(translate_relative_links),
+        };
         markdown::html::push_html(&mut buf, parser);
 
         buf
