@@ -124,6 +124,8 @@ site_pages.sort(Fn("sort_by_date"));
 site_pages
 ```
 
+When Bartholomew sees an incoming request for the `sitemap.xml` URL, it will look inside the scripts directory for a Rhai file named `sitemap.rhai` (as shown above) and execute the script on demand.
+
 In conjunction to the above scripting, the aforementioned <a href="https://handlebarsjs.com/" target="_blank">Handlebars</a> templating assists in this work being performed dynamically (using variables common between the script and the template); as shown in the `sitemap.hbs` file's contents below.
 
 ```
