@@ -7,7 +7,7 @@ url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/seo.md"
 
 ## Google verification using Bartholomew
 
-Your Bartholomew implementation can be <a href="https://support.google.com/webmasters/answer/9008080?hl=en" target="_blank">officially verify with Google</a>. This is an important first step because the verification process provides you with access to the <a href="https://g.co/kgs/UcBemE" target="_blank">Google Search Console</a>. The Google Search Console (formlerly Google Webmaster Tools) allows webmasters to check indexing status, search queries, crawling errors and also optimize visibility of their site.
+Your Bartholomew implementation can be <a href="https://support.google.com/webmasters/answer/9008080?hl=en" target="_blank">officially verified with Google</a>. This is an important first step because the verification process provides you with access to the <a href="https://g.co/kgs/UcBemE" target="_blank">Google Search Console</a>. The Google Search Console (formerly Google Webmaster Tools) allows webmasters to check indexing status, search queries, crawling errors and also optimize visibility of their site.
 
 Let's take a look at how the verification process is accomplished using Bartholomew. 
 
