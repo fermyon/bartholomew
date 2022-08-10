@@ -15,7 +15,7 @@ Let's take a look at how the verification process is accomplished using Bartholo
 
 The first step in the Google verification process is where Google provides you (the owner) of the specific website with a specially named file i.e. `abcdefg.html`. Google now wants you, the owner, to make this file available on your site, so that Google can fetch it as proof that you are the site's owner which has access control to the site. This is a really simple task. First you create a Markdown file (in Bartholomew's `content` directory) called `abcdefg.md` (the name of this file just has to match the name of the file which Google provided). **Note: We are creating an `.md` file here not an `.html` file**.
 
-Bartholomew uses templating so you just have to be explicit about a couple of things inside that new `.md` file. Specifically,  Makes sure that there is a template name (we will create the template next) and that the content type (of this file) is rendered as `text/html`. This is shown in the source code of the new `abcdefg.md` file below.
+Bartholomew uses templating so you just have to be explicit about a couple of things inside that new `.md` file. Specifically,  Make sure that there is a template name (we will create the template next) and that the content type (of this file) is rendered as `text/html`. This is shown in the source code of the new `abcdefg.md` file below.
 
 ```
 title = "Google Verification"
