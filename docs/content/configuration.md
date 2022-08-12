@@ -17,6 +17,7 @@ title = "Bartholomew"
 base_url = "http://localhost:3000"
 about = "This site is generated with Bartholomew, the Spin micro-CMS. And this message is in site.toml."
 theme = "fermyon"
+enable_shortcodes = false
 
 [extra]
 copyright = "The Site Authors"
@@ -33,6 +34,7 @@ It has a few pre-defined fields:
 - base_url: a base URL that templates can use to construct full URLs to content. This can be overridden by setting the `-e BASE_URL="https://example.com"` environment variable for Spin.
 - about: a brief description of the site
 - theme: the name of the theme for the website from the `/themes/` folder
+- enable_shortcodes: Allows addition of shortcodes in the markdown content using rhai scripts. Defaults to false.
 
 You can define your own fields in the `[extra]` section. Anything in `[extra]` is not
 used by the system itself. But it's a useful way to pass information from one central

@@ -116,3 +116,5 @@ The reason for this is pragmatic: We are trying to keep the binary size as small
 ## Can I embed HTML?
 
 Yes, you can embed HTML tags inside of your Markdown.
+
+Bartholomew supports reusable content using snippets in the form of shortcodes, so let's take a look at the [shortcodes](/shortcodes) support in Bartholomew. 

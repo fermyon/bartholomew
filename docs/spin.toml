@@ -8,7 +8,7 @@ trigger = { type = "http", base = "/" }
 [[component]]
 source = "modules/bartholomew.wasm"
 id = "bartholomew"
-files = [ "content/**/*" , "templates/*", "themes/**/*", "scripts/*", "config/*"]
+files = [ "content/**/*" , "shortcodes/*" , "templates/*", "scripts/*", "config/*"]
 [component.trigger]
 route = "/..."
 
