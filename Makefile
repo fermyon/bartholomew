@@ -2,6 +2,7 @@ SPIN ?= spin
 # If PREVIEW_MODE is on then unpublished content will be displayed.
 PREVIEW_MODE ?= 0
 SHOW_DEBUG ?= 1
+DISABLE_CACHE ?= 1
 BASE_URL ?= http://localhost:3000
 
 .PHONY: build
@@ -31,7 +32,11 @@ check-content:
 .PHONY: serve
 serve: build
 serve:
-	$(SPIN) up --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG) -e BASE_URL=$(BASE_URL) -f docs/spin.toml
+	$(SPIN) up --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG) -e BASE_URL=$(BASE_URL) -e DISABLE_CACHE=$(DISABLE_CACHE) -f docs/spin.toml
 
 .PHONY: run
 run: serve
+
+.PHONY: clean
+clean:
+	rm -rf config/_cache.json

@@ -2,3 +2,4 @@
 /modules/*.wasm
 /logs
 node_modules/
+/config/_cache.json

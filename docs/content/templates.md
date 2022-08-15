@@ -61,7 +61,7 @@ the `extra` section, we use `{{ page.head.extra.key }}`.
 
 ### The `site` object
 
-In addition to the `page` object, there is also a `site` object:
+In addition to the `page` object, there is also a `site` object. `site.pages` contains the `head` section and content of every page in the site. `site.pages` is only populated for templates included in `index_site_pages` in `site.toml` as described in the [configuration section](/configuration.md) 
 
 ```
 {
@@ -81,7 +81,7 @@ In addition to the `page` object, there is also a `site` object:
 ```
 
 Note that the `site.pages` array has access to every single document in the `content` folder.
-This part of the API may change in the future, as it does not scale terribly well.
+This part of the API may change in the future, as it does not scale terribly well. 
 
 ### The `env` object
 

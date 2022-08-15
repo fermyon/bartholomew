@@ -20,6 +20,7 @@ pub struct SiteInfo {
     pub base_url: Option<String>,
     pub about: Option<String>,
     pub theme: Option<String>,
+    pub index_site_pages: Option<Vec<String>>,
     pub extra: BTreeMap<String, String>,
 }
 
@@ -53,7 +54,7 @@ pub struct SiteValues {
 
 /// The structured values sent to the template renderer.
 /// The body should be legal HTML that can be inserted within the <body> tag.
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct PageValues {
     pub head: Head,
     pub body: String,
@@ -77,6 +78,7 @@ pub struct Renderer<'a> {
     pub script_dir: PathBuf,
     pub content_dir: PathBuf,
     pub show_unpublished: bool,
+    pub disable_cache: bool,
     handlebars: handlebars::Handlebars<'a>,
 }
 
@@ -94,6 +96,7 @@ impl<'a> Renderer<'a> {
             script_dir,
             content_dir,
             show_unpublished: false,
+            disable_cache: false,
             handlebars: Handlebars::new(),
         }
     }
@@ -108,7 +111,7 @@ impl<'a> Renderer<'a> {
         self.register_helpers();
 
         // If there is a theme, load the templates provided by it first
-        // Allows for user defined tempaltes to take precedence
+        // Allows for user defined templates to take precedence
         if self.theme_dir.is_some() {
             let mut templates = self.theme_dir.as_ref().unwrap().to_owned();
             templates.push("templates");
@@ -175,7 +178,6 @@ impl<'a> Renderer<'a> {
             page,
             request: request_headers,
             site: SiteValues {
-                info,
                 // Right now, we literally include ALL OF THE CONTENT in its rendered
                 // state. I take some consolation in knowing how PHP works. But
                 // seriously, this is probably not the best thing to do.
@@ -186,7 +188,21 @@ impl<'a> Renderer<'a> {
                 // 3. ???
                 // 4. Leave it like it is
                 // 5. Determine that this is out of scope
-                pages: crate::content::all_pages(self.content_dir.clone(), self.show_unpublished)?,
+                pages: match &info.index_site_pages {
+                    Some(templates) => {
+                        if templates.contains(&tpl) {
+                            crate::content::all_pages(
+                                self.content_dir.clone(),
+                                self.show_unpublished,
+                                self.disable_cache,
+                            )?
+                        } else {
+                            BTreeMap::new()
+                        }
+                    }
+                    None => BTreeMap::new(),
+                },
+                info,
             },
             // Copy the WASI env into the env template var.
             env: std::env::vars().collect(),

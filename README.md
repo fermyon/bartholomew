@@ -217,6 +217,15 @@ Make:
 $ PREVIEW_MODE=1 make serve
 ```
 
+### The Page Cache
+
+Unless the environment variable `-e DISABLE_CACHE=1` is set, the first load of a site will create a cache
+of page metadata in `config/_cache.json`. This is an optimization to reduce the number of file IO operations
+Bartholomew needs to make.
+
+If you are actively developing content, we suggest setting `DISABLE_CACHE=1`. By default, the `Makefile`'s `make serve`
+target disables the cache, as `make serve` is assumed to be used only for developers.
+
 ## Configuring Bartholomew
 
 Bartholomew can run inside of any Spin environment that supports directly executing
