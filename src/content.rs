@@ -12,6 +12,8 @@ use crate::template::PageValues;
 use handlebars::Handlebars;
 
 const DOC_SEPARATOR: &str = "\n---\n";
+// Cache for page values to reduce IO on each request
+const CACHE_FILE: &str = "/config/_cache.json";
 
 const SHORTCODE_PATH: &str = "/shortcodes/";
 
@@ -71,11 +73,38 @@ pub fn content_path(content_dir: PathBuf, path_info: &str) -> PathBuf {
     content_dir.join(buf.strip_prefix("/").unwrap_or(&buf))
 }
 
-/// Fetch all pages.
+pub fn all_pages(
+    dir: PathBuf,
+    show_unpublished: bool,
+    skip_cache: bool,
+) -> anyhow::Result<BTreeMap<String, PageValues>> {
+    if skip_cache {
+        return all_pages_load(dir, show_unpublished);
+    }
+
+    // Try loading the cached object:
+    let cache = PathBuf::from(CACHE_FILE);
+    match std::fs::read_to_string(&cache) {
+        Ok(data) => {
+            // We have the whole site here.
+            serde_json::from_str(&data)
+                .map_err(|e| anyhow::anyhow!("Failed to parse page cache TOML: {}", e))
+        }
+        Err(_) => {
+            let contents = all_pages_load(dir, show_unpublished)?;
+            // Serialize the files back out to disk for subsequent requests.
+            let cache_data = serde_json::to_string(&contents)?;
+            std::fs::write(&cache, cache_data)?;
+            Ok(contents)
+        }
+    }
+}
+
+/// Fetch all pages from disk.
 ///
 /// If show_unpublished is `true`, this will include pages that Bartholomew has determined are
 /// unpublished.
-pub fn all_pages(
+pub fn all_pages_load(
     dir: PathBuf,
     show_unpublished: bool,
 ) -> anyhow::Result<BTreeMap<String, PageValues>> {

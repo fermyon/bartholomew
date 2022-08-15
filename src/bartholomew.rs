@@ -19,6 +19,13 @@ pub fn render(req: Request) -> Result<Response> {
         }
         _ => false,
     };
+    let disable_cache = match std::env::var("DISABLE_CACHE") {
+        Ok(val) if val == "1" => {
+            eprintln!("INFO: Bartholomew is running with DISABLE_CACHE=1");
+            true
+        }
+        _ => false,
+    };
 
     // Get the request path.
     let path_info = match req.headers().get("spin-path-info") {
@@ -61,6 +68,7 @@ pub fn render(req: Request) -> Result<Response> {
 
     // If running in preview mode, show unpublished content.
     engine.show_unpublished = preview_mode;
+    engine.disable_cache = disable_cache;
 
     // Load the template directory.
     engine.load_template_dir()?;
