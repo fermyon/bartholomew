@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: set the release version (tag)
+        run: echo "RELEASE_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
       - name: Install Dependencies
         run: rustup target add wasm32-wasi
 
@@ -21,6 +24,11 @@ jobs:
       - name: Build bart
         run: make bart
 
+      - name: generate checksums
+        run: |
+          sha256sum target/wasm32-wasi/release/bartholomew.wasm > checksums-${{ env.RELEASE_VERSION }}.txt
+          sha256sum target/release/bart >> checksums-${{ env.RELEASE_VERSION }}.txt
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -29,3 +37,4 @@ jobs:
           files: |
             target/wasm32-wasi/release/bartholomew.wasm
             target/release/bart
+            checksums-${{ env.RELEASE_VERSION }}.txt
