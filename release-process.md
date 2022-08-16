@@ -3,7 +3,7 @@
 To cut a release of Bartholomew, you will need to do the following:
 
 1. Create a pull request that changes the version number for your new version (e.g. 1.2.2 becomes 1.2.3)
-    - `Cargo.toml` is the most important place to make this change
+    - `Cargo.toml` and `bart/Cargo.toml` are the most important places to make this change
     - Check the docs for hard-coded version strings
 2. Merge the PR created in #1 (Such PRs are still required to get approvals, so make sure you get signoff on the PR)
 3. Create a new tag with a `v` and then the version number (`v1.2.3`)
