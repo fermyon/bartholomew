@@ -36,7 +36,7 @@ This quickstart method uses a Bartholomew website template. So while we do requi
 
 ## Create Your First Website
 
-We can now generate a new repository with the same directory and file structure as the template. Simply visit [the template['s location ](https://github.com/fermyon/bartholomew-site-template)on[ GitHub](https://github.com/fermyon/bartholomew-site-template). Then click on the green `Use this template` button and follow the prompts. Here are some additional details about [creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) if you are interested.
+We can now generate a new repository with the same directory and file structure as the template. Simply visit [the template's location](https://github.com/fermyon/bartholomew-site-template) on [GitHub](https://github.com/fermyon/bartholomew-site-template). Then click on the green `Use this template` button and follow the prompts. Here are some additional details about [creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) if you are interested.
 
 ![Use template](../static/image/docs/use-template.png)
 
