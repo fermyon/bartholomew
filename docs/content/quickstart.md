@@ -45,7 +45,7 @@ We can now generate a new repository with the same directory and file structure 
 You can clone and customize your own new codebase and then run the website locally, to suit your needs:
 
 ```bash
-$ cd bartholomew-site-template
+$ cd <your-repo-name>
 $ spin up --follow-all
 ```
 
