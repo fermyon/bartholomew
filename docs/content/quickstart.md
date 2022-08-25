@@ -36,19 +36,13 @@ This quickstart method uses a Bartholomew website template. So while we do requi
 
 ## Create Your First Website
 
-We can now go and either:
-- clone the Bartholomew website template, which we spoke about earlier, or
-- generate a new repository with the same directory and file structure as the template
+We can now generate a new repository with the same directory and file structure as the template. Simply visit [the template['s location ](https://github.com/fermyon/bartholomew-site-template)on[ GitHub](https://github.com/fermyon/bartholomew-site-template). Then click on the green `Use this template` button and follow the prompts. Here are some additional details about [creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) if you are interested.
 
-The former can be done if you would like to contribute to the existing template (you could fork and clone, the create PRs etc.)
+![Use template](../static/image/docs/use-template.png)
 
-```bash
-$ git clone https://github.com/fermyon/bartholomew-site-template.git
-```
+## Customize Your Website
 
-The latter can be done if you would like to take the original template and go in a different direction to customize your own site, on an ongoing basis. Here are some details about [creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-Either way, once you have the repository on your file system you can go ahead and run the website locally:
+You can clone and customize your own new codebase and then run the website locally, to suit your needs:
 
 ```bash
 $ cd bartholomew-site-template
@@ -56,8 +50,6 @@ $ spin up --follow-all
 ```
 
 When you navigate to `http://localhost:3000`, you should see the website running.
-
-
 
 ## Create Your First Blog Post
 
