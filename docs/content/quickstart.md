@@ -30,7 +30,7 @@ $ cd bartholomew
 $ make bartholomew
 ```
 
-## Spin Templates
+## Templates
 
 This quickstart method uses a Bartholomew website template. So while we do require `spin` and `bart` CLI (as per the details above) everything else we need (to launch our Bartholomew CMS website) is packaged up in the Bartholomew website template. Including the `bartholomew.wasm` and the `spin_static_fs.wasm` files which take care of Bartholomew's business logic and [Spin's file server](https://github.com/fermyon/spin-fileserver) needs, respectively. We will start working with the template in the next section.
 
