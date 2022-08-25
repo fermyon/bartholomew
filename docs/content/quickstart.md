@@ -34,15 +34,21 @@ $ make bartholomew
 
 This quickstart method uses a Bartholomew website template. So while we do require `spin` and `bart` CLI (as per the details above) everything else we need (to launch our Bartholomew CMS website) is packaged up in the Bartholomew website template. Including the `bartholomew.wasm` and the `spin_static_fs.wasm` files which take care of Bartholomew's business logic and [Spin's file server](https://github.com/fermyon/spin-fileserver) needs, respectively. We will start working with the template in the next section.
 
-## Create Your First Website With Spin
+## Create Your First Website
 
-We can not go a clone the Bartholomew website template, which we spoke about earlier:
+We can now go and either:
+- clone the Bartholomew website template, which we spoke about earlier, or
+- generate a new repository with the same directory and file structure as the template
+
+The former can be done if you would like to contribute to the existing template (you could fork and clone, the create PRs etc.)
 
 ```bash
 $ git clone https://github.com/fermyon/bartholomew-site-template.git
 ```
 
-Once cloned, you can then run your new website locally:
+The latter can be done if you would like to take the original template and go in a different direction to customize your own site, on an ongoing basis. Here are some details about [creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+
+Either way, once you have the repository on your file system you can go ahead and run the website locally:
 
 ```bash
 $ cd bartholomew-site-template
