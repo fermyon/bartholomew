@@ -36,25 +36,22 @@ This quickstart method uses a Bartholomew website template. So while we do requi
 
 ## Create Your First Website With Spin
 
-Now that you have the `spin` in your path, you can use it to install the Bartholomew site template, which we spoke about earlier:
+We can not go a clone the Bartholomew website template, which we spoke about earlier:
 
 ```bash
-$ spin templates install --git https://github.com/fermyon/bartholomew-site-template
+$ git clone https://github.com/fermyon/bartholomew-site-template.git
 ```
 
-Once installed, you can then create your first website using the installed template:
+Once cloned, you can then run your new website locally:
 
 ```bash
-$ spin new bartholomew-site my-site
-```
-
-The following command will run your new website locally:
-
-```bash
-$ cd my-site && spin up --follow-all
+$ cd bartholomew-site-template
+$ spin up --follow-all
 ```
 
 When you navigate to `http://localhost:3000`, you should see the website running.
+
+
 
 ## Create Your First Blog Post
 
@@ -72,10 +69,16 @@ $ mkdir content/blog
 $ bart new post content/blog protons.md --author "Enrico Fermi" --template "blog" --title "On the Recombination of Neutrons and Protons"
 ```
 
+The output from the above command, will look similar to the following:
+
+```bash
+Wrote new post in file content/blog/protons.md
+```
+
 If you would like to check the validity of your content, you can use the following `bart check` command. Notice how we specify the location of the content we want to check. In this case, we are checking all of the Markdown files in the blog directory:
 
 ```bash
-bart check blog/*
+bart check content/blog/*
 ```
 
 If your syntax in the `.md` file is **correct**, you will receive an output similar to the following. Otherwise, you will receive an informative error message and a cross:
@@ -86,10 +89,7 @@ If your syntax in the `.md` file is **correct**, you will receive an output simi
 
 ## Viewing Your Changes
 
-Running the `spin up` command from above (again) will:
-
-- add the newly created post to the blogs index page at `http://localhost:3000/blog`
-- render the post content at `http://localhost:3000/blog/protons`
+Running the `spin up` command from above (again) will render the post content at `http://localhost:3000/blog/protons`
 
 ![Post content rendered by Bartholomew based on the blog template](../static/image/docs/bart-new-post.png)
 

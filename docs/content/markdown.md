@@ -21,13 +21,11 @@ rendered by Bartholomew as `<base_url>/foo`.
 
 > The content directory can have subdirectories.
 
-Bartholomew supports Markdown via the [Pulldown-Cmark](https://crates.io/crates/pulldown_cmark)
-library.
+Bartholomew supports Markdown via the [Pulldown-Cmark](https://crates.io/crates/pulldown_cmark) library.
 
 ## Editing the Page Head
 
-The first part of any Bartholomew document is the _head_. You can think of every piece of content as having a _head_ and a _body_.
-(Shoulders, knees, and toes will be added in a forthcoming release.)
+The first part of any Bartholomew document is the _head_. You can think of every piece of content as having a _head_ and a _body_. (Shoulders, knees, and toes will be added in a forthcoming release.)
 
 The head is formatted as TOML, which for the most part is just names and values.
 

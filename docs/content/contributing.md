@@ -7,7 +7,7 @@ url = "https://github.com/fermyon/bartholomew/blob/main/docs/content/contributin
 
 To contribute to the Bartholomew project, please follow these steps.
 
->> These steps will seperately install (from source) all of the software components that make up a Bartholomew Content Management System (CMS) deployment on localhost. Whilst this page is aimed at showing you how to contribute to Bartholomew, it also demonstrates how all of the different components work together. This is a great way to learn about Spin, Bartholomew, Spin File Server and in addition how the WebAssembly binary files contribute to the workings of this system.
+> These steps will seperately install (from source) all of the software components that make up a Bartholomew Content Management System (CMS) deployment on localhost. Whilst this page is aimed at showing you how to contribute to Bartholomew, it also demonstrates how all of the different components work together. This is a great way to learn about Spin, Bartholomew, Spin File Server and in addition how the WebAssembly binary files contribute to the workings of this system.
 
 The first step in contributing to Bartholomew is to create a fork of the GitHub repository. Let's get started.
 
@@ -19,27 +19,23 @@ Ensure that you are forking Bartholomew to **your own GitHub account**; where yo
 
 ## Clone the Fork
 
-Set up a new environment on your system where you would like to work:
-
-```bash
-mkdir ~/my_bartholomew_contribution
-cd ~/my_bartholomew_contribution
-```
-
-Then go ahead and clone the new fork that you just created (the one which resides in your own GitHub account).
+Go ahead and clone the new fork that you just created (the one which resides in your own GitHub account).
 
 ![Clone Bartholomew](../static/image/docs/clone-bartholomew.png)
 
-Cloning is performed using the following command:
+Cloning is performed using the following commands:
 
 ```bash
+# Change into home directory
+cd ~
+# Clone
 git clone git@github.com:yourusername/bartholomew.git
 ```
 
 Change into the new Bartholomew directory (repo):
 
 ```bash
-cd ~/my_bartholomew_contribution/bartholomew
+cd ~/bartholomew
 ```
 
 ## Building the Bartholomew Server
@@ -48,7 +44,11 @@ Rust and the wasm32-wasi target are prerequisites that are required to build Bar
 
 ---
 
-## Prerequisites
+## Prerequisites (Rust, wasm32-wasi and wasm-opt)
+
+You will need Rust installed.
+You also need to install and add `wasm32-wasi` target once you have Rust installed.
+Lastly, for prerequisites, you will need `wasm-opt`.
 
 **Rust**
 
@@ -65,6 +65,53 @@ rustup target add wasm32-wasi
 
 If you would like more details about the WebAssembly System Interface (WASI) there is an <a href="https://wasi.dev/" target="_blank">official specification</a> and an <a href="https://github.com/bytecodealliance/wasmtime/blob/main/docs/WASI-intro.md" target="_blank">'intro' document</a> available.
 
+**wasm-opt**
+
+Please go to the [latest release page](https://github.com/WebAssembly/binaryen/releases) of binaryen and download the compressed package that suits your specific operating system. Unpack the compressed file to a location of your choice. We are just using `~/` (home directory) for presentation purposes. For example:
+
+```bash
+# Download binaryen tar.gz file to home directory first
+# Then change into home directory
+cd ~
+# Unpack .tar.gz
+tar -zxvf binaryen-version_109-arm64-macos.tar.gz
+```
+
+Once unpacked, ensure that binaryen's bin folder is in your path. For example, open your `.zshrc` or `.bash_profile` file (depending on your OS) for editing:
+
+```bash
+# macOS example
+vi ~/.zshrc
+# Ubuntu Linux example
+vi ~/.bash_profile
+```
+
+Then add the path to binaryen's bin folder to the last line of your file like this:
+
+```bash
+export PATH="${HOME}/binaryen-version_109/bin:${PATH}"
+```
+Run whichever file you just edited. For example:
+
+```bash
+# macOS example
+. ~/.zshrc
+# Ubuntu Linux example
+. ~/.bash_profile
+```
+
+You can check this has worked by echoing your path. For example:
+
+```bash
+echo $PATH
+```
+
+The output from the above command will be similar to the following:
+
+```bash
+~/binaryen-version_109/bin:/other/things/in/your/path
+```
+
 ---
 
 Once the prerequisites are satisfied, you can go ahead and build Bartholomew:
@@ -75,27 +122,27 @@ make build
 
 The `make build` command does a `cargo build --target wasm32-wasi --release`.
 
->> `make build` also runs `wasm-opt`, which is part of the [Binaryen](https://webassembly.github.io/binaryen/) project. This reduces the size of the WebAssembly module by optimizing the bytecode.
+> `make build` also runs `wasm-opt`, which is part of the [Binaryen](https://webassembly.github.io/binaryen/) project. This reduces the size of the WebAssembly module by optimizing the bytecode.
 
 The above `make build` command creates a `bartholomew.wasm` file in the `bartholomew/target/wasm32-wasi/release` directory. You will need to copy that file into Bartholomew's `modules`/` directory for Spin to run Bartholomew.
 
-## Building the Bartholomew Command Line Interface (Cli) Tool
+## Building the Bartholomew Command Line Interface (CLI) Tool
 
-The `bart` CLI is different from what we just built above. The CLI is a useful tool that can be used to create a new blog post using a single-line command and more. Installing the Bartholomew CLI is worth it, so take a few seconds to make it happen.
+The Bartholomew Command Line Interface (CLI) Tool is called `bart`. this CLI is different from what we just built above. The CLI is a useful tool that can be used to create a new blog post using a single-line command and more. Installing the Bartholomew CLI is worth it, so take a few seconds to make it happen.
 
 To build the Bartholomew CLI from source, perform the following commands:
 
 ```bash
-cd /home/my_bartholomew_contribution/bartholomew
+cd ~/bartholomew
 make bart
 ```
 
-Once built, you will find the very useful `bart` CLI executable in the `/home/my_bartholomew_contribution/bartholomew/target/release` directory. 
+Once built, you will find the very useful `bart` CLI executable in the `~/bartholomew/target/release` directory. 
 
-For more information about how to use the CLI, please type `/home/my_bartholomew_contribution/bartholomew/target/release/bart --help`, as shown below:
+For more information about how to use the CLI, please type `~/bartholomew/target/release/bart --help`, as shown below:
 
 ```bash
-/home/my_bartholomew_contribution/bartholomew/target/release/bart --help    
+~/bartholomew/target/release/bart --help    
 bart 0.1.0
 The Bartholomew CLI
 
@@ -119,7 +166,7 @@ The Bartholomew CLI also has some other great features i.e. the `bart` command c
 
 ```bash
 # Note the "bart check" command is being run, as an absolute path, from where we installed bartholomew from source (notice how we are passing in the "content/*" as a parameter to bart's "check" subcommand).
-/home/my_bartholomew_contribution/bartholomew/target/release/bart check content/*
+~/bartholomew/target/release/bart check content/*
 ```
 
 The output from the above command will be similar to the following (depending on the web pages on your system):
@@ -132,7 +179,7 @@ The output from the above command will be similar to the following (depending on
 
 ```bash
 # Note the "bart check" command is still being run, as an absolute path, from where we installed bartholomew from source (notice how we are passing in the "blog/*" as a parameter to bart's "check" subcommand this time around).
-/home/my_bartholomew_contribution/bartholomew/target/release/bart check blog/*
+~/bartholomew/target/release/bart check blog/*
 ```
 
 The output from the above command will be similar to the following (depending on the blog posts on your system):
@@ -153,7 +200,7 @@ For Spin, follow [the Spin quickstart guide](https://spin.fermyon.dev/quickstart
 
 ## The Relationship Between Bartholomew and the Spin Fileserver
 
-Bartholomew uses an external file server called [Spin-Fileserver](https://github.com/fermyon/spin-fileserver).
+Bartholomew uses an external file server called [Spin-Fileserver](https://github.com/fermyon/spin-fileserver). This file server facilitates the presentation of files to the end users. For example, whilst the web page contents (HTML) are generated dynamically upon request, image elements in that HTML page source can point to images that are stored on the host server. The Spin file server ensures that these static images are correctly served to the client's web browser (as per the HTML's requirements.)
 
 Please build the spin-fileserver and then copy the resulting `spin_static_fs.wasm` file into Bartholomew's `modules/` directory. This will ensure that you are running the latest release of the spin-fileserver.
 
@@ -209,16 +256,18 @@ $ make serve
 
 For convenience, `make serve` builds the code, and then runs `spin up`.
 
-If you have created changes to a web page or a blog post on a Bartholomew instance, you can preview your changes.
+> Also `spin build --up` could be used, if there is no additional logic on the make file.
 
 ### Preview Mode
 
-By default, Bartholomew will not display unpublished content. Content is unpublished if either:
+If you have created changes to a web page or a blog post on a Bartholomew instance, you can preview your changes. For example, if you are contributing to the official documentation and want to render the site locally to preview your changes, you can navigate to the `bartholomew/docs` directory and run the site in preview mode, as shown below.
+
+> Note: By default, Bartholomew will not display unpublished content. Content is unpublished if either:
 
 - The article is marked `published = false` in its head,
 - The article has a publish date in the future.
 
-To view unpublished content, turn on `PREVIEW_MODE`.
+To view unpublished content i.e. if you are creating a new file, turn on `PREVIEW_MODE`.
 
 Spin:
 
@@ -233,12 +282,7 @@ $ PREVIEW_MODE=1 make serve
 ```
 ### The Page Cache
 
-Unless the environment variable `-e DISABLE_CACHE=1` is set, the first load of a site will create a cache
-of page metadata in `config/_cache.json`. This is an optimization to reduce the number of file IO operations
-Bartholomew needs to make.
-
-If you are actively developing content, we suggest setting `DISABLE_CACHE=1`. By default, the `Makefile`'s `make serve`
-target disables the cache, as `make serve` is assumed to be used only for developers.
+Unless the environment variable `-e DISABLE_CACHE=1` is set, the first load of a site will create a cache of page metadata in `config/_cache.json`. This is an optimization to reduce the number of file IO operations Bartholomew needs to make. If you are actively developing content, we suggest setting `DISABLE_CACHE=1`. By default, the `Makefile`'s `make serve` target disables the cache, as `make serve` is assumed to be used only for developers.
 
 # Adding, Committing and Pushing via Github
 
@@ -253,7 +297,7 @@ git config user.email "youremail@somemail.com"
 
 ## Add Changes
 
-Move to a top-level directory, under which your changes exist i.e. `cd ~/my_bartholomew_contribution/bartholomew`.
+Move to a top-level directory, under which your changes exist i.e. `cd ~/bartholomew`.
 
 Add your changes using the following command:
 
