@@ -36,7 +36,7 @@ It has a few pre-defined fields:
 - about: a brief description of the site
 - theme: the name of the theme for the website from the `/themes/` folder
 - index_site_pages: A list of templates that require `site.pages` to be populated.
-- enable_shortcodes: Allows addition of shortcodes in the markdown content using rhai scripts. Defaults to false.
+- enable_shortcodes: Allows the addition of shortcodes in the markdown content using rhai scripts. Defaults to false.
 
 You can define your own fields in the `[extra]` section. Anything in `[extra]` is not
 used by the system itself. But it's a useful way to pass information from one central
