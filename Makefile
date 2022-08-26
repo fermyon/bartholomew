@@ -31,11 +31,16 @@ check-content:
 
 .PHONY: serve
 serve: build
+serve: update-docs-binary
 serve:
 	$(SPIN) up --log-dir ./logs -e PREVIEW_MODE=$(PREVIEW_MODE) -e SHOW_DEBUG=$(SHOW_DEBUG) -e BASE_URL=$(BASE_URL) -e DISABLE_CACHE=$(DISABLE_CACHE) -f docs/spin.toml
 
 .PHONY: run
 run: serve
+
+.PHONY: update-docs-binary
+update-docs-binary: 
+	cp target/wasm32-wasi/release/bartholomew.wasm docs/modules/bartholomew.wasm
 
 .PHONY: clean
 clean:
