@@ -14,7 +14,7 @@ bytes = "1.1.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 flate2 = "1.0.23"
 handlebars = { version = "4.2.2", features = ["dir_source", "script_helper"] }
-handlebars_sprig = { git = "https://github.com/rajatjindal/handlebars-sprig", rev = "ac179552db4ed525e6e453a998140b1abb259b14" }
+handlebars_sprig = { git = "https://github.com/rajatjindal/handlebars-sprig", rev = "f2d42142121d4f04b35ce00fdd26ba48b0993fe0" }
 http = "0.2.6"
 pulldown-cmark = { version = "0.9.1", default-features = false }
 serde = { version = "1.0.136", features = ["derive"] }
