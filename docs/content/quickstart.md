@@ -22,12 +22,12 @@ For Spin, follow [the Spin quickstart guide](https://spin.fermyon.dev/quickstart
 
 For the `bart` CLI, there are two options:
 - download the latest `bart` binary [release](https://github.com/fermyon/bartholomew/releases/), or
-- clone and install `bart` from source, using the following commands:
+- clone and build `bart` from source, using the following commands (NOTE: `bart` will need to be installed to a user executable directory such as `/usr/bin/` to be run when built this way.):
 
 ```bash
 $ git clone https://github.com/fermyon/bartholomew.git
 $ cd bartholomew
-$ make bartholomew
+$ make bart
 ```
 
 ## Templates
@@ -53,7 +53,7 @@ When you navigate to `http://localhost:3000`, you should see the website running
 
 ## Create Your First Blog Post
 
-You are now ready to start adding content to your new website. You will recall that we installed the `bart` CLI in a previous step. We can use this CLI to create a new blog post page. 
+You are now ready to start adding content to your new website. You will recall that we installed the `bart` CLI in a previous step. We can use this CLI to create a new blog post page.
 
 Note how we:
 - set the location where the post will be created i.e. `content/blog`,
