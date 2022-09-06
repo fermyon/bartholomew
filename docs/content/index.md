@@ -30,21 +30,4 @@ websites built with Bartholomew are Spin applications that can run in any
 environment that is capable of running Spin. At Fermyon, we run all of our
 websites using Bartholomew and Spin, on our [Fermyon Platform, running on Nomad](https://www.fermyon.com/blog/spin-nomad).
 
-Getting started with your new WebAssembly-powered website is as simple as:
-
-```bash
-# create a new site based on a template repository
-$ bart new site --git https://github.com/fermyon/bartholomew-site-template website
-# run the website using Spin
-$ spin up --file website/spin.toml
-Serving HTTP on address http://127.0.0.1:3000
-Available Routes:
-  bartholomew: http://127.0.0.1:3000 (wildcard)
-  fileserver: http://127.0.0.1:3000/static (wildcard)
-```
-
-Now you can access your new website! Add your Markdown documents in the `content/`
-directory, and Bartholomew will dynamically render the website pages for you on
-each new request.
-
 In the next page, we will [take Bartholomew for a spin](./quickstart.md).

@@ -18,21 +18,9 @@ For Spin, follow [the Spin quickstart guide](https://spin.fermyon.dev/quickstart
 - clone and install Spin using cargo, or
 - clone and build Spin from source.
 
-### Bartholomew CLI
-
-For the `bart` CLI, there are two options:
-- download the latest `bart` binary [release](https://github.com/fermyon/bartholomew/releases/), or
-- clone and install `bart` from source, using the following commands:
-
-```bash
-$ git clone https://github.com/fermyon/bartholomew.git
-$ cd bartholomew
-$ make bartholomew
-```
-
 ## Templates
 
-This quickstart method uses a Bartholomew website template. So while we do require `spin` and `bart` CLI (as per the details above) everything else we need (to launch our Bartholomew CMS website) is packaged up in the Bartholomew website template. Including the `bartholomew.wasm` and the `spin_static_fs.wasm` files which take care of Bartholomew's business logic and [Spin's file server](https://github.com/fermyon/spin-fileserver) needs, respectively. We will start working with the template in the next section.
+This quickstart method uses a Bartholomew website template. So while we do require `spin` (as per the details above) everything else we need (to launch our Bartholomew CMS website) is packaged up in the Bartholomew website template. Including the `bartholomew.wasm` and the `spin_static_fs.wasm` files which take care of Bartholomew's business logic and [Spin's file server](https://github.com/fermyon/spin-fileserver) needs, respectively. We will start working with the template in the next section.
 
 ## Create Your First Website
 
@@ -40,9 +28,17 @@ We can now generate a new repository with the same directory and file structure 
 
 ![Use template](../static/image/docs/use-template.png)
 
-## Customize Your Website
+## Fetch Your Website
 
-You can clone and customize your own new codebase and then run the website locally, to suit your needs:
+The previous step creates a new repository in **your** GitHub account. This step fetches that new repository using the `git clone` command:
+
+```bash
+git clone git@github.com:your-username/your-repo-name.git
+```
+
+## Run Your Website
+
+You can clone and customize your new codebase and then run the website locally, to suit your needs:
 
 ```bash
 $ cd <your-repo-name>
@@ -51,9 +47,25 @@ $ spin up --follow-all
 
 When you navigate to `http://localhost:3000`, you should see the website running.
 
+## Customize Your Website
+
+We are now at the point where you can start adding new content and also customizing the website. 
+
+### Bartholomew CLI
+
+The Bartholomew Command Line Interface (CLI) is a handy tool that will help you add new content and also check and validate existing content. Please take a minute or two and install the CLI. Here are two options:
+- download the latest `bart` binary [release](https://github.com/fermyon/bartholomew/releases/), or
+- clone and install `bart` from source, using the following commands:
+
+```bash
+$ git clone https://github.com/fermyon/bartholomew.git
+$ cd bartholomew
+$ make bart
+```
+
 ## Create Your First Blog Post
 
-You are now ready to start adding content to your new website. You will recall that we installed the `bart` CLI in a previous step. We can use this CLI to create a new blog post page. 
+We can now use this CLI to create our new blog post page.
 
 Note how we:
 - set the location where the post will be created i.e. `content/blog`,
@@ -67,7 +79,7 @@ $ mkdir content/blog
 $ bart new post content/blog protons.md --author "Enrico Fermi" --template "blog" --title "On the Recombination of Neutrons and Protons"
 ```
 
-The output from the above command, will look similar to the following:
+The output from the above command will look similar to the following:
 
 ```bash
 Wrote new post in file content/blog/protons.md
