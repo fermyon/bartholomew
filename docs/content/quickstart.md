@@ -22,7 +22,7 @@ For Spin, follow [the Spin quickstart guide](https://spin.fermyon.dev/quickstart
 
 For the `bart` CLI, there are two options:
 - download the latest `bart` binary [release](https://github.com/fermyon/bartholomew/releases/), or
-- clone and build `bart` from source, using the following commands (NOTE: `bart` will need to be installed to a user executable directory such as `/usr/bin/` to be run when built this way.):
+- clone and build `bart` from source, using the following commands (NOTE: `target/release/bart` will need to be installed to a user executable directory such as `/usr/bin/` to be run when built this way.):
 
 ```bash
 $ git clone https://github.com/fermyon/bartholomew.git
