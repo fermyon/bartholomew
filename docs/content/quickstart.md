@@ -51,7 +51,7 @@ When you navigate to `http://localhost:3000`, you should see the website running
 
 We are now at the point where you can start adding new content and also customizing the website. 
 
-### Bartholomew CLI
+## Bartholomew CLI
 
 The Bartholomew Command Line Interface (CLI) is a handy tool that will help you add new content and also check and validate existing content. Please take a minute or two and install the CLI. Here are two options:
 - download the latest `bart` binary [release](https://github.com/fermyon/bartholomew/releases/), or
