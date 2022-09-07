@@ -280,6 +280,7 @@ Make:
 ```bash
 $ PREVIEW_MODE=1 make serve
 ```
+
 ### The Page Cache
 
 Unless the environment variable `-e DISABLE_CACHE=1` is set, the first load of a site will create a cache of page metadata in `config/_cache.json`. This is an optimization to reduce the number of file IO operations Bartholomew needs to make. If you are actively developing content, we suggest setting `DISABLE_CACHE=1`. By default, the `Makefile`'s `make serve` target disables the cache, as `make serve` is assumed to be used only for developers.
@@ -295,6 +296,8 @@ git config user.name "yourname"
 git config user.email "youremail@somemail.com"
 ```
 
+More information can be found at this GitHub documentation page called [signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
+
 ## Add Changes
 
 Move to a top-level directory, under which your changes exist i.e. `cd ~/bartholomew`.
@@ -307,11 +310,13 @@ git add .
 
 ## Commit Changes
 
-Type the following commit command and ensure to sign off (`--signoff`) and also leave a short message (`-m`):
+Type the following commit command to ensure that you sign off (`--signoff`), sign the data (`-S`) - recommended, and also leave a short message (`-m`):
 
 ```bash
-git commit --signoff -m "Updating documentation about testing process"
+git commit -S --signoff -m "Updating documentation about testing process"
 ```
+
+> Note: the `--signoff` option will only add a Signed-off-by trailer by the committer at the end of the commit log message. In addition to this, it is recommended that you use the `-S` option which will GPG-sign your commits. For more information about using GPG in GitHub see [this GitHub documentation](https://docs.github.com/en/authentication/managing-commit-signature-verification/adding-a-gpg-key-to-your-github-account).
 
 ## Push Changes
 At this stage, it is a good idea to just quickly check what GitHub thinks the `origin` is. For example, if we type `git remote -v` we can see that the origin is our repo; which we a) forked the original repo into and b) which we then cloned to our local disk so that we could edit:
