@@ -108,7 +108,7 @@ dependencies = [
  "pulldown-cmark 0.9.1",
  "serde",
  "serde_json",
- "spin-sdk 0.3.0",
+ "spin-sdk",
  "toml",
  "wit-bindgen-rust",
 ]
@@ -311,7 +311,7 @@ dependencies = [
 [[package]]
 name = "handlebars_sprig"
 version = "0.4.0"
-source = "git+https://github.com/rajatjindal/handlebars-sprig?rev=ac179552db4ed525e6e453a998140b1abb259b14#ac179552db4ed525e6e453a998140b1abb259b14"
+source = "git+https://github.com/rajatjindal/handlebars-sprig?rev=f2d42142121d4f04b35ce00fdd26ba48b0993fe0#f2d42142121d4f04b35ce00fdd26ba48b0993fe0"
 dependencies = [
  "chrono",
  "handlebars",
@@ -319,7 +319,7 @@ dependencies = [
  "rand",
  "serde",
  "serde_json",
- "spin-sdk 0.4.0",
+ "spin-sdk",
 ]
 
 [[package]]
@@ -888,7 +888,7 @@ dependencies = [
 [[package]]
 name = "spin-macro"
 version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?rev=232567f2b6c6b6d8145b5a7fdd42452ed69639e6#232567f2b6c6b6d8145b5a7fdd42452ed69639e6"
+source = "git+https://github.com/fermyon/spin?rev=139c40967a75dbdd5d4da2e626d24e68f54c0a5a#139c40967a75dbdd5d4da2e626d24e68f54c0a5a"
 dependencies = [
  "anyhow",
  "bytes",
@@ -898,48 +898,19 @@ dependencies = [
  "syn",
  "wit-bindgen-gen-core",
  "wit-bindgen-gen-rust-wasm",
- "wit-bindgen-rust",
-]
-
-[[package]]
-name = "spin-macro"
-version = "0.1.0"
-source = "git+https://github.com/fermyon/spin?rev=4c6ec40ef8b518c1e901a476c752ad961525bef8#4c6ec40ef8b518c1e901a476c752ad961525bef8"
-dependencies = [
- "anyhow",
- "bytes",
- "http",
- "proc-macro2",
- "quote",
- "syn",
- "wit-bindgen-gen-core",
- "wit-bindgen-gen-rust-wasm",
- "wit-bindgen-rust",
-]
-
-[[package]]
-name = "spin-sdk"
-version = "0.3.0"
-source = "git+https://github.com/fermyon/spin?rev=4c6ec40ef8b518c1e901a476c752ad961525bef8#4c6ec40ef8b518c1e901a476c752ad961525bef8"
-dependencies = [
- "anyhow",
- "bytes",
- "http",
- "spin-macro 0.1.0 (git+https://github.com/fermyon/spin?rev=4c6ec40ef8b518c1e901a476c752ad961525bef8)",
- "wasi-experimental-http",
  "wit-bindgen-rust",
 ]
 
 [[package]]
 name = "spin-sdk"
 version = "0.4.0"
-source = "git+https://github.com/fermyon/spin?rev=232567f2b6c6b6d8145b5a7fdd42452ed69639e6#232567f2b6c6b6d8145b5a7fdd42452ed69639e6"
+source = "git+https://github.com/fermyon/spin?rev=139c40967a75dbdd5d4da2e626d24e68f54c0a5a#139c40967a75dbdd5d4da2e626d24e68f54c0a5a"
 dependencies = [
  "anyhow",
  "bytes",
  "form_urlencoded",
  "http",
- "spin-macro 0.1.0 (git+https://github.com/fermyon/spin?rev=232567f2b6c6b6d8145b5a7fdd42452ed69639e6)",
+ "spin-macro",
  "wit-bindgen-rust",
 ]
 
@@ -997,26 +968,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d326610f408c7a4eb6f51c37c330e496b08506c9457c9d34287ecc38809fb060"
 dependencies = [
  "unicode-width",
-]
-
-[[package]]
-name = "thiserror"
-version = "1.0.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "854babe52e4df1653706b98fcfc05843010039b406875930a70e4d9644e5c417"
-dependencies = [
- "thiserror-impl",
-]
-
-[[package]]
-name = "thiserror-impl"
-version = "1.0.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa32fd3f627f367fe16f893e2597ae3c05020f8bba2666a4e6ea73d377e5714b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -1271,18 +1222,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
-name = "wasi-experimental-http"
-version = "0.9.0"
-source = "git+https://github.com/deislabs/wasi-experimental-http?rev=a82ae3d6c85c4251b3663035febeb8100068f51d#a82ae3d6c85c4251b3663035febeb8100068f51d"
-dependencies = [
- "anyhow",
- "bytes",
- "http",
- "thiserror",
- "tracing",
-]
-
-[[package]]
 name = "winapi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1358,8 +1297,8 @@ checksum = "d19538ccc21819d01deaf88d6a17eae6596a12e9aafdbb97916fb49896d89de9"
 
 [[package]]
 name = "wit-bindgen-gen-core"
-version = "0.1.0"
-source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=dde4694aaa6acf9370206527a798ac4ba6a8c5b8#dde4694aaa6acf9370206527a798ac4ba6a8c5b8"
+version = "0.2.0"
+source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=cb871cfa1ee460b51eb1d144b175b9aab9c50aba#cb871cfa1ee460b51eb1d144b175b9aab9c50aba"
 dependencies = [
  "anyhow",
  "wit-parser",
@@ -1367,8 +1306,8 @@ dependencies = [
 
 [[package]]
 name = "wit-bindgen-gen-rust"
-version = "0.1.0"
-source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=dde4694aaa6acf9370206527a798ac4ba6a8c5b8#dde4694aaa6acf9370206527a798ac4ba6a8c5b8"
+version = "0.2.0"
+source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=cb871cfa1ee460b51eb1d144b175b9aab9c50aba#cb871cfa1ee460b51eb1d144b175b9aab9c50aba"
 dependencies = [
  "heck",
  "wit-bindgen-gen-core",
@@ -1376,8 +1315,8 @@ dependencies = [
 
 [[package]]
 name = "wit-bindgen-gen-rust-wasm"
-version = "0.1.0"
-source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=dde4694aaa6acf9370206527a798ac4ba6a8c5b8#dde4694aaa6acf9370206527a798ac4ba6a8c5b8"
+version = "0.2.0"
+source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=cb871cfa1ee460b51eb1d144b175b9aab9c50aba#cb871cfa1ee460b51eb1d144b175b9aab9c50aba"
 dependencies = [
  "heck",
  "wit-bindgen-gen-core",
@@ -1386,8 +1325,8 @@ dependencies = [
 
 [[package]]
 name = "wit-bindgen-rust"
-version = "0.1.0"
-source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=dde4694aaa6acf9370206527a798ac4ba6a8c5b8#dde4694aaa6acf9370206527a798ac4ba6a8c5b8"
+version = "0.2.0"
+source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=cb871cfa1ee460b51eb1d144b175b9aab9c50aba#cb871cfa1ee460b51eb1d144b175b9aab9c50aba"
 dependencies = [
  "async-trait",
  "bitflags",
@@ -1396,8 +1335,8 @@ dependencies = [
 
 [[package]]
 name = "wit-bindgen-rust-impl"
-version = "0.1.0"
-source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=dde4694aaa6acf9370206527a798ac4ba6a8c5b8#dde4694aaa6acf9370206527a798ac4ba6a8c5b8"
+version = "0.2.0"
+source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=cb871cfa1ee460b51eb1d144b175b9aab9c50aba#cb871cfa1ee460b51eb1d144b175b9aab9c50aba"
 dependencies = [
  "proc-macro2",
  "syn",
@@ -1407,8 +1346,8 @@ dependencies = [
 
 [[package]]
 name = "wit-parser"
-version = "0.1.0"
-source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=dde4694aaa6acf9370206527a798ac4ba6a8c5b8#dde4694aaa6acf9370206527a798ac4ba6a8c5b8"
+version = "0.2.0"
+source = "git+https://github.com/bytecodealliance/wit-bindgen?rev=cb871cfa1ee460b51eb1d144b175b9aab9c50aba#cb871cfa1ee460b51eb1d144b175b9aab9c50aba"
 dependencies = [
  "anyhow",
  "id-arena",
