@@ -37,6 +37,7 @@ description = "This article is really interesting and full of useful material."
 date = "2021-12-23T15:05:19Z"
 template = "post"
 tags = ["news", "article"]
+enable_shortcodes = false
 
 [extra]
 author = "Matt Butcher"
@@ -80,6 +81,7 @@ The following fields are defined for Bartholomew:
     - NOTE: `content_type` has no impact on the formatting. That is, Markdown will still be rendered to HTML.
 - `status`: (EXPERT) Status code and message for HTTP. E.g. "302 Found"
 - `redirect`: (EXPERT) Send a redirect to the given fully qualified URL. The default redirect type is `301 Moved Permanently`. Use `status` to set another redirect type. When this is set, no body is sent to the client.
+- `enable_shortcodes`: Allows the addition of shortcodes in the markdown content using rhai scripts. Defaults to false.
 - `[extra]`: The section marker indicates that all content after it is user-defined.
     - Fields under extra MUST be in the form `name = "value"`. All values must be strings.
     - once the `[extra]` section is declared, you cannot declare top-level fields anymore.
