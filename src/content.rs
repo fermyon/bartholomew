@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
-use std::fs::{read_dir, DirEntry};
+use std::fs::{read_dir, DirEntry, File};
+use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -79,37 +80,87 @@ pub fn all_pages(
     skip_cache: bool,
 ) -> anyhow::Result<BTreeMap<String, PageValues>> {
     if skip_cache {
-        return all_pages_load(dir, show_unpublished);
+        let index_cache: IndexCache = all_pages_load(dir, show_unpublished)?;
+        return Ok(index_cache.contents);
     }
 
     // Try loading the cached object:
     let cache = PathBuf::from(CACHE_FILE);
-    match std::fs::read_to_string(&cache) {
-        Ok(data) => {
+    let cache_contents_file = File::open(&cache);
+    // Assume cache is invalid until expiry time is verified
+    let mut valid_cache = false;
+    let contents = match cache_contents_file {
+        Ok(file) => {
+            let mut reader = BufReader::new(file);
+            let mut content = String::new();
+            let mut cache_expiry_time = String::new();
+            // The first line of the cache contents file contains the expiry timestamp
+            // The value on the first line of the cache contents is 0 if there is no expiry of the cache
+            // A value 0 is used because it fails to be parsed into  a DateTime object
+            let read_first_line = reader.read_line(&mut cache_expiry_time);
+            if read_first_line.is_ok() {
+                let cache_invalidation_time =
+                    DateTime::parse_from_rfc3339(cache_expiry_time.trim());
+                if let Ok(val) = cache_invalidation_time {
+                    if Utc::now() < val {
+                        let result = reader.read_to_string(&mut content);
+                        if result.is_ok() {
+                            // if cache is valid and read properly set it to true
+                            valid_cache = true;
+                        }
+                    }
+                }
+            }
+            content
+        }
+        _ => "".to_string(),
+    };
+    match valid_cache {
+        true => {
             // We have the whole site here.
-            serde_json::from_str(&data)
+            serde_json::from_str(&contents)
                 .map_err(|e| anyhow::anyhow!("Failed to parse page cache TOML: {}", e))
         }
-        Err(_) => {
-            let contents = all_pages_load(dir, show_unpublished)?;
+        false => {
+            let index_cache: IndexCache = all_pages_load(dir, show_unpublished)?;
+            let cache_expiry_time = match index_cache.cache_expiration {
+                Some(date) => date.to_rfc3339(),
+                _ => "0".to_string(),
+            };
             // Serialize the files back out to disk for subsequent requests.
-            let cache_data = serde_json::to_string(&contents)?;
-            std::fs::write(&cache, cache_data)?;
-            Ok(contents)
+            let cache_data = serde_json::to_string(&index_cache.contents)?;
+
+            let f = File::create(CACHE_FILE)?;
+            let mut f = BufWriter::new(f);
+            println!("Writing string  is {}", cache_expiry_time);
+            println!(
+                "Writing Expiry Time is {:#?}",
+                DateTime::parse_from_rfc3339(&cache_expiry_time)
+            );
+            // Cache_contents is stored in a file in the following manner
+            // Cache expiry timer on the 1st line
+            // The rest of the file contains the cache contents
+            writeln!(f, "{}", cache_expiry_time)?;
+            write!(f, "{}", cache_data)?;
+            Ok(index_cache.contents)
         }
     }
+}
+
+pub struct IndexCache {
+    contents: BTreeMap<String, PageValues>,
+    cache_expiration: Option<DateTime<Utc>>,
 }
 
 /// Fetch all pages from disk.
 ///
 /// If show_unpublished is `true`, this will include pages that Bartholomew has determined are
 /// unpublished.
-pub fn all_pages_load(
-    dir: PathBuf,
-    show_unpublished: bool,
-) -> anyhow::Result<BTreeMap<String, PageValues>> {
+pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<IndexCache> {
     let files = all_files(dir)?;
     let mut contents = BTreeMap::new();
+    let mut contains_unpublished: bool = false;
+    let mut earliest_unpublished: Option<DateTime<Utc>> = None;
     for f in files {
         // Dotfiles should not be loaded.
         if f.file_name()
@@ -125,6 +176,27 @@ pub fn all_pages_load(
             Ok(content) => {
                 if show_unpublished || content.published {
                     contents.insert(f.to_string_lossy().to_string(), content.into());
+                } else {
+                    // find earliest unpublished article to save timestamp to refresh cache
+                    let article_date = content.head.date;
+                    match contains_unpublished {
+                        true => {
+                            if match earliest_unpublished {
+                                Some(val) => article_date.map(|d| d <= val).unwrap_or(true),
+                                _ => false,
+                            } {
+                                earliest_unpublished = article_date;
+                            }
+                        }
+                        false => {
+                            if let Some(val) = article_date {
+                                if val > Utc::now() {
+                                    earliest_unpublished = article_date;
+                                    contains_unpublished = true;
+                                }
+                            };
+                        }
+                    }
                 }
             }
             Err(e) => {
@@ -134,7 +206,10 @@ pub fn all_pages_load(
             }
         }
     }
-    Ok(contents)
+    Ok(IndexCache {
+        contents,
+        cache_expiration: earliest_unpublished,
+    })
 }
 
 /// Fetch a list of paths to every file in the directory
