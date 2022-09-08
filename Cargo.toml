@@ -14,14 +14,14 @@ bytes = "1.1.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 flate2 = "1.0.23"
 handlebars = { version = "4.2.2", features = ["dir_source", "script_helper"] }
-handlebars_sprig = { git = "https://github.com/rajatjindal/handlebars-sprig", rev = "ac179552db4ed525e6e453a998140b1abb259b14" }
+handlebars_sprig = { git = "https://github.com/rajatjindal/handlebars-sprig", rev = "f2d42142121d4f04b35ce00fdd26ba48b0993fe0" }
 http = "0.2.6"
 pulldown-cmark = { version = "0.9.1", default-features = false }
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.79"
-spin-sdk = { git = "https://github.com/fermyon/spin", rev = "4c6ec40ef8b518c1e901a476c752ad961525bef8", optional = true }
+spin-sdk = { git = "https://github.com/fermyon/spin", rev = "139c40967a75dbdd5d4da2e626d24e68f54c0a5a", optional = true }
 toml = "0.5.9"
-wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen", rev = "dde4694aaa6acf9370206527a798ac4ba6a8c5b8", default-features = false }
+wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen", rev = "cb871cfa1ee460b51eb1d144b175b9aab9c50aba", default-features = false }
 
 [workspace]
 members = ["bart"]
