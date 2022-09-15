@@ -1,18 +1,19 @@
-use std::collections::BTreeMap;
-use std::path::PathBuf;
+#[cfg(feature = "server")]
+use {
+    handlebars::Handlebars, handlebars_sprig, http::HeaderMap, std::collections::BTreeMap,
+    std::path::PathBuf,
+};
 
 use super::content::{Content, Head};
-use handlebars::Handlebars;
-use http::HeaderMap;
 use serde::{Deserialize, Serialize};
-
-use handlebars_sprig;
 
 /// The name of the default template.
 /// This will be resolved to $TEMPLATE_DIR/$DEFAULT_TEMPLATE.hbs
+#[cfg(feature = "server")]
 const DEFAULT_TEMPLATE: &str = "main";
 
 /// Describe the site itself
+#[cfg(feature = "server")]
 #[derive(Serialize, Deserialize)]
 pub struct SiteInfo {
     pub title: String,
@@ -25,6 +26,7 @@ pub struct SiteInfo {
 }
 
 /// Context for a template render.
+#[cfg(feature = "server")]
 #[derive(Serialize)]
 pub struct TemplateContext {
     request: BTreeMap<String, String>,
@@ -46,6 +48,7 @@ pub struct TemplateContext {
 // pub struct RequestValues {}
 
 /// Information about the site, including site info and all of the pages.
+#[cfg(feature = "server")]
 #[derive(Serialize)]
 pub struct SiteValues {
     info: SiteInfo,
@@ -72,6 +75,7 @@ impl From<Content> for PageValues {
 }
 
 /// Renderer can execute a handlebars template and render the results into HTML.
+#[cfg(feature = "server")]
 pub struct Renderer<'a> {
     pub template_dir: PathBuf,
     pub theme_dir: Option<PathBuf>,
@@ -82,6 +86,7 @@ pub struct Renderer<'a> {
     handlebars: handlebars::Handlebars<'a>,
 }
 
+#[cfg(feature = "server")]
 impl<'a> Renderer<'a> {
     /// Create a new renderer with the necessary directories attached.
     pub fn new(
@@ -108,6 +113,7 @@ impl<'a> Renderer<'a> {
 
     /// Load the template directory.
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
+        #[cfg(feature = "server")]
         self.register_helpers();
 
         // If there is a theme, load the templates provided by it first
@@ -216,6 +222,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Add all of the helper functions to this renderer.
+    #[cfg(feature = "server")]
     fn register_helpers(&mut self) {
         handlebars_sprig::addhelpers(&mut self.handlebars)
     }
