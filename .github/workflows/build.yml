@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: Swatinem/rust-cache@v2
+
       - name: Install Dependencies
         run: |
           rustup target add wasm32-wasi
