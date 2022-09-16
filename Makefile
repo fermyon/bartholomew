@@ -27,7 +27,7 @@ test:
 
 .PHONY: check-content
 check-content:
-	cd docs && ../target/release/bart check content/**
+	cd docs && ../target/release/bart check content/** --shortcodes ./shortcodes
 
 .PHONY: serve
 serve: build
