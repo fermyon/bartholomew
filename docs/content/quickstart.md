@@ -101,6 +101,14 @@ If your syntax in the `.md` file is **correct**, you will receive an output simi
 ✅ content/blog/protons.md
 ```
 
+### Validating content with shortcodes
+
+If some of your documents uses shortcodes, then directory from which the shortcodes must be loaded needs to be specified using the `--shortcodes` flag.
+
+```bash
+bart check content/blog/* --shortcode ./shortcodes
+```
+
 ## Viewing Your Changes
 
 Running the `spin up` command from above (again) will render the post content at `http://localhost:3000/blog/protons`

@@ -67,7 +67,7 @@ pub struct PageValues {
 impl From<Content> for PageValues {
     fn from(mut c: Content) -> Self {
         PageValues {
-            body: c.render_markdown(),
+            body: c.render_markdown(&None),
             head: c.head,
             published: c.published,
         }

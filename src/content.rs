@@ -317,8 +317,13 @@ impl Content {
     pub fn load_shortcodes_dir(
         &mut self,
         handlebar: &mut handlebars::Handlebars,
+        shortcodes_dir: &Option<PathBuf>,
     ) -> anyhow::Result<()> {
-        let scripts = all_files(PathBuf::from(SHORTCODE_PATH))?;
+        let shortcodes_dir = match shortcodes_dir {
+            Some(path) => path.to_owned(),
+            None => PathBuf::from(SHORTCODE_PATH),
+        };
+        let scripts = all_files(shortcodes_dir)?;
         for script in scripts {
             // Relative file name without extension. Note that we skip any file
             // that doesn't have this.
@@ -336,7 +341,7 @@ impl Content {
     }
 
     /// Render the body using a Markdown renderer
-    pub fn render_markdown(&mut self) -> String {
+    pub fn render_markdown(&mut self, shortcodes_dir: &Option<PathBuf>) -> String {
         let mut buf = String::new();
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
@@ -344,7 +349,7 @@ impl Content {
         let parser = match self.head.enable_shortcodes {
             Some(true) => {
                 let mut handlebars = Handlebars::new();
-                let _ = &self.load_shortcodes_dir(&mut handlebars);
+                let _ = &self.load_shortcodes_dir(&mut handlebars, shortcodes_dir);
 
                 // don't escape HTML so that rhai scripts can return html that will
                 // be rendered as HTML
@@ -401,7 +406,8 @@ Here's another [relative link](elsewhere.md), and here's [something else](/foo).
 Here’s another <a href="/elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.</p>
 "#;
 
-        let actual_output = &Content::new(Head::default(), input.to_string()).render_markdown();
+        let actual_output =
+            &Content::new(Head::default(), input.to_string()).render_markdown(&None);
 
         assert_eq!(expected_output, actual_output)
     }

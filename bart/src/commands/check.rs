@@ -10,6 +10,9 @@ pub struct CheckCommand {
     /// The path to check.
     #[structopt()]
     pub paths: Vec<PathBuf>,
+    /// The path to directory containing shortcodes
+    #[structopt(long = "shortcodes")]
+    pub shortcodes_dir: Option<PathBuf>,
 }
 
 impl CheckCommand {
@@ -22,7 +25,7 @@ impl CheckCommand {
             if file_path.is_dir() {
                 continue;
             }
-            match check_file(&file_path).await {
+            match check_file(&file_path, &self.shortcodes_dir).await {
                 Ok(()) => println!(
                     "✅ {}",
                     &file_path.to_str().unwrap_or("").color(Color::Green)
@@ -46,7 +49,7 @@ impl CheckCommand {
     }
 }
 
-async fn check_file(p: &Path) -> Result<()> {
+async fn check_file(p: &Path, shortcodes_dir: &Option<PathBuf>) -> Result<()> {
     let raw_data = std::fs::read_to_string(p)
         .map_err(|e| anyhow::anyhow!("Could not read file {:?} as a string: {}", &p, e))?;
     let mut content: Content = raw_data
@@ -54,7 +57,7 @@ async fn check_file(p: &Path) -> Result<()> {
         .map_err(|e| anyhow::anyhow!("Could not parse file {:?}: {}", &p, e))?;
 
     // This will catch (only) panic cases.
-    let _html = content.render_markdown();
+    let _html = content.render_markdown(shortcodes_dir);
 
     // Things we could do from here:
     // - Check whether requested template is known
