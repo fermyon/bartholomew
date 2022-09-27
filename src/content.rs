@@ -130,18 +130,25 @@ pub fn all_pages(
             // Serialize the files back out to disk for subsequent requests.
             let cache_data = serde_json::to_string(&index_cache.contents)?;
 
-            let f = File::create(CACHE_FILE)?;
-            let mut f = BufWriter::new(f);
-            println!("Writing string  is {}", cache_expiry_time);
-            println!(
-                "Writing Expiry Time is {:#?}",
-                DateTime::parse_from_rfc3339(&cache_expiry_time)
-            );
-            // Cache_contents is stored in a file in the following manner
-            // Cache expiry timer on the 1st line
-            // The rest of the file contains the cache contents
-            writeln!(f, "{}", cache_expiry_time)?;
-            write!(f, "{}", cache_data)?;
+            let cache_file = File::create(CACHE_FILE);
+            match cache_file {
+                Ok(f) => {
+                    let mut f = BufWriter::new(f);
+                    println!("Writing string  is {}", cache_expiry_time);
+                    println!(
+                        "Writing Expiry Time is {:#?}",
+                        DateTime::parse_from_rfc3339(&cache_expiry_time)
+                    );
+                    // Cache_contents is stored in a file in the following manner
+                    // Cache expiry timer on the 1st line
+                    // The rest of the file contains the cache contents
+                    writeln!(f, "{}", cache_expiry_time)?;
+                    write!(f, "{}", cache_data)?;
+                }
+                _ => {
+                    eprintln!("Cannot create Cache file");
+                }
+            }
             Ok(index_cache.contents)
         }
     }
