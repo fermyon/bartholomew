@@ -311,7 +311,7 @@ dependencies = [
 [[package]]
 name = "handlebars_sprig"
 version = "0.4.0"
-source = "git+https://github.com/rajatjindal/handlebars-sprig?rev=88d05d6c58dfcc1f2c99d7dddeb76f98845d20bb#88d05d6c58dfcc1f2c99d7dddeb76f98845d20bb"
+source = "git+https://github.com/rajatjindal/handlebars-sprig?rev=f2d42142121d4f04b35ce00fdd26ba48b0993fe0#f2d42142121d4f04b35ce00fdd26ba48b0993fe0"
 dependencies = [
  "chrono",
  "handlebars",
