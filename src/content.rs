@@ -252,10 +252,10 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
 fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
     if let Some(dest) = dest.strip_suffix(".md") {
         if let Some(dest) = dest.strip_prefix("./") {
-            return format!("/{dest}").into();
-        } else if !dest.contains('/') {
-            return format!("/{dest}").into();
+            return dest.to_string().into();
         }
+
+        return dest.to_string().into();
     }
 
     dest
@@ -407,10 +407,12 @@ mod test {
         let input = r#"
 This is a [relative link](./relative.md), but this is a [URL](https://en.wikipedia.org/).
 Here's another [relative link](elsewhere.md), and here's [something else](/foo).
+And this is an example of [relative deep link](./relatively/deep.md) and an example of [absolute deep link](/absolute/deep.md)
 "#;
 
-        let expected_output = r#"<p>This is a <a href="/relative">relative link</a>, but this is a <a href="https://en.wikipedia.org/">URL</a>.
-Here’s another <a href="/elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.</p>
+        let expected_output = r#"<p>This is a <a href="relative">relative link</a>, but this is a <a href="https://en.wikipedia.org/">URL</a>.
+Here’s another <a href="elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.
+And this is an example of <a href="relatively/deep">relative deep link</a> and an example of <a href="/absolute/deep">absolute deep link</a></p>
 "#;
 
         let actual_output =
