@@ -257,14 +257,11 @@ fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
         return dest;
     };
 
-    let firstleg = match dest.strip_suffix(".md") {
-        Some(val) => val,
-        _ => &dest,
-    };
+    let firstleg = dest.replace(".md", "");
 
     let result = match firstleg.strip_prefix("./") {
         Some(val) => val,
-        _ => firstleg,
+        _ => firstleg.as_str(),
     };
 
     result.to_string().into()
@@ -427,27 +424,29 @@ mod test {
         //relative links
         test_relative_links_0: ("link-to-page", "link-to-page", "relative link without slash and extension"),
         test_relative_links_1: ("link-to-page.md", "link-to-page", "relative link with .md extension"),
-        test_relative_links_2: ("link-to-page.jpg", "link-to-page.jpg", "relative link with .jpg extension"),
-        test_relative_links_3: ("./link-to-page", "link-to-page", "relative link with slash"),
-        test_relative_links_4: ("./link-to-page.md", "link-to-page", "relative link with slash and .md extension"),
-        test_relative_links_5: ("./link-to-page.jpg", "link-to-page.jpg", "relative link with slash and .jpg extension"),
+        test_relative_links_2: ("link-to-page.md#build", "link-to-page#build", "relative link with .md extension and hash"),
+        test_relative_links_3: ("link-to-page.jpg", "link-to-page.jpg", "relative link with .jpg extension"),
+        test_relative_links_4: ("./link-to-page", "link-to-page", "relative link with slash"),
+        test_relative_links_5: ("./link-to-page.md", "link-to-page", "relative link with slash and .md extension"),
+        test_relative_links_6: ("./link-to-page.jpg", "link-to-page.jpg", "relative link with slash and .jpg extension"),
 
         //relative deep links
-        test_relative_links_6: ("deep/link-to-page", "deep/link-to-page", "deep relative link without slash and extension"),
-        test_relative_links_7: ("deep/link-to-page.md", "deep/link-to-page", "deep relative link with .md extension"),
-        test_relative_links_8: ("deep/link-to-page.jpg", "deep/link-to-page.jpg", "deep relative link with .jpg extension"),
-        test_relative_links_9: ("./deep/link-to-page", "deep/link-to-page", "deep relative link with slash"),
-        test_relative_links_10: ("./deep/link-to-page.md", "deep/link-to-page", "deep relative link with slash and .md extension"),
-        test_relative_links_11: ("./deep/link-to-page.jpg", "deep/link-to-page.jpg", "deep relative link with slash and .jpg extension"),
+        test_relative_links_7: ("deep/link-to-page", "deep/link-to-page", "deep relative link without slash and extension"),
+        test_relative_links_8: ("deep/link-to-page.md", "deep/link-to-page", "deep relative link with .md extension"),
+        test_relative_links_9: ("deep/link-to-page.jpg", "deep/link-to-page.jpg", "deep relative link with .jpg extension"),
+        test_relative_links_10: ("./deep/link-to-page", "deep/link-to-page", "deep relative link with slash"),
+        test_relative_links_11: ("./deep/link-to-page.md", "deep/link-to-page", "deep relative link with slash and .md extension"),
+        test_relative_links_12: ("./deep/link-to-page.jpg", "deep/link-to-page.jpg", "deep relative link with slash and .jpg extension"),
 
         //absolute links
-        test_relative_links_12: ("/link-to-page", "/link-to-page", "absolute link without slash and extension"),
-        test_relative_links_13: ("/link-to-page.md", "/link-to-page", "absolute link with .md extension"),
-        test_relative_links_14: ("/link-to-page.jpg", "/link-to-page.jpg", "absolute link with .jpg extension"),
+        test_relative_links_13: ("/link-to-page", "/link-to-page", "absolute link without slash and extension"),
+        test_relative_links_14: ("/link-to-page.md", "/link-to-page", "absolute link with .md extension"),
+        test_relative_links_15: ("/link-to-page.jpg", "/link-to-page.jpg", "absolute link with .jpg extension"),
 
         //absolute links with complete urls
-        test_relative_links_15: ("https://example.com/link-to-page", "https://example.com/link-to-page", "absolute url without slash and extension"),
-        test_relative_links_16: ("https://example.com/link-to-page.md", "https://example.com/link-to-page.md", "absolute url with .md extension"),
-        test_relative_links_17: ("https://example.com/link-to-page.jpg", "https://example.com/link-to-page.jpg", "absolute url with .jpg extension"),
+        test_relative_links_16: ("https://example.com/link-to-page", "https://example.com/link-to-page", "absolute url without slash and extension"),
+        test_relative_links_17: ("https://example.com/link-to-page.md", "https://example.com/link-to-page.md", "absolute url with .md extension"),
+        test_relative_links_18: ("https://example.com/link-to-page.jpg", "https://example.com/link-to-page.jpg", "absolute url with .jpg extension"),
+        test_relative_links_19: ("https://example.com/link-to-page.md#build", "https://example.com/link-to-page.md#build", "absolute url with .md extension and hash"),
     }
 }
