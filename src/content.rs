@@ -1,3 +1,4 @@
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::fs::{read_dir, DirEntry, File};
@@ -250,15 +251,20 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
 
 /// Translate links of the form "./<name>.md" and "<name>.md" into "/<name>"
 fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
-    if let Some(dest) = dest.strip_suffix(".md") {
-        if let Some(dest) = dest.strip_prefix("./") {
-            return dest.to_string().into();
-        }
+    //if absolute url, return as is
+    let re = Regex::new(r"^(?:[a-z+]+:)?//").unwrap();
+    if re.is_match(&dest) {
+        return dest;
+    };
 
-        return dest.to_string().into();
-    }
+    let firstleg = dest.replace(".md", "");
 
-    dest
+    let result = match firstleg.strip_prefix("./") {
+        Some(val) => val,
+        _ => firstleg.as_str(),
+    };
+
+    result.to_string().into()
 }
 
 /// Look for relative Markdown links of the form "./<name>.md" or "<name>.md" and translate them into "/<name>"
@@ -402,22 +408,45 @@ impl FromStr for Content {
 mod test {
     use super::*;
 
-    #[test]
-    fn translate_relative_links() {
-        let input = r#"
-This is a [relative link](./relative.md), but this is a [URL](https://en.wikipedia.org/).
-Here's another [relative link](elsewhere.md), and here's [something else](/foo).
-And this is an example of [relative deep link](./relatively/deep.md) and an example of [absolute deep link](/absolute/deep.md)
-"#;
+    macro_rules! maybe_translate_relative_link_tests {
+        ($($name:ident: $value:expr,)*) => {
+        $(
+            #[test]
+            fn $name() {
+                let (input, expected, msg) = $value;
+                assert_eq!(markdown::CowStr::from(expected), maybe_translate_relative_link(markdown::CowStr::from(input)), "{}", msg);
+            }
+        )*
+        }
+    }
 
-        let expected_output = r#"<p>This is a <a href="relative">relative link</a>, but this is a <a href="https://en.wikipedia.org/">URL</a>.
-Here’s another <a href="elsewhere">relative link</a>, and here’s <a href="/foo">something else</a>.
-And this is an example of <a href="relatively/deep">relative deep link</a> and an example of <a href="/absolute/deep">absolute deep link</a></p>
-"#;
+    maybe_translate_relative_link_tests! {
+        //relative links
+        test_relative_links_0: ("link-to-page", "link-to-page", "relative link without slash and extension"),
+        test_relative_links_1: ("link-to-page.md", "link-to-page", "relative link with .md extension"),
+        test_relative_links_2: ("link-to-page.md#build", "link-to-page#build", "relative link with .md extension and hash"),
+        test_relative_links_3: ("link-to-page.jpg", "link-to-page.jpg", "relative link with .jpg extension"),
+        test_relative_links_4: ("./link-to-page", "link-to-page", "relative link with slash"),
+        test_relative_links_5: ("./link-to-page.md", "link-to-page", "relative link with slash and .md extension"),
+        test_relative_links_6: ("./link-to-page.jpg", "link-to-page.jpg", "relative link with slash and .jpg extension"),
 
-        let actual_output =
-            &Content::new(Head::default(), input.to_string()).render_markdown(&None);
+        //relative deep links
+        test_relative_links_7: ("deep/link-to-page", "deep/link-to-page", "deep relative link without slash and extension"),
+        test_relative_links_8: ("deep/link-to-page.md", "deep/link-to-page", "deep relative link with .md extension"),
+        test_relative_links_9: ("deep/link-to-page.jpg", "deep/link-to-page.jpg", "deep relative link with .jpg extension"),
+        test_relative_links_10: ("./deep/link-to-page", "deep/link-to-page", "deep relative link with slash"),
+        test_relative_links_11: ("./deep/link-to-page.md", "deep/link-to-page", "deep relative link with slash and .md extension"),
+        test_relative_links_12: ("./deep/link-to-page.jpg", "deep/link-to-page.jpg", "deep relative link with slash and .jpg extension"),
 
-        assert_eq!(expected_output, actual_output)
+        //absolute links
+        test_relative_links_13: ("/link-to-page", "/link-to-page", "absolute link without slash and extension"),
+        test_relative_links_14: ("/link-to-page.md", "/link-to-page", "absolute link with .md extension"),
+        test_relative_links_15: ("/link-to-page.jpg", "/link-to-page.jpg", "absolute link with .jpg extension"),
+
+        //absolute links with complete urls
+        test_relative_links_16: ("https://example.com/link-to-page", "https://example.com/link-to-page", "absolute url without slash and extension"),
+        test_relative_links_17: ("https://example.com/link-to-page.md", "https://example.com/link-to-page.md", "absolute url with .md extension"),
+        test_relative_links_18: ("https://example.com/link-to-page.jpg", "https://example.com/link-to-page.jpg", "absolute url with .jpg extension"),
+        test_relative_links_19: ("https://example.com/link-to-page.md#build", "https://example.com/link-to-page.md#build", "absolute url with .md extension and hash"),
     }
 }
