@@ -11,5 +11,6 @@ To cut a release of Bartholomew, you will need to do the following:
     - This will trigger a release build
     - The release build will attach the `bartholomew.wasm`, `bart` CLI and checksums file to the GitHub release
     - The release notes will be auto-generated, but you can edit as needed, for instance to alert about breaking changes or other notable items
+1. Update [bartholomew-site-template](https://github.com/fermyon/bartholomew-site-template/tree/main) with the latest `wasm` module.
 
 At this point, you can just verify that all things are good.
