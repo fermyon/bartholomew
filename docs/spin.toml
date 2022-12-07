@@ -6,15 +6,82 @@ authors = [ "Fermyon Engineering <engineering@fermyon.com>" ]
 trigger = { type = "http", base = "/" }
 
 [[component]]
-source = "modules/bartholomew.wasm"
-id = "bartholomew"
-files = [ "content/**/*" , "shortcodes/*" , "templates/*", "scripts/*", "config/*"]
+id = "redirect-site-index"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/index" }
 [component.trigger]
-route = "/..."
+route = "/"
+executor = { type = "wagi" }
 
 [[component]]
-source = "modules/spin_static_fs.wasm"
-id = "fileserver"
-files = [{ source = "static/", destination = "/" }, ]
+id = "redirect-configuration"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/configuration" }
 [component.trigger]
-route = "/static/..."
+route = "/configuration"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-contributing"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/contributing" }
+[component.trigger]
+route = "/contributing"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-markdown"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/markdown" }
+[component.trigger]
+route = "/markdown"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-quickstart"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/quickstart" }
+[component.trigger]
+route = "/quickcstart"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-scripting"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/scripting" }
+[component.trigger]
+route = "/scripting"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-seo"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/seo" }
+[component.trigger]
+route = "/seo"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-shortcodes"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/shortcodes" }
+[component.trigger]
+route = "/shortcodes"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-templates"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/templates" }
+[component.trigger]
+route = "/templates"
+executor = { type = "wagi" }
+
+[[component]]
+id = "redirect-themes"
+source = "modules/redirect.wasm"
+environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/themes" }
+[component.trigger]
+route = "/themes"
+executor = { type = "wagi" }
+
