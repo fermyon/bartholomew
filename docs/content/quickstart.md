@@ -106,7 +106,7 @@ If your syntax in the `.md` file is **correct**, you will receive an output simi
 If some of your documents uses shortcodes, then directory from which the shortcodes must be loaded needs to be specified using the `--shortcodes` flag.
 
 ```bash
-bart check content/blog/* --shortcode ./shortcodes
+bart check content/blog/* --shortcodes ./shortcodes
 ```
 
 ## Viewing Your Changes
