@@ -87,7 +87,7 @@ pub fn all_pages(
 
     // Try loading the cached object:
     let cache = PathBuf::from(CACHE_FILE);
-    let cache_contents_file = File::open(&cache);
+    let cache_contents_file = File::open(cache);
     // Assume cache is invalid until expiry time is verified
     let mut valid_cache = false;
     let contents = match cache_contents_file {
