@@ -394,13 +394,17 @@ impl FromStr for Content {
         // This is a heavy-handed way of normalizing the document to only use "\n"
         // for line endings. This simplifies a number of things, including Rhai scripting.
         let doc = full_document.replace("\r\n", "\n");
-        let (toml_text, body) = doc
-            .split_once(DOC_SEPARATOR)
-            .unwrap_or(("title = 'Untitled'", &doc));
-        let head: Head =
-            toml::from_str(toml_text).map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
+        let parsed_doc = doc.split_once(DOC_SEPARATOR);
 
-        Ok(Content::new(head, body.to_owned()))
+        if let Some(val) = parsed_doc {
+            let (toml_text, body) = val;
+            let head: Head = toml::from_str(toml_text)
+                .map_err(|e| anyhow::anyhow!("TOML parsing error: {}", e))?;
+            return Ok(Content::new(head, body.to_owned()));
+        }
+        Err(anyhow::anyhow!(
+            "Frontmatter is required. Separate frontmatter from content using \"---\""
+        ))
     }
 }
 
