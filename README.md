@@ -9,6 +9,6 @@ The screenshot below shows how Bartholomew is implemented as the official Fermyo
 
 ## Bartholomew Documentation
 
-Check out [the docs](https://bartholomew.fermyon.dev/) and please raise any issues or ask any questions; we are here to help :)
+Check out [the official documentation](https://developer.fermyon.com/bartholomew/index) and please raise any issues or ask any questions; we are here to help :)
 
 ------
