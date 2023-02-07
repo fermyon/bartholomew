@@ -42,7 +42,7 @@ id = "redirect-quickstart"
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/quickstart" }
 [component.trigger]
-route = "/quickcstart"
+route = "/quickstart"
 executor = { type = "wagi" }
 
 [[component]]
