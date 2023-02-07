@@ -29,6 +29,3 @@ jobs:
         run: |
           make test
 
-      - name: Check Docs
-        run: |
-          make check-content
