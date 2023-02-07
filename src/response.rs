@@ -27,7 +27,7 @@ enum ContentEncoding {
 }
 
 pub fn not_found(route: String, body: String) -> Result<Response> {
-    eprintln!("Not found: {}", route);
+    eprintln!("Not found: {route}");
     let bldr = Builder::new()
         .status(http::StatusCode::NOT_FOUND)
         .header(http::header::CONTENT_TYPE, "text/html; charset=utf-8");
@@ -48,7 +48,7 @@ pub fn send_result(
     content_encoding: Option<&HeaderValue>,
     status: Option<u16>,
 ) -> Result<Response> {
-    eprintln!("Responded: {}", route);
+    eprintln!("Responded: {route}");
     let mut bldr = Builder::new().header(http::header::CONTENT_TYPE, content_type);
     if let Some(status) = status {
         bldr = bldr.status(status);

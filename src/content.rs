@@ -135,7 +135,7 @@ pub fn all_pages(
             match cache_file {
                 Ok(f) => {
                     let mut f = BufWriter::new(f);
-                    println!("Writing string  is {}", cache_expiry_time);
+                    println!("Writing string  is {cache_expiry_time}");
                     println!(
                         "Writing Expiry Time is {:#?}",
                         DateTime::parse_from_rfc3339(&cache_expiry_time)
@@ -143,8 +143,8 @@ pub fn all_pages(
                     // Cache_contents is stored in a file in the following manner
                     // Cache expiry timer on the 1st line
                     // The rest of the file contains the cache contents
-                    writeln!(f, "{}", cache_expiry_time)?;
-                    write!(f, "{}", cache_data)?;
+                    writeln!(f, "{cache_expiry_time}")?;
+                    write!(f, "{cache_data}")?;
                 }
                 _ => {
                     eprintln!("Cannot create Cache file");
@@ -175,7 +175,7 @@ pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<In
             .map(|f| f.to_string_lossy().starts_with('.'))
             .unwrap_or(false)
         {
-            eprintln!("Skipping dotfile {:?}", f);
+            eprintln!("Skipping dotfile {f:?}");
             continue;
         }
         let raw_data = std::fs::read_to_string(&f)
@@ -374,7 +374,7 @@ impl Content {
                     .render_template(&self.body, &{})
                     .unwrap_or_else(|e| {
                         // print the error
-                        eprintln!("Error rendering markdown: {}", e);
+                        eprintln!("Error rendering markdown: {e}");
                         // return nothing
                         e.to_string()
                     });
