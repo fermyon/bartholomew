@@ -1,8 +1,9 @@
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "spin")]
+use spin_sdk::key_value::Store;
 use std::collections::{BTreeMap, HashMap};
-use std::fs::{read_dir, DirEntry, File};
-use std::io::{BufRead, BufReader, BufWriter, Read, Write};
+use std::fs::{read_dir, DirEntry};
 use std::path::PathBuf;
 use std::str::FromStr;
 
@@ -14,10 +15,13 @@ use crate::template::PageValues;
 use handlebars::Handlebars;
 
 const DOC_SEPARATOR: &str = "\n---\n";
-// Cache for page values to reduce IO on each request
-const CACHE_FILE: &str = "/config/_cache.json";
 
 const SHORTCODE_PATH: &str = "/shortcodes/";
+
+#[cfg(feature = "spin")]
+const BARTHOLOMEW_INDEX_CACHE_KEY: &str = "bartholomew_index_cache";
+#[cfg(feature = "spin")]
+const BARTHOLOMEW_CACHE_EXPIRY_KEY: &str = "bartholomew_cache_expiry";
 
 /// Head contains the front matter for a document
 #[derive(Default, Deserialize, Serialize)]
@@ -62,6 +66,8 @@ pub struct Head {
     pub redirect: Option<String>,
     /// If set to true, this will enable shortcode support for the document
     pub enable_shortcodes: Option<bool>,
+    /// If set to true, disables caching using KV
+    pub disable_page_cache: Option<bool>,
     /// A map of string/string pairs that are user-customizable.
     pub extra: Option<HashMap<String, String>>,
 }
@@ -84,38 +90,27 @@ pub fn all_pages(
         let index_cache: IndexCache = all_pages_load(dir, show_unpublished)?;
         return Ok(index_cache.contents);
     }
-
-    // Try loading the cached object:
-    let cache = PathBuf::from(CACHE_FILE);
-    let cache_contents_file = File::open(cache);
-    // Assume cache is invalid until expiry time is verified
+    #[cfg(feature = "spin")]
     let mut valid_cache = false;
-    let contents = match cache_contents_file {
-        Ok(file) => {
-            let mut reader = BufReader::new(file);
-            let mut content = String::new();
-            let mut cache_expiry_time = String::new();
-            // The first line of the cache contents file contains the expiry timestamp
-            // The value on the first line of the cache contents is 0 if there is no expiry of the cache
-            // A value 0 is used because it fails to be parsed into  a DateTime object
-            let read_first_line = reader.read_line(&mut cache_expiry_time);
-            if read_first_line.is_ok() {
-                let cache_invalidation_time =
-                    DateTime::parse_from_rfc3339(cache_expiry_time.trim());
-                if let Ok(val) = cache_invalidation_time {
-                    if Utc::now() < val {
-                        let result = reader.read_to_string(&mut content);
-                        if result.is_ok() {
-                            // if cache is valid and read properly set it to true
-                            valid_cache = true;
-                        }
-                    }
-                }
-            }
-            content
+    #[cfg(not(feature = "spin"))]
+    let valid_cache = false;
+    #[cfg(feature = "spin")]
+    let store = Store::open_default()?;
+    #[cfg(feature = "spin")]
+    let mut contents = String::from("");
+    #[cfg(not(feature = "spin"))]
+    let contents = String::from("");
+    // Try loading the cached object:
+    #[cfg(feature = "spin")]
+    if store.exists(BARTHOLOMEW_CACHE_EXPIRY_KEY)? {
+        contents = String::from_utf8(store.get(BARTHOLOMEW_INDEX_CACHE_KEY)?)?;
+        let expiry_time = String::from_utf8(store.get("bartholomew_cache_expiry")?)?;
+        let cache_expiry_time = DateTime::<Utc>::from_str(expiry_time.trim())?;
+        if Utc::now() < cache_expiry_time {
+            // if cache is valid and read properly set it to true
+            valid_cache = true;
         }
-        _ => "".to_string(),
-    };
+    }
     match valid_cache {
         true => {
             // We have the whole site here.
@@ -124,31 +119,13 @@ pub fn all_pages(
         }
         false => {
             let index_cache: IndexCache = all_pages_load(dir, show_unpublished)?;
-            let cache_expiry_time = match index_cache.cache_expiration {
-                Some(date) => date.to_rfc3339(),
-                _ => "0".to_string(),
-            };
-            // Serialize the files back out to disk for subsequent requests.
-            let cache_data = serde_json::to_string(&index_cache.contents)?;
-
-            let cache_file = File::create(CACHE_FILE);
-            match cache_file {
-                Ok(f) => {
-                    let mut f = BufWriter::new(f);
-                    println!("Writing string  is {cache_expiry_time}");
-                    println!(
-                        "Writing Expiry Time is {:#?}",
-                        DateTime::parse_from_rfc3339(&cache_expiry_time)
-                    );
-                    // Cache_contents is stored in a file in the following manner
-                    // Cache expiry timer on the 1st line
-                    // The rest of the file contains the cache contents
-                    writeln!(f, "{cache_expiry_time}")?;
-                    write!(f, "{cache_data}")?;
-                }
-                _ => {
-                    eprintln!("Cannot create Cache file");
-                }
+            #[cfg(feature = "spin")]
+            {
+                let cache_expiry_time = index_cache.cache_expiration.to_string();
+                // Serialize the value back out to KV for subsequent requests.
+                let cache_data = serde_json::to_string(&index_cache.contents)?;
+                store.set(BARTHOLOMEW_INDEX_CACHE_KEY, cache_data)?;
+                store.set(BARTHOLOMEW_CACHE_EXPIRY_KEY, cache_expiry_time)?;
             }
             Ok(index_cache.contents)
         }
@@ -156,8 +133,8 @@ pub fn all_pages(
 }
 
 pub struct IndexCache {
-    contents: BTreeMap<String, PageValues>,
-    cache_expiration: Option<DateTime<Utc>>,
+    pub contents: BTreeMap<String, PageValues>,
+    pub cache_expiration: DateTime<Utc>,
 }
 
 /// Fetch all pages from disk.
@@ -214,9 +191,13 @@ pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<In
             }
         }
     }
+    let cache_expiration = match contains_unpublished {
+        true => earliest_unpublished.unwrap(),
+        false => DateTime::<Utc>::MAX_UTC,
+    };
     Ok(IndexCache {
         contents,
-        cache_expiration: earliest_unpublished,
+        cache_expiration,
     })
 }
 
