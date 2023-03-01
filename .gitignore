@@ -3,3 +3,4 @@
 /logs
 /config/_cache.json
 **/.DS_Store
+node_modules/
