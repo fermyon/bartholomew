@@ -12,6 +12,19 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "server")]
 const DEFAULT_TEMPLATE: &str = "main";
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct DynamicTemplateConfig {
+    pub dynamic_content_url: String,
+    pub dynamic_content_path: String,
+    pub dynamic_template_name: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct DynamicTemplateParams {
+    pub dynamic_content_path: String,
+    pub dynamic_template_name: String,
+}
+
 /// Describe the site itself
 #[cfg(feature = "server")]
 #[derive(Serialize, Deserialize)]
@@ -22,6 +35,7 @@ pub struct SiteInfo {
     pub about: Option<String>,
     pub theme: Option<String>,
     pub index_site_pages: Option<Vec<String>>,
+    pub dynamic_templates: Option<Vec<DynamicTemplateConfig>>,
     pub extra: BTreeMap<String, String>,
 }
 
