@@ -278,6 +278,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             status: None,
             redirect: None,
             enable_shortcodes: None,
+            disable_page_cache: None,
         },
         body: msg.to_string(),
         published: true,
