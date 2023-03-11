@@ -9,6 +9,7 @@ use std::str::FromStr;
 use chrono::{DateTime, Utc};
 use pulldown_cmark as markdown;
 
+use crate::rhai_engine::custom_rhai_engine_init;
 use crate::template::PageValues;
 
 use handlebars::Handlebars;
@@ -362,6 +363,11 @@ impl Content {
         let parser = match self.head.enable_shortcodes {
             Some(true) => {
                 let mut handlebars = Handlebars::new();
+                // Initialize the custom rhai enginer with helpers
+                let rhai_engine = custom_rhai_engine_init();
+                // Make handlebars use the custom engine
+                handlebars.set_engine(rhai_engine);
+
                 let _ = &self.load_shortcodes_dir(&mut handlebars, shortcodes_dir);
 
                 // don't escape HTML so that rhai scripts can return html that will

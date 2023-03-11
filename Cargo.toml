@@ -17,6 +17,7 @@ handlebars = { version = "4.2.2", features = ["dir_source", "script_helper"] }
 handlebars_sprig = { git = "https://github.com/rajatjindal/handlebars-sprig", rev = "f2d42142121d4f04b35ce00fdd26ba48b0993fe0", optional = true }
 http = "0.2.6"
 pulldown-cmark = { version = "0.9.1", default-features = false }
+rhai = "1.12.0"
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.79"
 spin-sdk = { git = "https://github.com/fermyon/spin", rev = "139c40967a75dbdd5d4da2e626d24e68f54c0a5a", optional = true }
@@ -31,4 +32,4 @@ members = ["bart"]
 [features]
 default = ["server"]
 spin = ["dep:spin-sdk"]
-server = ["spin",  "dep:handlebars_sprig"]
+server = ["spin", "dep:handlebars_sprig"]
