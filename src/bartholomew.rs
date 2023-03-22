@@ -123,7 +123,9 @@ pub fn render(req: Request) -> Result<Response> {
 
             let status_opt = doc.head.status;
             let loc_opt = doc.head.redirect.clone();
-
+            if doc.head.path_info.is_none() {
+                doc.head.path_info = Some(path_info.clone());
+            }
             match loc_opt {
                 Some(location) => {
                     let status =
