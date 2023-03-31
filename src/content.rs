@@ -363,7 +363,7 @@ impl Content {
         let parser = match self.head.enable_shortcodes {
             Some(true) => {
                 let mut handlebars = Handlebars::new();
-                // Initialize the custom rhai enginer with helpers
+                // Initialize the custom rhai engine with helpers
                 let rhai_engine = custom_rhai_engine_init();
                 // Make handlebars use the custom engine
                 handlebars.set_engine(rhai_engine);
