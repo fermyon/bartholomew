@@ -1,4 +1,5 @@
 pub mod content;
+pub mod rhai_engine;
 pub mod template;
 
 #[cfg(feature = "spin")]

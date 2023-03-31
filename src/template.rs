@@ -4,6 +4,8 @@ use {
     std::path::PathBuf,
 };
 
+use crate::rhai_engine::custom_rhai_engine_init;
+
 use super::content::{Content, Head};
 use serde::{Deserialize, Serialize};
 
@@ -109,6 +111,11 @@ impl<'a> Renderer<'a> {
         script_dir: PathBuf,
         content_dir: PathBuf,
     ) -> Self {
+        let mut handlebars = Handlebars::new();
+        // Create custom rhai engine and assign to handlebars
+        let rhai_engine = custom_rhai_engine_init();
+        handlebars.set_engine(rhai_engine);
+
         Renderer {
             template_dir,
             theme_dir,
@@ -116,7 +123,7 @@ impl<'a> Renderer<'a> {
             content_dir,
             show_unpublished: false,
             disable_cache: false,
-            handlebars: Handlebars::new(),
+            handlebars,
         }
     }
     // pub fn load(&mut self, name: &str, file: &str) -> Result<(), anyhow::Error> {
