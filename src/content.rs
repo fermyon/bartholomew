@@ -63,6 +63,9 @@ pub struct Head {
     pub redirect: Option<String>,
     /// If set to true, this will enable shortcode support for the document
     pub enable_shortcodes: Option<bool>,
+    /// This provides the path info the file
+    /// If empty, the path info is filled in using the request url
+    pub path_info: Option<String>,
     /// A map of string/string pairs that are user-customizable.
     pub extra: Option<HashMap<String, String>>,
 }
@@ -251,7 +254,7 @@ fn visit_files(dir: PathBuf, cb: &mut dyn FnMut(&DirEntry)) -> anyhow::Result<()
 }
 
 /// Translate links of the form "./<name>.md" and "<name>.md" into "/<name>"
-fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
+fn maybe_translate_relative_link(dest: markdown::CowStr, path_info: String) -> markdown::CowStr {
     //if absolute url, return as is
     let re = Regex::new(r"^(?:[a-z+]+:)?//").unwrap();
     if re.is_match(&dest) {
@@ -259,11 +262,19 @@ fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
     };
 
     let firstleg = dest.replace(".md", "");
-
     let result = match firstleg.strip_prefix("./") {
         Some(val) => val,
         _ => firstleg.as_str(),
     };
+
+    // If urls are not urls from the root of the website or anchor tags
+    // Convert them to absolute urls to avoid issues where a url end with a slash
+    if !result.starts_with('/') && !result.starts_with('#') {
+        let mut path = PathBuf::from(path_info);
+        path.pop();
+        path = path.join(result);
+        return path.to_str().unwrap_or_default().to_owned().into();
+    }
 
     result.to_string().into()
 }
@@ -271,12 +282,12 @@ fn maybe_translate_relative_link(dest: markdown::CowStr) -> markdown::CowStr {
 /// Look for relative Markdown links of the form "./<name>.md" or "<name>.md" and translate them into "/<name>"
 ///
 /// See also `maybe_translate_relative_link`.
-fn translate_relative_links(event: markdown::Event) -> markdown::Event {
+fn translate_relative_links(event: markdown::Event, path_info: String) -> markdown::Event {
     match event {
         markdown::Event::Start(markdown::Tag::Link(markdown::LinkType::Inline, dest, title)) => {
             markdown::Event::Start(markdown::Tag::Link(
                 markdown::LinkType::Inline,
-                maybe_translate_relative_link(dest),
+                maybe_translate_relative_link(dest, path_info),
                 title,
             ))
         }
@@ -359,35 +370,36 @@ impl Content {
         let mut buf = String::new();
         // Might as well turn on all the lights on the Christmas tree
         let opt = markdown::Options::all();
-        let out: String;
-        let parser = match self.head.enable_shortcodes {
-            Some(true) => {
-                let mut handlebars = Handlebars::new();
-                // Initialize the custom rhai engine with helpers
-                let rhai_engine = custom_rhai_engine_init();
-                // Make handlebars use the custom engine
-                handlebars.set_engine(rhai_engine);
+        let mut out: String = self.body.to_owned();
+        if let Some(true) = self.head.enable_shortcodes {
+            let mut handlebars = Handlebars::new();
 
-                let _ = &self.load_shortcodes_dir(&mut handlebars, shortcodes_dir);
+            let rhai_engine = custom_rhai_engine_init();
+            // Make handlebars use the custom engine
+            handlebars.set_engine(rhai_engine);
 
-                // don't escape HTML so that rhai scripts can return html that will
-                // be rendered as HTML
-                handlebars.register_escape_fn(handlebars::no_escape);
+            let _ = &self.load_shortcodes_dir(&mut handlebars, shortcodes_dir);
 
-                // run the markdown through the template engine to
-                // enable any script helpers
-                out = handlebars
-                    .render_template(&self.body, &{})
-                    .unwrap_or_else(|e| {
-                        // print the error
-                        eprintln!("Error rendering markdown: {e}");
-                        // return nothing
-                        e.to_string()
-                    });
-                markdown::Parser::new_ext(&out, opt).map(translate_relative_links)
-            }
-            _ => markdown::Parser::new_ext(&self.body, opt).map(translate_relative_links),
-        };
+            // don't escape HTML so that rhai scripts can return html that will
+            // be rendered as HTML
+            handlebars.register_escape_fn(handlebars::no_escape);
+
+            // run the markdown through the template engine to
+            // enable any script helpers
+            out = handlebars
+                .render_template(&self.body, &{})
+                .unwrap_or_else(|e| {
+                    // print the error
+                    eprintln!("Error rendering markdown: {e}");
+                    // return nothing
+                    e.to_string()
+                });
+        }
+
+        let parser = markdown::Parser::new_ext(&out, opt).map(|event| {
+            translate_relative_links(event, self.head.path_info.clone().unwrap_or_default())
+        });
+
         markdown::html::push_html(&mut buf, parser);
 
         buf
@@ -420,7 +432,7 @@ mod test {
             #[test]
             fn $name() {
                 let (input, expected, msg) = $value;
-                assert_eq!(markdown::CowStr::from(expected), maybe_translate_relative_link(markdown::CowStr::from(input)), "{}", msg);
+                assert_eq!(markdown::CowStr::from(expected), maybe_translate_relative_link(markdown::CowStr::from(input), "".to_owned()), "{}", msg);
             }
         )*
         }
