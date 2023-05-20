@@ -1,12 +1,12 @@
 use crate::content;
 use crate::response::{self, *};
-use crate::template::{self, DynamicTemplateParams};
+use crate::template::{self};
 use anyhow::{anyhow, Result};
 use spin_sdk::{
     http::{Request, Response},
     http_component,
 };
-use std::collections::HashMap;
+
 use std::path::PathBuf;
 
 /// The entry point to Bartholomew.
@@ -43,24 +43,6 @@ pub fn render(req: Request) -> Result<Response> {
 
     // Load the site config.
     let mut config: template::SiteInfo = toml::from_slice(&std::fs::read(CONFIG_FILE)?)?;
-    let dynamic_templates = config
-        .dynamic_templates
-        .clone()
-        .unwrap_or_default()
-        .into_iter()
-        .map(|t| {
-            (
-                t.dynamic_content_url,
-                DynamicTemplateParams {
-                    dynamic_content_path: t.dynamic_content_path,
-                    dynamic_template_name: t.dynamic_template_name,
-                },
-            )
-        })
-        .collect::<HashMap<_, _>>();
-
-    // check if path exists in dynamic templates list
-    let dynamic_template_params = dynamic_templates.get(&path_info as &str);
 
     let base_url = std::env::var(BASE_URL_ENV);
 
@@ -98,16 +80,36 @@ pub fn render(req: Request) -> Result<Response> {
     engine.load_script_dir()?;
 
     // Load the content.
-    let content_path = match dynamic_template_params {
-        Some(val) => content::content_path(PathBuf::from(CONTENT_PATH), &val.dynamic_content_path),
-        None => content::content_path(PathBuf::from(CONTENT_PATH), &path_info),
-    };
+    let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
 
     eprintln!("Path {}", content_path.to_string_lossy());
 
     match std::fs::read_to_string(&content_path) {
         Ok(full_document) => {
             let mut doc: content::Content = full_document.parse()?;
+
+            // If a dynamic content source if specified get the body from that file instead
+            if let Some(val) = &doc.head.body_source {
+                match std::fs::read_to_string(content::content_path(
+                    PathBuf::from(CONTENT_PATH),
+                    val,
+                )) {
+                    Ok(alternate_content) => {
+                        let new_content: content::Content = alternate_content.parse()?;
+                        doc.body = new_content.body;
+                    }
+                    Err(err) => {
+                        eprintln!("Failed to read body source: {err}");
+                        let err_vals = template::error_values(
+                            "Not Found",
+                            "The requested page was not found.",
+                        );
+                        let body =
+                            engine.render_template(err_vals, config, req.headers().to_owned())?;
+                        return response::not_found(path_info, body);
+                    }
+                }
+            }
 
             // Hide unpublished content unless PREVIEW_MODE is on.
             if !doc.published && !preview_mode {
@@ -138,10 +140,6 @@ pub fn render(req: Request) -> Result<Response> {
                         .content_type
                         .clone()
                         .unwrap_or_else(|| DEFAULT_CONTENT_TYPE.to_owned());
-
-                    if let Some(val) = dynamic_template_params {
-                        doc.head.template = Some(val.dynamic_template_name.to_owned());
-                    }
 
                     let data = engine
                         .render_template(doc, config, req.headers().to_owned())

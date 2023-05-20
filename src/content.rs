@@ -66,6 +66,9 @@ pub struct Head {
     /// This provides the path info the file
     /// If empty, the path info is filled in using the request url
     pub path_info: Option<String>,
+    /// This provides the path from which to dynamicaly load content for the body
+    /// If empty, the body of the current file is used.
+    pub body_source: Option<String>,
     /// A map of string/string pairs that are user-customizable.
     pub extra: Option<HashMap<String, String>>,
 }
