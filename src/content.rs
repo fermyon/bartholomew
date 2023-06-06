@@ -387,6 +387,10 @@ impl Content {
             // be rendered as HTML
             handlebars.register_escape_fn(handlebars::no_escape);
 
+            // register the handlebars_sprig helpers
+            #[cfg(feature = "server")]
+            handlebars_sprig::addhelpers(&mut handlebars);
+
             // run the markdown through the template engine to
             // enable any script helpers
             out = handlebars
