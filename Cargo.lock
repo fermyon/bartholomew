@@ -90,7 +90,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "bart"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "bartholomew",
@@ -106,7 +106,7 @@ dependencies = [
 
 [[package]]
 name = "bartholomew"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "brotli",
