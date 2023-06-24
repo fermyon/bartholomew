@@ -50,6 +50,11 @@ pub struct Head {
     ///
     /// This may result in HTTP headers being altered.
     pub content_type: Option<String>,
+    /// Cache Control header override.
+    ///
+    /// The default is to send no cache control headers. This should only be
+    /// used when you are sure that the content is safe to be cached.
+    pub cache_control: Option<String>,
     /// An optional status line
     ///
     /// This should only ever be set if the status code is _not_ 200.

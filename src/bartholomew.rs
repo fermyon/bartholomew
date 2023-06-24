@@ -141,13 +141,22 @@ pub fn render(req: Request) -> Result<Response> {
                         .clone()
                         .unwrap_or_else(|| DEFAULT_CONTENT_TYPE.to_owned());
 
+                    let cache_control = doc.head.cache_control.clone();
+
                     let data = engine
                         .render_template(doc, config, req.headers().to_owned())
                         .map_err(|e| anyhow!("Rendering {:?}: {}", &content_path, e))?;
 
                     let content_encoding = req.headers().get(http::header::ACCEPT_ENCODING);
 
-                    response::send_result(path_info, data, content_type, content_encoding, None)
+                    response::send_result(
+                        path_info,
+                        data,
+                        content_type,
+                        cache_control,
+                        content_encoding,
+                        None,
+                    )
                 }
             }
         }
