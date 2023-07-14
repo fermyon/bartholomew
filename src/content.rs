@@ -300,6 +300,7 @@ fn translate_relative_links(event: markdown::Event, path_info: String) -> markdo
 
 /// The envelope for a page's content
 /// The head contains front matter, while the body is the markdown body of the document.
+#[derive(Serialize, Deserialize)]
 pub struct Content {
     /// The front matter for this content.
     pub head: Head,

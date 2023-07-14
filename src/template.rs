@@ -7,6 +7,7 @@ use {
 use crate::rhai_engine::custom_rhai_engine_init;
 
 use super::content::{Content, Head};
+use handlebars::handlebars_helper;
 use serde::{Deserialize, Serialize};
 
 /// The name of the default template.
@@ -81,9 +82,9 @@ pub struct PageValues {
 }
 
 impl From<Content> for PageValues {
-    fn from(mut c: Content) -> Self {
+    fn from(c: Content) -> Self {
         PageValues {
-            body: c.render_markdown(&None),
+            body: c.body,
             head: c.head,
             published: c.published,
         }
@@ -101,6 +102,11 @@ pub struct Renderer<'a> {
     pub disable_cache: bool,
     handlebars: handlebars::Handlebars<'a>,
 }
+
+handlebars_helper!(render_markdown: |content: Content|{
+    let mut content = content;
+    content.render_markdown(&None)
+});
 
 #[cfg(feature = "server")]
 impl<'a> Renderer<'a> {
@@ -136,6 +142,8 @@ impl<'a> Renderer<'a> {
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
         #[cfg(feature = "server")]
         self.register_helpers();
+        self.handlebars
+            .register_helper("render_markdown", Box::new(render_markdown));
 
         // If there is a theme, load the templates provided by it first
         // Allows for user defined templates to take precedence
