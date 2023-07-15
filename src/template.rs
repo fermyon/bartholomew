@@ -47,7 +47,7 @@ pub struct SiteInfo {
 #[derive(Serialize)]
 pub struct TemplateContext {
     request: BTreeMap<String, String>,
-    page: PageValues,
+    page: Content,
     site: SiteValues,
     /// A copy of the environment variables
     ///
@@ -69,26 +69,7 @@ pub struct TemplateContext {
 #[derive(Serialize)]
 pub struct SiteValues {
     info: SiteInfo,
-    pages: BTreeMap<String, PageValues>,
-}
-
-/// The structured values sent to the template renderer.
-/// The body should be legal HTML that can be inserted within the <body> tag.
-#[derive(Serialize, Deserialize)]
-pub struct PageValues {
-    pub head: Head,
-    pub body: String,
-    pub published: bool,
-}
-
-impl From<Content> for PageValues {
-    fn from(c: Content) -> Self {
-        PageValues {
-            body: c.body,
-            head: c.head,
-            published: c.published,
-        }
-    }
+    pages: BTreeMap<String, Content>,
 }
 
 /// Renderer can execute a handlebars template and render the results into HTML.
@@ -190,14 +171,13 @@ impl<'a> Renderer<'a> {
     }
 
     /// Given values and a site object, render a template.
-    pub fn render_template<T: Into<PageValues>>(
+    pub fn render_template(
         &self,
-        values: T,
+        content: Content,
         info: SiteInfo,
         request: HeaderMap,
     ) -> anyhow::Result<String> {
-        let page: PageValues = values.into();
-        let tpl = page
+        let tpl = content
             .head
             .template
             .clone()
@@ -210,7 +190,7 @@ impl<'a> Renderer<'a> {
         }
 
         let ctx = TemplateContext {
-            page,
+            page: content,
             request: request_headers,
             site: SiteValues {
                 // Right now, we literally include ALL OF THE CONTENT in its rendered
@@ -279,8 +259,8 @@ fn pages_helper(
 ///
 /// It should be assumed that all data passed into this function will be visible to the
 /// end user.
-pub fn error_values(title: &str, msg: &str) -> PageValues {
-    PageValues {
+pub fn error_values(title: &str, msg: &str) -> Content {
+    Content {
         head: Head {
             title: title.to_string(),
             date: Some(chrono::Utc::now()),
