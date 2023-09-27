@@ -287,6 +287,7 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
             enable_shortcodes: None,
             path_info: None,
             body_source: None,
+            cache_control: None,
         },
         body: msg.to_string(),
         published: true,

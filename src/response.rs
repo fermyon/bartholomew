@@ -45,11 +45,16 @@ pub fn send_result(
     route: String,
     body: String,
     content_type: String,
+    cache_control: Option<String>,
     content_encoding: Option<&HeaderValue>,
     status: Option<u16>,
 ) -> Result<Response> {
     eprintln!("Responded: {route}");
     let mut bldr = Builder::new().header(http::header::CONTENT_TYPE, content_type);
+
+    if let Some(val) = cache_control {
+        bldr = bldr.header(http::header::CACHE_CONTROL, val);
+    }
     if let Some(status) = status {
         bldr = bldr.status(status);
     }
