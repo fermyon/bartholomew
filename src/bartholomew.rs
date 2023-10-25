@@ -28,13 +28,14 @@ pub fn render(req: Request) -> Result<Response> {
         _ => false,
     };
 
+    let optinal_path_prefix = spin_sdk::config::get("optional_path_prefix").unwrap_or_default();
     // Get the request path.
     let path_info = match req.headers().get("spin-path-info") {
         Some(p) => {
             if p == "/" {
-                DEFAULT_INDEX.to_owned()
+                format!("{}{}", optinal_path_prefix, DEFAULT_INDEX.to_owned())
             } else {
-                p.to_str()?.to_owned()
+                format!("{}{}", optinal_path_prefix, p.to_str()?.to_owned())
             }
         }
         None => DEFAULT_INDEX.to_owned(),
@@ -60,11 +61,14 @@ pub fn render(req: Request) -> Result<Response> {
         None
     };
 
+    // allow user to configure the content path
+    let content_path = &spin_sdk::config::get("content_dir").unwrap_or(CONTENT_PATH.to_owned());
+
     let mut engine = template::Renderer::new(
         PathBuf::from(TEMPLATE_PATH),
         theme_dir,
         PathBuf::from(SCRIPT_PATH),
-        PathBuf::from(CONTENT_PATH),
+        PathBuf::from(content_path),
     );
 
     // If running in preview mode, show unpublished content.
@@ -80,7 +84,7 @@ pub fn render(req: Request) -> Result<Response> {
     engine.load_script_dir()?;
 
     // Load the content.
-    let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
+    let content_path = content::content_path(PathBuf::from(content_path), &path_info);
 
     eprintln!("Path {}", content_path.to_string_lossy());
 
