@@ -38,6 +38,8 @@ pub struct SiteInfo {
     pub theme: Option<String>,
     pub index_site_pages: Option<Vec<String>>,
     pub dynamic_templates: Option<Vec<DynamicTemplateConfig>>,
+    #[serde(default)]
+    pub prepend_route_info: bool,
     pub extra: BTreeMap<String, String>,
 }
 

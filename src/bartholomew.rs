@@ -29,7 +29,7 @@ pub fn render(req: Request) -> Result<Response> {
     };
 
     // Get the request path.
-    let path_info = match req.headers().get("spin-path-info") {
+    let mut path_info = match req.headers().get("spin-path-info") {
         Some(p) => {
             if p == "/" {
                 DEFAULT_INDEX.to_owned()
@@ -50,6 +50,16 @@ pub fn render(req: Request) -> Result<Response> {
         config.base_url = Some(url);
     }
     eprintln!("Base URL: {:?}", &config.base_url);
+    eprintln!("Prepend route info : {:?}", &config.prepend_route_info);
+
+    if config.prepend_route_info {
+        let route_info = match req.headers().get("spin-component-route") {
+            Some(route) => route.to_str().unwrap_or_default(),
+            None => "",
+        };
+        path_info = format!("{route_info}{path_info}");
+        eprintln!("Updated request path: {:?}", path_info);
+    }
 
     // If a theme is specifed, create theme path
     let theme_dir = if config.theme.is_some() {
