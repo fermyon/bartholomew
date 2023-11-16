@@ -2,48 +2,14 @@ variable "region" {
   type    = string
 }
 
-variable "production" {
-  type        = bool
-  default     = false
-  description = "Whether or not this job should run in production mode. Default: false."
-}
-
-variable "dns_domain" {
+variable "ecr_ref" {
   type        = string
-  default     = "fermyon.dev"
-  description = "The root DNS domain for the Bartholomew docs website, e.g. fermyon.dev, fermyon.link"
+  description = "The ECR reference of the Spin app for the Bartholomew Docs website"
 }
 
-variable "hostname" {
+variable "commit_sha" {
   type        = string
-  default     = null
-  description = "An alternative hostname to use (defaults are <canary>.bartholomew.<dns_domain>})"
-}
-
-variable "letsencrypt_env" {
-  type    = string
-  default = "prod"
-  description = <<EOF
-The Let's Encrypt cert resolver to use. Options are 'staging' and 'prod'. (Default: prod)
-
-With the letsencrypt-prod cert resolver, we're limited to *5 requests per week* for a cert with matching domain and SANs.
-For testing/staging, it is recommended to use letsencrypt-staging, which has vastly increased limits.
-EOF
-
-  validation {
-    condition     = var.letsencrypt_env == "staging" || var.letsencrypt_env == "prod"
-    error_message = "The Let's Encrypt env must be either 'staging' or 'prod'."
-  }
-}
-
-variable "bindle_id" {
-  type        = string
-  default     = "bartholomew-docs/0.1.0"
-  description = "A bindle id, such as foo/bar/1.2.3"
-}
-
-locals {
-  hostname = "${var.hostname == null ? "${var.production == true ? "bartholomew.${var.dns_domain}" : "canary.bartholomew.${var.dns_domain}"}" : var.hostname}"
+  description = "The git commit sha that the website is published from"
 }
 
 job "bartholomew-docs" {
@@ -56,6 +22,12 @@ job "bartholomew-docs" {
     "${var.region}e",
     "${var.region}f"
   ]
+
+  # Add unique metadata to support recreating the job even if var.ecr_ref
+  # represents a mutable tag (eg latest).
+  meta {
+    commit_sha = var.commit_sha
+  }
 
   group "bartholomew-docs" {
     count = 3
@@ -80,11 +52,11 @@ job "bartholomew-docs" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.rule=Host(`${local.hostname}`)",
+        "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.rule=Host(`bartholomew.fermyon.dev`)",
         "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.entryPoints=websecure",
         "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.tls=true",
-        "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.tls.certresolver=letsencrypt-cf-${var.letsencrypt_env}",
-        "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.tls.domains[0].main=${local.hostname}"
+        "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.tls.certresolver=letsencrypt-cf-prod",
+        "traefik.http.routers.bartholomew-docs-${NOMAD_NAMESPACE}.tls.domains[0].main=bartholomew.fermyon.dev"
       ]
 
       check {
@@ -98,31 +70,58 @@ job "bartholomew-docs" {
     task "server" {
       driver = "exec"
 
+      vault {
+        policies = ["svc-website-runner"]
+      }
+
       artifact {
-        source = "https://github.com/fermyon/spin/releases/download/v0.8.0/spin-v0.8.0-linux-amd64.tar.gz"
+        source = "https://github.com/fermyon/spin/releases/download/v2.0.1/spin-v2.0.1-linux-amd64.tar.gz"
         options {
-          checksum = "sha256:0ef31fe6e2b4d34ddd089b01a1f88820f88c456276bfe4e1477836a6087654c1"
+          checksum = "sha256:686bb12b9244ed33bf54a53e62303879036632b476ad09a728172b260f26c8e7"
         }
       }
 
       env {
         RUST_LOG   = "spin=trace"
-        BINDLE_URL = "http://bindle.service.consul:3030/v1"
-        BASE_URL   = "https://${local.hostname}"
+        BASE_URL   = "https://bartholomew.fermyon.dev"
       }
 
       config {
-        command = "spin"
-        args = [
-          "up",
-          "--listen", "${NOMAD_IP_http}:${NOMAD_PORT_http}",
-          "--bindle", var.bindle_id,
-          "--log-dir", "${NOMAD_ALLOC_DIR}/logs",
-          "--temp", "${NOMAD_ALLOC_DIR}/tmp",
+        command = "${NOMAD_TASK_DIR}/run.sh"
+      }
 
-          # Set BASE_URL for Bartholomew to override default (localhost:3000)
-          "-e", "BASE_URL=${BASE_URL}",
-        ]
+      template {
+        destination = "${NOMAD_TASK_DIR}/run.sh"
+        change_mode = "restart"
+        data = <<-EOF
+        #!/bin/bash
+        set -euo pipefail
+
+        IFS=/ read -r registry image <<< "${var.ecr_ref}"
+        aws ecr get-login-password --region ${var.region} | \
+          ${NOMAD_TASK_DIR}/spin registry login --username AWS --password-stdin $registry
+
+        ${NOMAD_TASK_DIR}/spin up \
+          --from-registry ${var.ecr_ref} \
+          --listen ${NOMAD_IP_http}:${NOMAD_PORT_http} \
+          --log-dir ${NOMAD_ALLOC_DIR}/logs \
+          --temp ${NOMAD_ALLOC_DIR}/tmp \
+          -e BASE_URL=${BASE_URL}
+        EOF
+      }
+
+      template {
+        destination = "${NOMAD_SECRETS_DIR}/env.txt"
+        // Don't restart the task when creds expire; these are only needed on first login/pull
+        change_mode = "noop"
+        env         = true
+        data        = <<-EOF
+        {{ with secret "aws/creds/website-runner" "ttl=15m" }}
+        AWS_ACCESS_KEY_ID="{{ .Data.access_key }}"
+        AWS_SECRET_ACCESS_KEY="{{ .Data.secret_key }}"
+        AWS_SESSION_TOKEN="{{ .Data.security_token }}"
+        {{ end }}
+        EOF
       }
     }
   }
