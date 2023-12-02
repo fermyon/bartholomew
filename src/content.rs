@@ -10,7 +10,6 @@ use chrono::{DateTime, Utc};
 use pulldown_cmark as markdown;
 
 use crate::rhai_engine::custom_rhai_engine_init;
-use crate::template::PageValues;
 
 use handlebars::Handlebars;
 
@@ -91,7 +90,7 @@ pub fn all_pages(
     dir: PathBuf,
     show_unpublished: bool,
     skip_cache: bool,
-) -> anyhow::Result<BTreeMap<String, PageValues>> {
+) -> anyhow::Result<BTreeMap<String, Content>> {
     if skip_cache {
         let index_cache: IndexCache = all_pages_load(dir, show_unpublished)?;
         return Ok(index_cache.contents);
@@ -168,7 +167,7 @@ pub fn all_pages(
 }
 
 pub struct IndexCache {
-    contents: BTreeMap<String, PageValues>,
+    contents: BTreeMap<String, Content>,
     cache_expiration: Option<DateTime<Utc>>,
 }
 
@@ -195,7 +194,7 @@ pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<In
         match raw_data.parse::<Content>() {
             Ok(content) => {
                 if show_unpublished || content.published {
-                    contents.insert(f.to_string_lossy().to_string(), content.into());
+                    contents.insert(f.to_string_lossy().to_string(), content);
                 } else {
                     // find earliest unpublished article to save timestamp to refresh cache
                     let article_date = content.head.date;
@@ -305,6 +304,7 @@ fn translate_relative_links(event: markdown::Event, path_info: String) -> markdo
 
 /// The envelope for a page's content
 /// The head contains front matter, while the body is the markdown body of the document.
+#[derive(Serialize, Deserialize)]
 pub struct Content {
     /// The front matter for this content.
     pub head: Head,

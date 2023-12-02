@@ -7,6 +7,7 @@ use {
 use crate::rhai_engine::custom_rhai_engine_init;
 
 use super::content::{Content, Head};
+use handlebars::handlebars_helper;
 use serde::{Deserialize, Serialize};
 
 /// The name of the default template.
@@ -48,7 +49,7 @@ pub struct SiteInfo {
 #[derive(Serialize)]
 pub struct TemplateContext {
     request: BTreeMap<String, String>,
-    page: PageValues,
+    page: Content,
     site: SiteValues,
     /// A copy of the environment variables
     ///
@@ -70,26 +71,7 @@ pub struct TemplateContext {
 #[derive(Serialize)]
 pub struct SiteValues {
     info: SiteInfo,
-    pages: BTreeMap<String, PageValues>,
-}
-
-/// The structured values sent to the template renderer.
-/// The body should be legal HTML that can be inserted within the <body> tag.
-#[derive(Serialize, Deserialize)]
-pub struct PageValues {
-    pub head: Head,
-    pub body: String,
-    pub published: bool,
-}
-
-impl From<Content> for PageValues {
-    fn from(mut c: Content) -> Self {
-        PageValues {
-            body: c.render_markdown(&None),
-            head: c.head,
-            published: c.published,
-        }
-    }
+    pages: BTreeMap<String, Content>,
 }
 
 /// Renderer can execute a handlebars template and render the results into HTML.
@@ -103,6 +85,11 @@ pub struct Renderer<'a> {
     pub disable_cache: bool,
     handlebars: handlebars::Handlebars<'a>,
 }
+
+handlebars_helper!(render_markdown: |content: Content|{
+    let mut content = content;
+    content.render_markdown(&None)
+});
 
 #[cfg(feature = "server")]
 impl<'a> Renderer<'a> {
@@ -138,6 +125,8 @@ impl<'a> Renderer<'a> {
     pub fn load_template_dir(&mut self) -> Result<(), anyhow::Error> {
         #[cfg(feature = "server")]
         self.register_helpers();
+        self.handlebars
+            .register_helper("render_markdown", Box::new(render_markdown));
 
         // If there is a theme, load the templates provided by it first
         // Allows for user defined templates to take precedence
@@ -184,14 +173,13 @@ impl<'a> Renderer<'a> {
     }
 
     /// Given values and a site object, render a template.
-    pub fn render_template<T: Into<PageValues>>(
+    pub fn render_template(
         &self,
-        values: T,
+        content: Content,
         info: SiteInfo,
         request: HeaderMap,
     ) -> anyhow::Result<String> {
-        let page: PageValues = values.into();
-        let tpl = page
+        let tpl = content
             .head
             .template
             .clone()
@@ -204,7 +192,7 @@ impl<'a> Renderer<'a> {
         }
 
         let ctx = TemplateContext {
-            page,
+            page: content,
             request: request_headers,
             site: SiteValues {
                 // Right now, we literally include ALL OF THE CONTENT in its rendered
@@ -273,8 +261,8 @@ fn pages_helper(
 ///
 /// It should be assumed that all data passed into this function will be visible to the
 /// end user.
-pub fn error_values(title: &str, msg: &str) -> PageValues {
-    PageValues {
+pub fn error_values(title: &str, msg: &str) -> Content {
+    Content {
         head: Head {
             title: title.to_string(),
             date: Some(chrono::Utc::now()),
