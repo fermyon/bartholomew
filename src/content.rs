@@ -1,3 +1,5 @@
+use anyhow::bail;
+use glob::glob;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
@@ -167,6 +169,70 @@ pub fn all_pages(
     }
 }
 
+pub fn get_pages_by_glob(
+    dir: PathBuf,
+    glob: String,
+    show_unpublished: bool,
+) -> anyhow::Result<BTreeMap<String, PageValues>> {
+    let index_cache: IndexCache = pages_by_glob_load(dir, glob, show_unpublished)?;
+    Ok(index_cache.contents)
+}
+
+pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<IndexCache> {
+    let files = all_files(dir)?;
+    let mut contents = BTreeMap::new();
+    let mut contains_unpublished: bool = false;
+    let mut earliest_unpublished: Option<DateTime<Utc>> = None;
+    for f in files {
+        // Dotfiles should not be loaded.
+        if f.file_name()
+            .map(|f| f.to_string_lossy().starts_with('.'))
+            .unwrap_or(false)
+        {
+            eprintln!("Skipping dotfile {f:?}");
+            continue;
+        }
+        let raw_data = std::fs::read_to_string(&f)
+            .map_err(|e| anyhow::anyhow!("File is not string data: {:?}: {}", &f, e))?;
+        match raw_data.parse::<Content>() {
+            Ok(content) => {
+                if show_unpublished || content.published {
+                    contents.insert(f.to_string_lossy().to_string(), content.into());
+                } else {
+                    // find earliest unpublished article to save timestamp to refresh cache
+                    let article_date = content.head.date;
+                    match contains_unpublished {
+                        true => {
+                            if match earliest_unpublished {
+                                Some(val) => article_date.map(|d| d <= val).unwrap_or(true),
+                                _ => false,
+                            } {
+                                earliest_unpublished = article_date;
+                            }
+                        }
+                        false => {
+                            if let Some(val) = article_date {
+                                if val > Utc::now() {
+                                    earliest_unpublished = article_date;
+                                    contains_unpublished = true;
+                                }
+                            };
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                // If a parse fails, don't take down the entire site. Just skip this piece of content.
+                eprintln!("File {:?}: {}", &f, e);
+                continue;
+            }
+        }
+    }
+    Ok(IndexCache {
+        contents,
+        cache_expiration: earliest_unpublished,
+    })
+}
 pub struct IndexCache {
     contents: BTreeMap<String, PageValues>,
     cache_expiration: Option<DateTime<Utc>>,
@@ -176,8 +242,22 @@ pub struct IndexCache {
 ///
 /// If show_unpublished is `true`, this will include pages that Bartholomew has determined are
 /// unpublished.
-pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<IndexCache> {
-    let files = all_files(dir)?;
+pub fn pages_by_glob_load(
+    dir: PathBuf,
+    glob_pattern: String,
+    show_unpublished: bool,
+) -> anyhow::Result<IndexCache> {
+    let mut files: Vec<PathBuf> = Vec::new();
+    let full_pattern = format!("{}{}", dir.to_string_lossy(), glob_pattern);
+    let full_path = PathBuf::from(&full_pattern);
+    for entry in glob(full_path.to_str().unwrap_or_default())? {
+        match entry {
+            Ok(path) => files.push(path),
+            Err(e) => {
+                bail!("Failed to read file glob: {e}")
+            }
+        }
+    }
     let mut contents = BTreeMap::new();
     let mut contains_unpublished: bool = false;
     let mut earliest_unpublished: Option<DateTime<Utc>> = None;

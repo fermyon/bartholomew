@@ -4,10 +4,13 @@ use {
     std::path::PathBuf,
 };
 
+use std::{collections::HashMap, fs::File, io::Read};
+
 use crate::rhai_engine::custom_rhai_engine_init;
 
 use super::content::{Content, Head};
 use serde::{Deserialize, Serialize};
+use walkdir::WalkDir;
 
 /// The name of the default template.
 /// This will be resolved to $TEMPLATE_DIR/$DEFAULT_TEMPLATE.hbs
@@ -91,11 +94,17 @@ impl From<Content> for PageValues {
         }
     }
 }
+#[cfg(feature = "server")]
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct TemplateMeta {
+    read_pages_glob: Option<String>,
+}
 
 /// Renderer can execute a handlebars template and render the results into HTML.
 #[cfg(feature = "server")]
 pub struct Renderer<'a> {
     pub template_dir: PathBuf,
+    pub template_meta: HashMap<String, TemplateMeta>,
     pub theme_dir: Option<PathBuf>,
     pub script_dir: PathBuf,
     pub content_dir: PathBuf,
@@ -117,9 +126,11 @@ impl<'a> Renderer<'a> {
         // Create custom rhai engine and assign to handlebars
         let rhai_engine = custom_rhai_engine_init();
         handlebars.set_engine(rhai_engine);
+        let template_meta = HashMap::new();
 
         Renderer {
             template_dir,
+            template_meta,
             theme_dir,
             script_dir,
             content_dir,
@@ -147,8 +158,38 @@ impl<'a> Renderer<'a> {
             self.handlebars
                 .register_templates_directory(".hbs", templates)?;
         }
-        self.handlebars
-            .register_templates_directory(".hbs", &self.template_dir)?;
+        for entry in WalkDir::new(&self.template_dir)
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
+            if entry.file_type().is_file() && entry.path().extension().map_or(false, |e| e == "hbs")
+            {
+                let path = entry.path();
+                match read_file(path.to_str().unwrap()) {
+                    Ok(contents) => {
+                        // Do something with the file contents
+                        let doc = contents.replace("\r\n", "\n");
+                        let (toml_text, body) = doc.split_once("\n---\n").unwrap_or(("", &doc));
+                        let toml_text = toml_text.trim_start_matches("---").trim();
+                        let template_meta = toml::from_str(toml_text)?;
+                        let filename = path
+                            .file_name()
+                            .unwrap_or_default()
+                            .to_str()
+                            .unwrap()
+                            .replace(".hbs", "");
+                        self.template_meta
+                            .insert(filename.to_owned(), template_meta);
+                        self.handlebars.register_template_string(&filename, body)?;
+                    }
+                    Err(err) => {
+                        eprintln!("Error reading template {}: {}", entry.path().display(), err);
+                    }
+                }
+            }
+        }
+        // self.handlebars
+        //     .register_templates_directory(".hbs", &self.template_dir)?;
         Ok(())
     }
 
@@ -220,11 +261,26 @@ impl<'a> Renderer<'a> {
                 pages: match &info.index_site_pages {
                     Some(templates) => {
                         if templates.contains(&tpl) {
-                            crate::content::all_pages(
-                                self.content_dir.clone(),
-                                self.show_unpublished,
-                                self.disable_cache,
-                            )?
+                            let mut glob_pattern: Option<String> = None;
+                            let template_meta = self.template_meta.get(&tpl);
+                            if let Some(val) = template_meta {
+                                if val.read_pages_glob.is_some() {
+                                    glob_pattern =
+                                        Some(val.read_pages_glob.as_ref().unwrap().to_owned());
+                                }
+                            }
+                            match glob_pattern {
+                                Some(pattern) => crate::content::get_pages_by_glob(
+                                    self.content_dir.clone(),
+                                    pattern,
+                                    self.show_unpublished,
+                                )?,
+                                None => crate::content::all_pages(
+                                    self.content_dir.clone(),
+                                    self.show_unpublished,
+                                    self.disable_cache,
+                                )?,
+                            }
                         } else {
                             BTreeMap::new()
                         }
@@ -294,4 +350,11 @@ pub fn error_values(title: &str, msg: &str) -> PageValues {
         body: msg.to_string(),
         published: true,
     }
+}
+
+fn read_file(file_path: &str) -> anyhow::Result<String> {
+    let mut file = File::open(file_path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
 }
