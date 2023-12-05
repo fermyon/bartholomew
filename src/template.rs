@@ -179,8 +179,6 @@ impl<'a> Renderer<'a> {
                 }
             }
         }
-        // self.handlebars
-        //     .register_templates_directory(".hbs", &self.template_dir)?;
         Ok(())
     }
 

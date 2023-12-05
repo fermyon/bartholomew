@@ -180,8 +180,7 @@ pub fn get_pages_by_glob(
 
 pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<IndexCache> {
     let files = all_files(dir)?;
-    let index_cache = get_index_cache_from_files(files, show_unpublished)?;
-    Ok(index_cache)
+    get_index_cache_from_files(files, show_unpublished)
 }
 pub struct IndexCache {
     contents: BTreeMap<String, PageValues>,
@@ -210,8 +209,7 @@ pub fn pages_by_glob_load(
             }
         }
     }
-    let index_cache = get_index_cache_from_files(files, show_unpublished)?;
-    Ok(index_cache)
+    get_index_cache_from_files(files, show_unpublished)
 }
 
 /// Fetch a list of paths to every file in the directory
