@@ -24,6 +24,8 @@ spin-sdk = { git = "https://github.com/fermyon/spin", rev = "139c40967a75dbdd5d4
 toml = "0.5.9"
 wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen", rev = "cb871cfa1ee460b51eb1d144b175b9aab9c50aba", default-features = false }
 regex = "1"
+walkdir = "2.4.0"
+glob = "0.3.1"
 
 [workspace]
 members = ["bart"]
