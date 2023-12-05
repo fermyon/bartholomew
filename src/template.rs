@@ -9,6 +9,7 @@ use std::{collections::HashMap, fs::File, io::Read};
 use crate::rhai_engine::custom_rhai_engine_init;
 
 use super::content::{Content, Head};
+use anyhow::bail;
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
@@ -97,7 +98,7 @@ impl From<Content> for PageValues {
 #[cfg(feature = "server")]
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct TemplateMeta {
-    read_pages_glob: Option<String>,
+    read_pages_glob: Option<Vec<String>>,
 }
 
 /// Renderer can execute a handlebars template and render the results into HTML.
@@ -261,7 +262,7 @@ impl<'a> Renderer<'a> {
                 pages: match &info.index_site_pages {
                     Some(templates) => {
                         if templates.contains(&tpl) {
-                            let mut glob_pattern: Option<String> = None;
+                            let mut glob_pattern: Option<Vec<String>> = None;
                             let template_meta = self.template_meta.get(&tpl);
                             if let Some(val) = template_meta {
                                 if val.read_pages_glob.is_some() {
@@ -270,11 +271,19 @@ impl<'a> Renderer<'a> {
                                 }
                             }
                             match glob_pattern {
-                                Some(pattern) => crate::content::get_pages_by_glob(
-                                    self.content_dir.clone(),
-                                    pattern,
-                                    self.show_unpublished,
-                                )?,
+                                Some(pattern) => {
+                                    let pages = crate::content::get_pages_by_glob(
+                                        self.content_dir.clone(),
+                                        pattern,
+                                        self.show_unpublished,
+                                    );
+                                    match pages {
+                                        Ok(val) => val,
+                                        Err(err) => {
+                                            bail!("Error parsing glob in template \"{tpl}\": {err}")
+                                        }
+                                    }
+                                }
                                 None => crate::content::all_pages(
                                     self.content_dir.clone(),
                                     self.show_unpublished,
