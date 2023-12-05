@@ -171,7 +171,7 @@ pub fn all_pages(
 
 pub fn get_pages_by_glob(
     dir: PathBuf,
-    globs: Vec<String>,
+    globs: &Vec<String>,
     show_unpublished: bool,
 ) -> anyhow::Result<BTreeMap<String, PageValues>> {
     let index_cache: IndexCache = pages_by_glob_load(dir, globs, show_unpublished)?;
@@ -180,11 +180,8 @@ pub fn get_pages_by_glob(
 
 pub fn all_pages_load(dir: PathBuf, show_unpublished: bool) -> anyhow::Result<IndexCache> {
     let files = all_files(dir)?;
-    let (contents, earliest_unpublished) = process_files(files, show_unpublished)?;
-    Ok(IndexCache {
-        contents,
-        cache_expiration: earliest_unpublished,
-    })
+    let index_cache = get_index_cache_from_files(files, show_unpublished)?;
+    Ok(index_cache)
 }
 pub struct IndexCache {
     contents: BTreeMap<String, PageValues>,
@@ -197,7 +194,7 @@ pub struct IndexCache {
 /// unpublished.
 pub fn pages_by_glob_load(
     dir: PathBuf,
-    glob_patterns: Vec<String>,
+    glob_patterns: &Vec<String>,
     show_unpublished: bool,
 ) -> anyhow::Result<IndexCache> {
     let mut files: Vec<PathBuf> = Vec::new();
@@ -213,11 +210,8 @@ pub fn pages_by_glob_load(
             }
         }
     }
-    let (contents, earliest_unpublished) = process_files(files, show_unpublished)?;
-    Ok(IndexCache {
-        contents,
-        cache_expiration: earliest_unpublished,
-    })
+    let index_cache = get_index_cache_from_files(files, show_unpublished)?;
+    Ok(index_cache)
 }
 
 /// Fetch a list of paths to every file in the directory
@@ -422,12 +416,10 @@ impl FromStr for Content {
     }
 }
 
-type ProcessFileReturn = (BTreeMap<String, PageValues>, Option<DateTime<Utc>>);
-
-fn process_files(
+fn get_index_cache_from_files(
     files: Vec<PathBuf>,
     show_unpublished: bool,
-) -> Result<ProcessFileReturn, anyhow::Error> {
+) -> Result<IndexCache, anyhow::Error> {
     let mut contents = BTreeMap::new();
     let mut contains_unpublished: bool = false;
     let mut earliest_unpublished: Option<DateTime<Utc>> = None;
@@ -476,7 +468,10 @@ fn process_files(
             }
         }
     }
-    Ok((contents, earliest_unpublished))
+    Ok(IndexCache {
+        contents,
+        cache_expiration: earliest_unpublished,
+    })
 }
 
 #[cfg(test)]

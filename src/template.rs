@@ -165,26 +165,16 @@ impl<'a> Renderer<'a> {
         {
             if entry.file_type().is_file() && entry.path().extension().map_or(false, |e| e == "hbs")
             {
-                let path = entry.path();
-                match read_file(path.to_str().unwrap()) {
-                    Ok(contents) => {
-                        // Do something with the file contents
-                        let doc = contents.replace("\r\n", "\n");
-                        let (toml_text, body) = doc.split_once("\n---\n").unwrap_or(("", &doc));
-                        let toml_text = toml_text.trim_start_matches("---").trim();
-                        let template_meta = toml::from_str(toml_text)?;
-                        let filename = path
-                            .file_name()
-                            .unwrap_or_default()
-                            .to_str()
-                            .unwrap()
-                            .replace(".hbs", "");
+                let filename = entry.file_name().to_str().unwrap().replace(".hbs", "");
+                let res = parse_hbs_template(entry);
+                match res {
+                    Ok((template_meta, body)) => {
                         self.template_meta
                             .insert(filename.to_owned(), template_meta);
                         self.handlebars.register_template_string(&filename, body)?;
                     }
                     Err(err) => {
-                        eprintln!("Error reading template {}: {}", entry.path().display(), err);
+                        eprintln!("Error reading template {}: {}", filename, err);
                     }
                 }
             }
@@ -262,34 +252,14 @@ impl<'a> Renderer<'a> {
                 pages: match &info.index_site_pages {
                     Some(templates) => {
                         if templates.contains(&tpl) {
-                            let mut glob_pattern: Option<Vec<String>> = None;
-                            let template_meta = self.template_meta.get(&tpl);
-                            if let Some(val) = template_meta {
-                                if val.read_pages_glob.is_some() {
-                                    glob_pattern =
-                                        Some(val.read_pages_glob.as_ref().unwrap().to_owned());
-                                }
+                            let mut glob_pattern: Option<&Vec<String>> = None;
+                            let default_meta = TemplateMeta::default();
+                            let template_meta =
+                                self.template_meta.get(&tpl).unwrap_or(&default_meta);
+                            if let Some(val) = &template_meta.read_pages_glob {
+                                glob_pattern = Some(val);
                             }
-                            match glob_pattern {
-                                Some(pattern) => {
-                                    let pages = crate::content::get_pages_by_glob(
-                                        self.content_dir.clone(),
-                                        pattern,
-                                        self.show_unpublished,
-                                    );
-                                    match pages {
-                                        Ok(val) => val,
-                                        Err(err) => {
-                                            bail!("Error parsing glob in template \"{tpl}\": {err}")
-                                        }
-                                    }
-                                }
-                                None => crate::content::all_pages(
-                                    self.content_dir.clone(),
-                                    self.show_unpublished,
-                                    self.disable_cache,
-                                )?,
-                            }
+                            self.create_site_pages_index(glob_pattern, &tpl)?
                         } else {
                             BTreeMap::new()
                         }
@@ -313,6 +283,32 @@ impl<'a> Renderer<'a> {
     #[cfg(feature = "server")]
     fn register_helpers(&mut self) {
         handlebars_sprig::addhelpers(&mut self.handlebars)
+    }
+    fn create_site_pages_index(
+        &self,
+        glob_pattern: Option<&Vec<String>>,
+        tpl: &str,
+    ) -> anyhow::Result<BTreeMap<String, PageValues>> {
+        match glob_pattern {
+            Some(pattern) => {
+                let pages = crate::content::get_pages_by_glob(
+                    self.content_dir.clone(),
+                    pattern,
+                    self.show_unpublished,
+                );
+                match pages {
+                    Ok(val) => Ok(val),
+                    Err(err) => {
+                        bail!("Error parsing glob in template \"{tpl}\": {err}")
+                    }
+                }
+            }
+            None => crate::content::all_pages(
+                self.content_dir.clone(),
+                self.show_unpublished,
+                self.disable_cache,
+            ),
+        }
     }
 }
 
@@ -366,4 +362,21 @@ fn read_file(file_path: &str) -> anyhow::Result<String> {
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
     Ok(contents)
+}
+
+#[cfg(feature = "server")]
+fn parse_hbs_template(entry: walkdir::DirEntry) -> anyhow::Result<(TemplateMeta, String)> {
+    let path = entry.path();
+    match read_file(path.to_str().unwrap()) {
+        Ok(contents) => {
+            let doc = contents.replace("\r\n", "\n");
+            let (toml_text, body) = doc.split_once("\n---\n").unwrap_or(("", &doc));
+            let toml_text = toml_text.trim_start_matches("---").trim();
+            let template_meta = toml::from_str(toml_text)?;
+            Ok((template_meta, body.to_owned()))
+        }
+        Err(err) => {
+            bail!("Failed to parse hbs template \"entry\": {err}")
+        }
+    }
 }
