@@ -129,7 +129,7 @@ dependencies = [
 
 [[package]]
 name = "bart"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "anyhow",
  "bartholomew",
@@ -145,7 +145,7 @@ dependencies = [
 
 [[package]]
 name = "bartholomew"
-version = "0.9.0"
+version = "0.10.0"
 dependencies = [
  "anyhow",
  "brotli",
