@@ -49,8 +49,11 @@ pub fn render(req: Request) -> Result<Response> {
     if let Ok(url) = base_url {
         config.base_url = Some(url);
     }
-    eprintln!("Base URL: {:?}", &config.base_url);
-    eprintln!("Prepend route info : {:?}", &config.prepend_route_info);
+
+    if let Some(url) = &config.base_url {
+        eprintln!("Base URL: {}", url);
+    };
+    eprintln!("Prepend route info: {:?}", &config.prepend_route_info);
 
     if config.prepend_route_info {
         let route_info = match req.headers().get("spin-component-route") {
@@ -61,7 +64,7 @@ pub fn render(req: Request) -> Result<Response> {
         eprintln!("Updated request path: {:?}", path_info);
     }
 
-    // If a theme is specifed, create theme path
+    // If a theme is specified, create theme path
     let theme_dir = if config.theme.is_some() {
         let mut path: PathBuf = PathBuf::from(THEME_PATH);
         path.push(config.theme.as_ref().unwrap());
@@ -92,7 +95,7 @@ pub fn render(req: Request) -> Result<Response> {
     // Load the content.
     let content_path = content::content_path(PathBuf::from(CONTENT_PATH), &path_info);
 
-    eprintln!("Path {}", content_path.to_string_lossy());
+    eprintln!("Path: {}", content_path.to_string_lossy());
 
     match std::fs::read_to_string(&content_path) {
         Ok(full_document) => {
