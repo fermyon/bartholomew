@@ -1,87 +1,100 @@
+spin_manifest_version = 2
+
+[application]
 name = "bartholomew-docs"
-spin_version = "1"
 version = "0.1.0"
 description = "The Bartholomew documentation website"
-authors = [ "Fermyon Engineering <engineering@fermyon.com>" ]
-trigger = { type = "http", base = "/" }
+authors = ["Fermyon Engineering <engineering@fermyon.com>"]
 
-[[component]]
-id = "redirect-site-index"
+[application.trigger.http]
+base = "/"
+
+[[trigger.http]]
+id = "trigger-redirect-site-index"
+component = "redirect-site-index"
+route = "/"
+
+[[trigger.http]]
+id = "trigger-redirect-configuration"
+component = "redirect-configuration"
+route = "/configuration"
+
+[[trigger.http]]
+id = "trigger-redirect-contributing"
+component = "redirect-contributing"
+route = "/contributing"
+
+[[trigger.http]]
+id = "trigger-redirect-markdown"
+component = "redirect-markdown"
+route = "/markdown"
+
+[[trigger.http]]
+id = "trigger-redirect-quickstart"
+component = "redirect-quickstart"
+route = "/quickstart"
+
+[[trigger.http]]
+id = "trigger-redirect-scripting"
+component = "redirect-scripting"
+route = "/scripting"
+
+[[trigger.http]]
+id = "trigger-redirect-seo"
+component = "redirect-seo"
+route = "/seo"
+
+[[trigger.http]]
+id = "trigger-redirect-shortcodes"
+component = "redirect-shortcodes"
+route = "/shortcodes"
+
+[[trigger.http]]
+id = "trigger-redirect-templates"
+component = "redirect-templates"
+route = "/templates"
+
+[[trigger.http]]
+id = "trigger-redirect-themes"
+component = "redirect-themes"
+route = "/themes"
+
+[component.redirect-site-index]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/index" }
-[component.trigger]
-route = "/"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-configuration"
+[component.redirect-configuration]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/configuration" }
-[component.trigger]
-route = "/configuration"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-contributing"
+[component.redirect-contributing]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/contributing-bartholomew" }
-[component.trigger]
-route = "/contributing"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-markdown"
+[component.redirect-markdown]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/markdown" }
-[component.trigger]
-route = "/markdown"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-quickstart"
+[component.redirect-quickstart]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/quickstart" }
-[component.trigger]
-route = "/quickstart"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-scripting"
+[component.redirect-scripting]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/scripting" }
-[component.trigger]
-route = "/scripting"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-seo"
+[component.redirect-seo]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/seo" }
-[component.trigger]
-route = "/seo"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-shortcodes"
+[component.redirect-shortcodes]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/shortcodes" }
-[component.trigger]
-route = "/shortcodes"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-templates"
+[component.redirect-templates]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/templates" }
-[component.trigger]
-route = "/templates"
-executor = { type = "wagi" }
 
-[[component]]
-id = "redirect-themes"
+[component.redirect-themes]
 source = "modules/redirect.wasm"
 environment = { DESTINATION = "https://developer.fermyon.com/bartholomew/themes" }
-[component.trigger]
-route = "/themes"
-executor = { type = "wagi" }
-
