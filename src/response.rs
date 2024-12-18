@@ -3,7 +3,6 @@ use flate2::{
     write::{DeflateEncoder, GzEncoder},
     Compression,
 };
-use http::{response::Builder, HeaderValue};
 use spin_sdk::http::Response;
 use std::io::Write;
 
@@ -28,17 +27,21 @@ enum ContentEncoding {
 
 pub fn not_found(route: String, body: String) -> Result<Response> {
     eprintln!("Not found: {route}");
-    let bldr = Builder::new()
-        .status(http::StatusCode::NOT_FOUND)
-        .header(http::header::CONTENT_TYPE, "text/html; charset=utf-8");
-    Ok(bldr.body(Some(body.into()))?)
+    let mut response = Response::new(http::StatusCode::NOT_FOUND.as_u16(), body);
+    response.set_header(
+        http::header::CONTENT_TYPE.to_string(),
+        "text/html; charset=utf-8",
+    );
+    Ok(response)
 }
 
 pub fn internal_server_error(body: String) -> Result<Response> {
-    let bldr = Builder::new()
-        .status(http::StatusCode::INTERNAL_SERVER_ERROR)
-        .header(http::header::CONTENT_TYPE, "text/html; charset=utf-8");
-    Ok(bldr.body(Some(body.into()))?)
+    let mut response = Response::new(http::StatusCode::INTERNAL_SERVER_ERROR.as_u16(), body);
+    response.set_header(
+        http::header::CONTENT_TYPE.to_string(),
+        "text/html; charset=utf-8",
+    );
+    Ok(response)
 }
 
 pub fn send_result(
@@ -46,34 +49,40 @@ pub fn send_result(
     body: String,
     content_type: String,
     cache_control: Option<String>,
-    content_encoding: Option<&HeaderValue>,
+    content_encoding: Option<&spin_sdk::http::HeaderValue>,
     status: Option<u16>,
 ) -> Result<Response> {
     eprintln!("Responded: {route}");
-    let mut bldr = Builder::new().header(http::header::CONTENT_TYPE, content_type);
+    let mut bldr = Response::builder();
+    bldr.header(http::header::CONTENT_TYPE.as_str(), content_type);
 
     if let Some(val) = cache_control {
-        bldr = bldr.header(http::header::CACHE_CONTROL, val);
+        bldr.header(http::header::CACHE_CONTROL.as_str(), val);
     }
     if let Some(status) = status {
-        bldr = bldr.status(status);
+        bldr.status(status);
     }
 
     match parse_encoding(content_encoding) {
         Ok(enc) => match enc {
             ContentEncoding::Gzip => {
-                bldr = bldr.header(http::header::CONTENT_ENCODING, "gzip");
+                bldr.header(http::header::CONTENT_ENCODING.as_str(), "gzip");
                 let mut e = GzEncoder::new(Vec::new(), Compression::default());
                 e.write_all(body.as_bytes())?;
-                Ok(bldr.body(Some(e.finish()?.into()))?)
+                bldr.body(e.finish()?);
+                Ok(bldr.build())
             }
             ContentEncoding::Deflate => {
-                bldr = bldr.header(http::header::CONTENT_ENCODING, "deflate");
+                bldr.header(http::header::CONTENT_ENCODING.as_str(), "deflate");
                 let mut e = DeflateEncoder::new(Vec::new(), Compression::default());
                 e.write_all(body.as_bytes())?;
-                Ok(bldr.body(Some(e.finish()?.into()))?)
+                bldr.body(e.finish()?);
+                Ok(bldr.build())
             }
-            _ => Ok(bldr.body(Some(body.into()))?),
+            _ => {
+                bldr.body(body);
+                Ok(bldr.build())
+            }
         },
         Err(e) => bail!(e),
     }
@@ -82,19 +91,22 @@ pub fn send_result(
 pub fn send_redirect(route: String, location: String, status: u16) -> Result<Response> {
     eprintln!("Redirected {} to {} (Code: {})", route, &location, &status);
 
-    let bldr = Builder::new()
+    let response = Response::builder()
         .status(status)
-        .header(http::header::CONTENT_TYPE, "text/html; charset=utf-8")
-        .header(http::header::LOCATION, location);
+        .header(
+            http::header::CONTENT_TYPE.as_str(),
+            "text/html; charset=utf-8",
+        )
+        .header(http::header::LOCATION.as_str(), location)
+        .build();
 
-    Ok(bldr.body(None)?)
+    Ok(response)
 }
 
 /// Based on the Accept-Encoding header, return the best Content-Encoding.
-fn parse_encoding(enc: Option<&HeaderValue>) -> Result<ContentEncoding> {
-    let res = match enc {
+fn parse_encoding(enc: Option<&spin_sdk::http::HeaderValue>) -> Result<ContentEncoding> {
+    let res = match enc.and_then(|hv| hv.as_str()) {
         Some(encoding) => encoding
-            .to_str()?
             .split(',')
             .map(|s| {
                 let enc = s.trim();
