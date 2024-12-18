@@ -29,12 +29,12 @@ pub fn render(req: Request) -> Result<Response> {
     };
 
     // Get the request path.
-    let mut path_info = match req.headers().get("spin-path-info") {
+    let mut path_info = match req.header("spin-path-info").and_then(|hv| hv.as_str()) {
         Some(p) => {
             if p == "/" {
                 DEFAULT_INDEX.to_owned()
             } else {
-                p.to_str()?.to_owned()
+                p.to_owned()
             }
         }
         None => DEFAULT_INDEX.to_owned(),
@@ -56,8 +56,8 @@ pub fn render(req: Request) -> Result<Response> {
     eprintln!("Prepend route info: {:?}", &config.prepend_route_info);
 
     if config.prepend_route_info {
-        let route_info = match req.headers().get("spin-component-route") {
-            Some(route) => route.to_str().unwrap_or_default(),
+        let route_info = match req.header("spin-component-route") {
+            Some(route) => route.as_str().unwrap_or_default(),
             None => "",
         };
         path_info = format!("{route_info}{path_info}");
@@ -117,8 +117,7 @@ pub fn render(req: Request) -> Result<Response> {
                             "Not Found",
                             "The requested page was not found.",
                         );
-                        let body =
-                            engine.render_template(err_vals, config, req.headers().to_owned())?;
+                        let body = engine.render_template(err_vals, config, req.headers())?;
                         return response::not_found(path_info, body);
                     }
                 }
@@ -132,7 +131,7 @@ pub fn render(req: Request) -> Result<Response> {
                 );
                 let err_vals =
                     template::error_values("Not Found", "The requested page was not found.");
-                let body = engine.render_template(err_vals, config, req.headers().to_owned())?;
+                let body = engine.render_template(err_vals, config, req.headers())?;
                 return response::not_found(path_info, body);
             }
 
@@ -157,10 +156,10 @@ pub fn render(req: Request) -> Result<Response> {
                     let cache_control = doc.head.cache_control.clone();
 
                     let data = engine
-                        .render_template(doc, config, req.headers().to_owned())
+                        .render_template(doc, config, req.headers())
                         .map_err(|e| anyhow!("Rendering {:?}: {}", &content_path, e))?;
 
-                    let content_encoding = req.headers().get(http::header::ACCEPT_ENCODING);
+                    let content_encoding = req.header(http::header::ACCEPT_ENCODING.as_str());
 
                     response::send_result(
                         path_info,
@@ -175,7 +174,7 @@ pub fn render(req: Request) -> Result<Response> {
         }
         Err(_) => {
             let err_vals = template::error_values("Not Found", "The requested page was not found.");
-            let body = engine.render_template(err_vals, config, req.headers().to_owned())?;
+            let body = engine.render_template(err_vals, config, req.headers())?;
             response::not_found(path_info, body)
         }
     }

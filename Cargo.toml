@@ -14,13 +14,13 @@ bytes = "1.1.0"
 chrono = { version = "0.4.19", features = ["serde"] }
 flate2 = "1.0.23"
 handlebars = { version = "4.2.2", features = ["dir_source", "script_helper"] }
-handlebars_sprig = { git = "https://github.com/rajatjindal/handlebars-sprig", rev = "f2d42142121d4f04b35ce00fdd26ba48b0993fe0", optional = true }
-http = "0.2.6"
+handlebars_sprig = { git = "https://github.com/itowlson/handlebars-sprig", branch = "update-spin-sdk", optional = true }
+http = "1"
 pulldown-cmark = { version = "0.9.1", default-features = false }
 rhai = "1.12.0"
 serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.79"
-spin-sdk = { git = "https://github.com/fermyon/spin", rev = "139c40967a75dbdd5d4da2e626d24e68f54c0a5a", optional = true }
+spin-sdk = { version = "3", optional = true }
 toml = "0.5.9"
 wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen", rev = "cb871cfa1ee460b51eb1d144b175b9aab9c50aba", default-features = false }
 regex = "1"
