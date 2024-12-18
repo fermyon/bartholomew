@@ -15,7 +15,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          rustup target add wasm32-wasi
+          rustup target add wasm32-wasip1
 
       - name: Build
         run: |
