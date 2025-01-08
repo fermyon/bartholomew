@@ -26,6 +26,7 @@ wit-bindgen-rust = { git = "https://github.com/bytecodealliance/wit-bindgen", re
 regex = "1"
 walkdir = "2.4.0"
 glob = "0.3.1"
+base64 = "0.22.1"
 
 [workspace]
 members = ["bart"]
