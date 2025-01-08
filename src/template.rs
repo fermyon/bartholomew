@@ -115,7 +115,7 @@ pub struct Renderer<'a> {
 }
 
 #[cfg(feature = "server")]
-impl<'a> Renderer<'a> {
+impl Renderer<'_> {
     /// Create a new renderer with the necessary directories attached.
     pub fn new(
         template_dir: PathBuf,

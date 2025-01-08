@@ -36,9 +36,9 @@ fn is_authenticated(req: &Request) -> Result<bool> {
                     && auth_parts[0] == expected_user_name
                     && auth_parts[1] == expected_password);
             }
-            return Ok(false);
+            Ok(false)
         }
-        Err(e) => return Err(Error::from(e)),
+        Err(e) => Err(Error::from(e)),
     }
 }
 

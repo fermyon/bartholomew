@@ -104,9 +104,8 @@ pub fn send_unauthorized(with_challenge: bool) -> Result<Response> {
 
         return Ok(response_builder.body(None)?);
     }
-    let response_builder = Builder::new().status(401);
 
-    return Ok(response_builder.body(None)?);
+    Ok(Builder::new().status(401).body(None)?)
 }
 /// Based on the Accept-Encoding header, return the best Content-Encoding.
 fn parse_encoding(enc: Option<&HeaderValue>) -> Result<ContentEncoding> {
