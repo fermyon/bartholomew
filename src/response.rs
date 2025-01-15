@@ -93,19 +93,13 @@ pub fn send_redirect(route: String, location: String, status: u16) -> Result<Res
     Ok(bldr.body(None)?)
 }
 
-pub fn send_unauthorized(with_challenge: bool) -> Result<Response> {
-    if with_challenge {
-        let realm =
-            std::env::var(BASIC_AUTH_REALM).unwrap_or(FALLBACK_BASIC_AUTH_REALM.to_string());
-        let response_builder = Builder::new().status(401).header(
-            http::header::WWW_AUTHENTICATE,
-            format!("Basic realm=\"{}\"", realm),
-        );
-
-        return Ok(response_builder.body(None)?);
-    }
-
-    Ok(Builder::new().status(401).body(None)?)
+pub fn send_unauthorized() -> Result<Response> {
+    let realm = std::env::var(BASIC_AUTH_REALM).unwrap_or(FALLBACK_BASIC_AUTH_REALM.to_string());
+    let response_builder = Builder::new().status(401).header(
+        http::header::WWW_AUTHENTICATE,
+        format!("Basic realm=\"{}\"", realm),
+    );
+    Ok(response_builder.body(None)?)
 }
 /// Based on the Accept-Encoding header, return the best Content-Encoding.
 fn parse_encoding(enc: Option<&HeaderValue>) -> Result<ContentEncoding> {

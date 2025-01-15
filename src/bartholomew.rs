@@ -52,9 +52,8 @@ fn has_credentials() -> bool {
 pub fn render(req: Request) -> Result<Response> {
     if has_credentials() {
         match is_authenticated(&req) {
-            Ok(false) => return response::send_unauthorized(false),
             Ok(true) => (),
-            _ => return response::send_unauthorized(true),
+            _ => return response::send_unauthorized(),
         }
     }
     // Preview mode lets you see content marked as unpublished.
