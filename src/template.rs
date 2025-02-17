@@ -115,7 +115,7 @@ pub struct Renderer<'a> {
 }
 
 #[cfg(feature = "server")]
-impl<'a> Renderer<'a> {
+impl Renderer<'_> {
     /// Create a new renderer with the necessary directories attached.
     pub fn new(
         template_dir: PathBuf,
@@ -163,8 +163,7 @@ impl<'a> Renderer<'a> {
             .into_iter()
             .filter_map(|e| e.ok())
         {
-            if entry.file_type().is_file() && entry.path().extension().map_or(false, |e| e == "hbs")
-            {
+            if entry.file_type().is_file() && entry.path().extension().is_some_and(|e| e == "hbs") {
                 let filename = entry.file_name().to_str().unwrap().replace(".hbs", "");
                 let res = parse_hbs_template(entry);
                 match res {
