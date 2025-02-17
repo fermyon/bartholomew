@@ -7,13 +7,13 @@ BASE_URL ?= http://localhost:3000
 
 .PHONY: build
 build:
-	cargo build --target wasm32-wasi --release
+	cargo build --target wasm32-wasip1 --release
 
 .PHONY: build-release
 build-release: build
-	wasm-opt -O target/wasm32-wasi/release/bartholomew.wasm -o target/wasm32-wasi/release/bartholomew.wasm
+	wasm-opt -O target/wasm32-wasip1/release/bartholomew.wasm -o target/wasm32-wasip1/release/bartholomew.wasm
 	# Keep an eye on the binary size. We want it under 5M
-	@ls -lah target/wasm32-wasi/release/*.wasm
+	@ls -lah target/wasm32-wasip1/release/*.wasm
 
 .PHONY: bart
 bart:
@@ -40,7 +40,7 @@ run: serve
 
 .PHONY: update-docs-binary
 update-docs-binary: 
-	cp target/wasm32-wasi/release/bartholomew.wasm docs/modules/bartholomew.wasm
+	cp target/wasm32-wasip1/release/bartholomew.wasm docs/modules/bartholomew.wasm
 
 .PHONY: clean
 clean:
