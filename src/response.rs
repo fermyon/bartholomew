@@ -19,6 +19,9 @@ pub const DEFAULT_CONTENT_TYPE: &str = "text/html; charset=utf-8";
 pub const PREVIEW_MODE_ENV: &str = "PREVIEW_MODE";
 pub const BASE_URL_ENV: &str = "BASE_URL";
 
+const BASIC_AUTH_REALM: &str = "BASIC_AUTH_REALM";
+const FALLBACK_BASIC_AUTH_REALM: &str = "bartholomew";
+
 #[derive(PartialEq)]
 enum ContentEncoding {
     Gzip,
@@ -90,6 +93,14 @@ pub fn send_redirect(route: String, location: String, status: u16) -> Result<Res
     Ok(bldr.body(None)?)
 }
 
+pub fn send_unauthorized() -> Result<Response> {
+    let realm = std::env::var(BASIC_AUTH_REALM).unwrap_or(FALLBACK_BASIC_AUTH_REALM.to_string());
+    let response_builder = Builder::new().status(401).header(
+        http::header::WWW_AUTHENTICATE,
+        format!("Basic realm=\"{}\"", realm),
+    );
+    Ok(response_builder.body(None)?)
+}
 /// Based on the Accept-Encoding header, return the best Content-Encoding.
 fn parse_encoding(enc: Option<&HeaderValue>) -> Result<ContentEncoding> {
     let res = match enc {

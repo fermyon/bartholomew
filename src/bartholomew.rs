@@ -1,17 +1,61 @@
 use crate::content;
 use crate::response::{self, *};
 use crate::template::{self};
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, bail, Error, Result};
+
+use base64::{engine::general_purpose, Engine as _};
 use spin_sdk::{
     http::{Request, Response},
     http_component,
 };
 
+const BASIC_AUTH_USERNAME: &str = "BASIC_AUTH_USERNAME";
+const BASIC_AUTH_PASSWORD: &str = "BASIC_AUTH_PASSWORD";
+
 use std::path::PathBuf;
+
+fn is_authenticated(req: &Request) -> Result<bool> {
+    let Some(header) = req.headers().get(http::header::AUTHORIZATION) else {
+        bail!("Authorization header not present");
+    };
+    let Ok(expected_user_name) = std::env::var(BASIC_AUTH_USERNAME) else {
+        bail!("Username for Basic Auth not set");
+    };
+    let Ok(expected_password) = std::env::var(BASIC_AUTH_PASSWORD) else {
+        bail!("Password for Basic Auth not set");
+    };
+    match header.to_str() {
+        Ok(header_value) => {
+            let header_value_parts: Vec<&str> = header_value.split_whitespace().collect();
+            if header_value_parts.len() == 2 && header_value_parts[0] == "Basic" {
+                let credentials = header_value_parts[1];
+                let decoded = general_purpose::STANDARD.decode(credentials)?;
+                let decoded_str = std::str::from_utf8(&decoded)?;
+                let auth_parts: Vec<&str> = decoded_str.split(':').collect();
+                return Ok(auth_parts.len() == 2
+                    && auth_parts[0] == expected_user_name
+                    && auth_parts[1] == expected_password);
+            }
+            Ok(false)
+        }
+        Err(e) => Err(Error::from(e)),
+    }
+}
+
+fn has_credentials() -> bool {
+    std::env::var(BASIC_AUTH_USERNAME).is_ok_and(|x| !x.is_empty())
+        && std::env::var(BASIC_AUTH_PASSWORD).is_ok_and(|x| !x.is_empty())
+}
 
 /// The entry point to Bartholomew.
 #[http_component]
 pub fn render(req: Request) -> Result<Response> {
+    if has_credentials() {
+        match is_authenticated(&req) {
+            Ok(true) => (),
+            _ => return response::send_unauthorized(),
+        }
+    }
     // Preview mode lets you see content marked as unpublished.
     let preview_mode = match std::env::var(PREVIEW_MODE_ENV) {
         Ok(val) if val == "1" => {
