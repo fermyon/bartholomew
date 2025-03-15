@@ -1,8 +1,5 @@
 #[cfg(feature = "server")]
-use {
-    handlebars::Handlebars, handlebars_sprig, http::HeaderMap, std::collections::BTreeMap,
-    std::path::PathBuf,
-};
+use {handlebars::Handlebars, handlebars_sprig, std::collections::BTreeMap, std::path::PathBuf};
 
 use std::{collections::HashMap, fs::File, io::Read};
 
@@ -213,11 +210,11 @@ impl Renderer<'_> {
     }
 
     /// Given values and a site object, render a template.
-    pub fn render_template<T: Into<PageValues>>(
-        &self,
+    pub fn render_template<'r, T: Into<PageValues>>(
+        &'a self,
         values: T,
         info: SiteInfo,
-        request: HeaderMap,
+        request: impl Iterator<Item = (&'r str, &'r spin_sdk::http::HeaderValue)>,
     ) -> anyhow::Result<String> {
         let page: PageValues = values.into();
         let tpl = page
@@ -227,9 +224,10 @@ impl Renderer<'_> {
             .unwrap_or_else(|| DEFAULT_TEMPLATE.to_owned());
 
         let mut request_headers: BTreeMap<String, String> = BTreeMap::new();
-        for (key, value) in request.iter() {
-            let val = value.to_str()?;
-            request_headers.insert(String::from(key.as_str()), String::from(val));
+        for (key, value) in request {
+            if let Some(val) = value.as_str() {
+                request_headers.insert(String::from(key), String::from(val));
+            }
         }
 
         let ctx = TemplateContext {
